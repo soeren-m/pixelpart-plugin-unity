@@ -1,0 +1,3 @@
+[submodule "pixelpart-runtime"]
+	path = pixelpart-runtime
+	url = https://github.com/soeren-m/pixelpart-runtime

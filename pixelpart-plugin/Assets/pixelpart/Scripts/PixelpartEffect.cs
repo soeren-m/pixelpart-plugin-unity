@@ -134,6 +134,8 @@ public class PixelpartEffect : MonoBehaviour {
 						Plugin.PixelpartGetEffectParticleTextureData(nativeEffect, emitterIndex, textureData);
 
 						Texture2D texture = new Texture2D((int)textureWidth, (int)textureHeight, TextureFormat.RGBA32, false);
+						texture.filterMode = FilterMode.Bilinear;
+						texture.wrapMode = TextureWrapMode.Repeat;
 						texture.LoadRawTextureData(textureData);
 						texture.Apply();
 
@@ -161,6 +163,7 @@ public class PixelpartEffect : MonoBehaviour {
 						Plugin.PixelpartGetEffectSpriteTextureData(nativeEffect, spriteIndex, textureData);
 
 						Texture2D texture = new Texture2D((int)textureWidth, (int)textureHeight, TextureFormat.RGBA32, false);
+						texture.filterMode = FilterMode.Bilinear;
 						texture.LoadRawTextureData(textureData);
 						texture.Apply();
 

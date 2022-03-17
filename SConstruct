@@ -163,7 +163,7 @@ elif env["platform"] == "osx":
     elif env["target"] == "release":
         env.Append(CCFLAGS=["-O3"])
 
-    target_path = "macOS/libpixelpart.bundle"
+    target_path = "macOS/pixelpart.bundle"
 
 elif env["platform"] == "ios":
     if env["ios_simulator"]:

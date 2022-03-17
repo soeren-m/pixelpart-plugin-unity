@@ -257,9 +257,15 @@ UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartGetEffectNumParticl
 		return 0;
 	}
 
-	return pixelpart::getNumParticleIndices(
-		nativeEffect->project.effect.getParticleEmitterByIndex(emitterIndex),
-		nativeEffect->particleEngine.getNumParticles(emitterIndex)) / 3;
+	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.getParticleEmitterByIndex(emitterIndex);
+	uint32_t numParticles = nativeEffect->particleEngine.getNumParticles(emitterIndex);
+
+	if(emitter.renderer == pixelpart::ParticleEmitter::RendererType::trail && numParticles > 1) {
+		return pixelpart::getNumParticleIndices(emitter, numParticles) / 3;
+	}
+	else {
+		return numParticles * 2;
+	}
 }
 
 UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartGetEffectNumParticleVertices(PixelpartNativeEffect* nativeEffect, uint32_t emitterIndex) {
@@ -267,9 +273,15 @@ UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartGetEffectNumParticl
 		return 0;
 	}
 
-	return pixelpart::getNumParticleVertices(
-		nativeEffect->project.effect.getParticleEmitterByIndex(emitterIndex),
-		nativeEffect->particleEngine.getNumParticles(emitterIndex));
+	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.getParticleEmitterByIndex(emitterIndex);
+	uint32_t numParticles = nativeEffect->particleEngine.getNumParticles(emitterIndex);
+
+	if(emitter.renderer == pixelpart::ParticleEmitter::RendererType::trail && numParticles > 1) {
+		return pixelpart::getNumParticleVertices(emitter, numParticles);
+	}
+	else {
+		return numParticles * 4;
+	}
 }
 
 UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetParticleEmittersSortedByLayer(PixelpartNativeEffect* nativeEffect, uint32_t* indices) {

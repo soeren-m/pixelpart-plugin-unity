@@ -14,7 +14,7 @@ UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartSpriteGetName(Pixelp
 		return 0;
 	}
 
-	pixelpart::Sprite& sprite = nativeEffect->project.effect.getSprite(spriteIndex);	
+	pixelpart::Sprite& sprite = nativeEffect->project.effect.getSprite(spriteIndex);
 	if(sprite.name.empty()) {
 		return 0;
 	}
@@ -94,7 +94,7 @@ UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartSpriteGetLocalTime(Pix
 	}
 
 	pixelpart::Sprite& sprite = nativeEffect->project.effect.getSprite(spriteIndex);
-	
+
 	return static_cast<float>(std::fmod(nativeEffect->particleEngine.getTime() - sprite.lifetimeStart, sprite.lifetimeDuration) / sprite.lifetimeDuration);
 }
 
@@ -174,23 +174,13 @@ UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartSpriteIsVisible(Pixelpa
 	return sprite.visible;
 }
 
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec2d>* UNITY_INTERFACE_API PixelpartSpriteGetMotionPath(PixelpartNativeEffect* nativeEffect, uint32_t spriteIndex) {
-	if(!nativeEffect || !nativeEffect->project.effect.hasSprite(spriteIndex)) {
-		return nullptr;
-	}
-
-	pixelpart::Sprite& sprite = nativeEffect->project.effect.getSprite(spriteIndex);
-	
-	return &sprite.motionPath;
-}
-
 UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartSpriteGetWidth(PixelpartNativeEffect* nativeEffect, uint32_t spriteIndex) {
 	if(!nativeEffect || !nativeEffect->project.effect.hasSprite(spriteIndex)) {
 		return nullptr;
 	}
 
 	pixelpart::Sprite& sprite = nativeEffect->project.effect.getSprite(spriteIndex);
-	
+
 	return &sprite.width;
 }
 
@@ -200,7 +190,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	}
 
 	pixelpart::Sprite& sprite = nativeEffect->project.effect.getSprite(spriteIndex);
-	
+
 	return &sprite.height;
 }
 
@@ -210,8 +200,18 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	}
 
 	pixelpart::Sprite& sprite = nativeEffect->project.effect.getSprite(spriteIndex);
-	
+
 	return &sprite.orientation;
+}
+
+UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec2d>* UNITY_INTERFACE_API PixelpartSpriteGetMotionPath(PixelpartNativeEffect* nativeEffect, uint32_t spriteIndex) {
+	if(!nativeEffect || !nativeEffect->project.effect.hasSprite(spriteIndex)) {
+		return nullptr;
+	}
+
+	pixelpart::Sprite& sprite = nativeEffect->project.effect.getSprite(spriteIndex);
+
+	return &sprite.motionPath;
 }
 
 UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec4d>* UNITY_INTERFACE_API PixelpartSpriteGetColor(PixelpartNativeEffect* nativeEffect, uint32_t spriteIndex) {
@@ -220,7 +220,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec4d>* UNITY_INTERFACE_API P
 	}
 
 	pixelpart::Sprite& sprite = nativeEffect->project.effect.getSprite(spriteIndex);
-	
+
 	return &sprite.color;
 }
 
@@ -230,7 +230,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	}
 
 	pixelpart::Sprite& sprite = nativeEffect->project.effect.getSprite(spriteIndex);
-	
+
 	return &sprite.opacity;
 }
 }

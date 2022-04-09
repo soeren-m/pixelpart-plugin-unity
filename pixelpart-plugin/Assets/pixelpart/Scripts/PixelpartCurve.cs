@@ -15,7 +15,7 @@ public class PixelpartCurve {
 	private IntPtr nativeCurve = IntPtr.Zero;
 	private IntPtr nativeEffect = IntPtr.Zero;
 	private ObjectType objectType = ObjectType.None;
-	
+
 	public InterpolationType Interpolation {
 		get {
 			return (InterpolationType)Plugin.PixelpartCurveGetInterpolation(nativeCurve);

@@ -81,7 +81,7 @@ public class PixelpartParticleEmitter {
 		set {
 			Plugin.PixelpartParticleEmitterSetBlendMode(nativeEffect, emitterId, (int)value);
 		}
-	}	
+	}
 	public ColorModeType ColorMode {
 		get {
 			return (ColorModeType)Plugin.PixelpartParticleEmitterGetColorMode(nativeEffect, emitterId);
@@ -240,7 +240,7 @@ public class PixelpartParticleEmitter {
 	}
 	public PixelpartCurve GetParticleRotation() {
 		return new PixelpartCurve(Plugin.PixelpartParticleEmitterGetParticleRotation(nativeEffect, emitterId), nativeEffect, PixelpartCurve.ObjectType.ParticleEmitter);
-	}	
+	}
 	public PixelpartCurve GetParticleWeight() {
 		return new PixelpartCurve(Plugin.PixelpartParticleEmitterGetParticleWeight(nativeEffect, emitterId), nativeEffect, PixelpartCurve.ObjectType.ParticleEmitter);
 	}

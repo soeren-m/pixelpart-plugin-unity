@@ -16,7 +16,6 @@ public class PixelpartCollider {
 			Plugin.PixelpartColliderSetLifetimeStart(nativeEffect, colliderIndex, value);
 		}
 	}
-
 	public float LifetimeDuration {
 		get {
 			return Plugin.PixelpartColliderGetLifetimeDuration(nativeEffect, colliderIndex);
@@ -25,7 +24,6 @@ public class PixelpartCollider {
 			Plugin.PixelpartColliderSetLifetimeDuration(nativeEffect, colliderIndex, value);
 		}
 	}
-
 	public bool Repeat {
 		get {
 			return Plugin.PixelpartColliderGetRepeat(nativeEffect, colliderIndex);
@@ -39,7 +37,7 @@ public class PixelpartCollider {
 		nativeEffect = nativePtr;
 		colliderIndex = nativeIndex;
 	}
-	
+
 	public string GetName() {
 		byte[] buffer = new byte[256];
 		int size = Plugin.PixelpartColliderGetName(nativeEffect, colliderIndex, buffer, buffer.Length);

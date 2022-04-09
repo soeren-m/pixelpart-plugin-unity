@@ -97,7 +97,7 @@ UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartColliderGetLocalTime(P
 	}
 
 	pixelpart::Collider& collider = nativeEffect->project.effect.getCollider(colliderIndex);
-	
+
 	return static_cast<float>(std::fmod(nativeEffect->particleEngine.getTime() - collider.lifetimeStart, collider.lifetimeDuration) / collider.lifetimeDuration);
 }
 
@@ -167,7 +167,7 @@ UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartColliderGetNumPoint
 	}
 
 	pixelpart::Collider& collider = nativeEffect->project.effect.getCollider(colliderIndex);
-	
+
 	return static_cast<uint32_t>(collider.points.size());
 }
 
@@ -177,7 +177,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	}
 
 	pixelpart::Collider& collider = nativeEffect->project.effect.getCollider(colliderIndex);
-	
+
 	return &collider.bounce;
 }
 
@@ -187,7 +187,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	}
 
 	pixelpart::Collider& collider = nativeEffect->project.effect.getCollider(colliderIndex);
-	
+
 	return &collider.friction;
 }
 }

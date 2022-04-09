@@ -16,7 +16,6 @@ public class PixelpartSprite {
 			Plugin.PixelpartSpriteSetLifetimeStart(nativeEffect, spriteIndex, value);
 		}
 	}
-
 	public float LifetimeDuration {
 		get {
 			return Plugin.PixelpartSpriteGetLifetimeDuration(nativeEffect, spriteIndex);
@@ -25,7 +24,6 @@ public class PixelpartSprite {
 			Plugin.PixelpartSpriteSetLifetimeDuration(nativeEffect, spriteIndex, value);
 		}
 	}
-
 	public bool Repeat {
 		get {
 			return Plugin.PixelpartSpriteGetRepeat(nativeEffect, spriteIndex);
@@ -43,7 +41,6 @@ public class PixelpartSprite {
 			Plugin.PixelpartSpriteSetBlendMode(nativeEffect, spriteIndex, (int)value);
 		}
 	}
-
 	public ColorModeType ColorMode {
 		get {
 			return (ColorModeType)Plugin.PixelpartSpriteGetColorMode(nativeEffect, spriteIndex);
@@ -52,7 +49,6 @@ public class PixelpartSprite {
 			Plugin.PixelpartSpriteSetColorMode(nativeEffect, spriteIndex, (int)value);
 		}
 	}
-
 	public uint Layer {
 		get {
 			return Plugin.PixelpartSpriteGetLayer(nativeEffect, spriteIndex);
@@ -61,7 +57,6 @@ public class PixelpartSprite {
 			Plugin.PixelpartSpriteSetLayer(nativeEffect, spriteIndex, value);
 		}
 	}
-
 	public bool Visible {
 		get {
 			return Plugin.PixelpartSpriteIsVisible(nativeEffect, spriteIndex);
@@ -108,6 +103,5 @@ public class PixelpartSprite {
 	public PixelpartCurve GetOpacity() {
 		return new PixelpartCurve(Plugin.PixelpartSpriteGetOpacity(nativeEffect, spriteIndex), nativeEffect, PixelpartCurve.ObjectType.Sprite);
 	}
-	
 }
 }

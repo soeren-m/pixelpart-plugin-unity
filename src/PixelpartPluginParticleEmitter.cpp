@@ -157,7 +157,7 @@ UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartParticleEmitterGetSh
 	}
 
 	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.getParticleEmitter(emitterId);
-	
+
 	return static_cast<int32_t>(emitter.shape);
 }
 
@@ -167,7 +167,7 @@ UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartParticleEmitterGetDi
 	}
 
 	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.getParticleEmitter(emitterId);
-	
+
 	return static_cast<int32_t>(emitter.distribution);
 }
 
@@ -177,7 +177,7 @@ UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartParticleEmitterGetSp
 	}
 
 	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.getParticleEmitter(emitterId);
-	
+
 	return static_cast<int32_t>(emitter.spawnMode);
 }
 
@@ -187,7 +187,7 @@ UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartParticleEmitterGetBurst
 	}
 
 	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.getParticleEmitter(emitterId);
-	
+
 	return emitter.burst;
 }
 
@@ -435,7 +435,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	}
 
 	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.getParticleEmitter(emitterId);
-	
+
 	return &emitter.width;
 }
 
@@ -445,7 +445,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	}
 
 	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.getParticleEmitter(emitterId);
-	
+
 	return &emitter.height;
 }
 
@@ -455,7 +455,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	}
 
 	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.getParticleEmitter(emitterId);
-	
+
 	return &emitter.orientation;
 }
 
@@ -485,7 +485,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	}
 
 	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.getParticleEmitter(emitterId);
-	
+
 	return &emitter.numParticles;
 }
 
@@ -495,7 +495,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	}
 
 	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.getParticleEmitter(emitterId);
-	
+
 	return &emitter.particleLifespan;
 }
 
@@ -505,7 +505,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec2d>* UNITY_INTERFACE_API P
 	}
 
 	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.getParticleEmitter(emitterId);
-	
+
 	return &emitter.motionPath;
 }
 
@@ -515,7 +515,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec2d>* UNITY_INTERFACE_API P
 	}
 
 	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.getParticleEmitter(emitterId);
-	
+
 	return &emitter.particleMotionPath;
 }
 
@@ -535,7 +535,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	}
 
 	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.getParticleEmitter(emitterId);
-	
+
 	return &emitter.particleAcceleration;
 }
 
@@ -545,7 +545,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	}
 
 	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.getParticleEmitter(emitterId);
-	
+
 	return &emitter.particleRadialAcceleration;
 }
 
@@ -555,7 +555,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	}
 
 	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.getParticleEmitter(emitterId);
-	
+
 	return &emitter.particleDamping;
 }
 
@@ -575,7 +575,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	}
 
 	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.getParticleEmitter(emitterId);
-	
+
 	return &emitter.particleRotation;
 }
 
@@ -585,7 +585,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	}
 
 	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.getParticleEmitter(emitterId);
-	
+
 	return &emitter.particleWeight;
 }
 
@@ -595,7 +595,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	}
 
 	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.getParticleEmitter(emitterId);
-	
+
 	return &emitter.particleBounce;
 }
 
@@ -605,7 +605,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	}
 
 	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.getParticleEmitter(emitterId);
-	
+
 	return &emitter.particleFriction;
 }
 
@@ -615,7 +615,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	}
 
 	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.getParticleEmitter(emitterId);
-	
+
 	return &emitter.particleInitialSize;
 }
 
@@ -625,7 +625,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	}
 
 	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.getParticleEmitter(emitterId);
-	
+
 	return &emitter.particleSize;
 }
 
@@ -635,7 +635,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	}
 
 	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.getParticleEmitter(emitterId);
-	
+
 	return &emitter.particleWidth;
 }
 
@@ -645,7 +645,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	}
 
 	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.getParticleEmitter(emitterId);
-	
+
 	return &emitter.particleHeight;
 }
 
@@ -655,7 +655,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec4d>* UNITY_INTERFACE_API P
 	}
 
 	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.getParticleEmitter(emitterId);
-	
+
 	return &emitter.particleColor;
 }
 
@@ -665,7 +665,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	}
 
 	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.getParticleEmitter(emitterId);
-	
+
 	return &emitter.particleInitialOpacity;
 }
 
@@ -675,7 +675,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	}
 
 	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.getParticleEmitter(emitterId);
-	
+
 	return &emitter.particleOpacity;
 }
 

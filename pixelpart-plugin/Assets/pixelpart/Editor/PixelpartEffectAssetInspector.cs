@@ -16,7 +16,7 @@ public class PixelpartEffectAssetInspector : UnityEditor.Editor {
 		EditorGUILayout.LabelField("Data Size", asset.Data.Length.ToString() + " bytes");
 
 		var scale = EditorGUILayout.FloatField("Scale", asset.Scale);
-		scale = Math.Max(0.0f, scale);	
+		scale = Math.Max(scale, 0.0f);
 		if(asset.Scale != scale) {
 			asset.Scale = scale;
 			EditorUtility.SetDirty(asset);

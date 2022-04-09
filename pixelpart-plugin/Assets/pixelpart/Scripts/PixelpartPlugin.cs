@@ -15,11 +15,10 @@ internal static class Plugin {
 	public static extern void PixelpartSetMaxNumParticles(uint value);
 	[DllImport(pluginName)]
 	public static extern uint PixelpartGetMaxNumParticles();
-
 	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartLoadEffect(byte[] data, int size);
 	[DllImport(pluginName)]
-	public static extern void PixelpartDestroyEffect(IntPtr nativeEffect);
+	public static extern void PixelpartDeleteEffect(IntPtr nativeEffect);
 	[DllImport(pluginName)]
 	public static extern void PixelpartUpdateEffect(IntPtr nativeEffect, float dt);
 	[DllImport(pluginName)]
@@ -63,45 +62,41 @@ internal static class Plugin {
 	[DllImport(pluginName)]
 	public static extern uint PixelpartGetEffectMaxLayer(IntPtr nativeEffect);
 	[DllImport(pluginName)]
-	public static extern uint PixelpartGetEffectMaxNumTrianglesPerEmitter(IntPtr nativeEffect);
-	[DllImport(pluginName)]
-	public static extern uint PixelpartGetEffectMaxNumVerticesPerEmitter(IntPtr nativeEffect);
-	[DllImport(pluginName)]
 	public static extern uint PixelpartGetParticleEmitterId(IntPtr nativeEffect, uint emitterIndex);
 	[DllImport(pluginName)]
 	public static extern uint PixelpartGetEffectNumParticles(IntPtr nativeEffect, uint emitterIndex);
-	[DllImport(pluginName)]
-	public static extern uint PixelpartGetEffectNumParticleTriangles(IntPtr nativeEffect, uint emitterIndex);
-	[DllImport(pluginName)]
-	public static extern uint PixelpartGetEffectNumParticleVertices(IntPtr nativeEffect, uint emitterIndex);
 	[DllImport(pluginName)]
 	public static extern uint PixelpartGetParticleEmittersSortedByLayer(IntPtr nativeEffect, uint[] indices);
 	[DllImport(pluginName)]
 	public static extern uint PixelpartGetSpritesSortedByLayer(IntPtr nativeEffect, uint[] indices);
 	[DllImport(pluginName)]
-	public static extern uint PixelpartGetEffectParticleTextureWidth(IntPtr nativeEffect, uint emitterIndex);
+	public static extern int PixelpartGetEffectParticleImageId(IntPtr nativeEffect, uint emitterIndex, byte[] buffer, int length);
 	[DllImport(pluginName)]
-	public static extern uint PixelpartGetEffectParticleTextureHeight(IntPtr nativeEffect, uint emitterIndex);
+	public static extern int PixelpartGetEffectSpriteImageId(IntPtr nativeEffect, uint spriteIndex, byte[] buffer, int length);
 	[DllImport(pluginName)]
-	public static extern uint PixelpartGetEffectParticleTextureDataSize(IntPtr nativeEffect, uint emitterIndex);
+	public static extern bool PixelpartPrepareParticleMeshBuild(IntPtr nativeEffect, uint emitterIndex);
 	[DllImport(pluginName)]
-	public static extern void PixelpartGetEffectParticleTextureData(IntPtr nativeEffect, uint emitterIndex, byte[] textureData);
+	public static extern bool PixelpartPrepareSpriteMeshBuild(IntPtr nativeEffect, uint spriteIndex);
 	[DllImport(pluginName)]
-	public static extern uint PixelpartGetEffectSpriteTextureWidth(IntPtr nativeEffect, uint spriteIndex);
+	public static extern uint PixelpartGetParticleMeshNumTriangles(IntPtr nativeEffect);
 	[DllImport(pluginName)]
-	public static extern uint PixelpartGetEffectSpriteTextureHeight(IntPtr nativeEffect, uint spriteIndex);
+	public static extern uint PixelpartGetParticleMeshNumVertices(IntPtr nativeEffect);
 	[DllImport(pluginName)]
-	public static extern uint PixelpartGetEffectSpriteTextureDataSize(IntPtr nativeEffect, uint spriteIndex);
+	public static extern bool PixelpartGetParticleSpriteTriangleData(IntPtr nativeEffect, float scaleX, float scaleY, int[] triangles, float[] positions, float[] uvs, float[] colors);
 	[DllImport(pluginName)]
-	public static extern void PixelpartGetEffectSpriteTextureData(IntPtr nativeEffect, uint spriteIndex, byte[] textureData);
+	public static extern bool PixelpartGetParticleTrailTriangleData(IntPtr nativeEffect, float scaleX, float scaleY, int[] triangles, float[] positions, float[] uvs, float[] colors);
 	[DllImport(pluginName)]
-	public static extern bool PixelpartFillParticleSpriteTriangleData(IntPtr nativeEffect, uint emitterIndex, float scaleX, float scaleY, int[] triangles, float[] positions, float[] uvs, float[] colors);
+	public static extern bool PixelpartGetParticleTriangleData(IntPtr nativeEffect, float scaleX, float scaleY, int[] triangles, float[] positions, float[] uvs, float[] colors);
 	[DllImport(pluginName)]
-	public static extern bool PixelpartFillParticleTrailTriangleData(IntPtr nativeEffect, uint emitterIndex, float scaleX, float scaleY, int[] triangles, float[] positions, float[] uvs, float[] colors);
+	public static extern bool PixelpartGetSpriteTriangleData(IntPtr nativeEffect, float scaleX, float scaleY, int[] triangles, float[] positions, float[] uvs, float[] colors);
 	[DllImport(pluginName)]
-	public static extern bool PixelpartFillParticleTriangleData(IntPtr nativeEffect, uint emitterIndex, float scaleX, float scaleY, int[] triangles, float[] positions, float[] uvs, float[] colors);
+	public static extern uint PixelpartGetEffectResourceImageWidth(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string imageId);
 	[DllImport(pluginName)]
-	public static extern bool PixelpartFillSpriteTriangleData(IntPtr nativeEffect, uint spriteIndex, float scaleX, float scaleY, int[] triangles, float[] positions, float[] uvs, float[] colors);
+	public static extern uint PixelpartGetEffectResourceImageHeight(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string imageId);
+	[DllImport(pluginName)]
+	public static extern uint PixelpartGetEffectResourceImageDataSize(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string imageId);
+	[DllImport(pluginName)]
+	public static extern void PixelpartGetEffectResourceImageData(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string imageId, byte[] imageData);
 
 	[DllImport(pluginName)]
 	public static extern uint PixelpartFindParticleEmitter(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string buffer);
@@ -285,13 +280,13 @@ internal static class Plugin {
 	[DllImport(pluginName)]
 	public static extern int PixelpartForceFieldGetGridHeight(IntPtr nativeEffect, uint forceFieldIndex);
 	[DllImport(pluginName)]
-	public static extern IntPtr PixelpartForceFieldGetMotionPath(IntPtr nativeEffect, uint forceFieldIndex);
-	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartForceFieldGetWidth(IntPtr nativeEffect, uint forceFieldIndex);
 	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartForceFieldGetHeight(IntPtr nativeEffect, uint forceFieldIndex);
 	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartForceFieldGetOrientation(IntPtr nativeEffect, uint forceFieldIndex);
+	[DllImport(pluginName)]
+	public static extern IntPtr PixelpartForceFieldGetMotionPath(IntPtr nativeEffect, uint forceFieldIndex);
 	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartForceFieldGetDirection(IntPtr nativeEffect, uint forceFieldIndex);
 	[DllImport(pluginName)]
@@ -371,13 +366,13 @@ internal static class Plugin {
 	[DllImport(pluginName)]
 	public static extern bool PixelpartSpriteIsVisible(IntPtr nativeEffect, uint spriteIndex);
 	[DllImport(pluginName)]
-	public static extern IntPtr PixelpartSpriteGetMotionPath(IntPtr nativeEffect, uint spriteIndex);
-	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartSpriteGetWidth(IntPtr nativeEffect, uint spriteIndex);
 	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartSpriteGetHeight(IntPtr nativeEffect, uint spriteIndex);
 	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartSpriteGetOrientation(IntPtr nativeEffect, uint spriteIndex);
+	[DllImport(pluginName)]
+	public static extern IntPtr PixelpartSpriteGetMotionPath(IntPtr nativeEffect, uint spriteIndex);
 	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartSpriteGetColor(IntPtr nativeEffect, uint spriteIndex);
 	[DllImport(pluginName)]

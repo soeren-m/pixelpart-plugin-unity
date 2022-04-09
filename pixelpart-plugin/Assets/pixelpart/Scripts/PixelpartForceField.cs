@@ -16,7 +16,6 @@ public class PixelpartForceField {
 			Plugin.PixelpartForceFieldSetLifetimeStart(nativeEffect, forceFieldIndex, value);
 		}
 	}
-
 	public float LifetimeDuration {
 		get {
 			return Plugin.PixelpartForceFieldGetLifetimeDuration(nativeEffect, forceFieldIndex);
@@ -25,7 +24,6 @@ public class PixelpartForceField {
 			Plugin.PixelpartForceFieldSetLifetimeDuration(nativeEffect, forceFieldIndex, value);
 		}
 	}
-
 	public bool Repeat {
 		get {
 			return Plugin.PixelpartForceFieldGetRepeat(nativeEffect, forceFieldIndex);
@@ -52,7 +50,6 @@ public class PixelpartForceField {
 			Plugin.PixelpartForceFieldSetDirectionVariance(nativeEffect, forceFieldIndex, value);
 		}
 	}
-
 	public float StrengthVariance {
 		get {
 			return Plugin.PixelpartForceFieldGetStrengthVariance(nativeEffect, forceFieldIndex);

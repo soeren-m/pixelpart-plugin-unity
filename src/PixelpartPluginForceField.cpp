@@ -100,7 +100,7 @@ UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartForceFieldGetLocalTime
 	}
 
 	pixelpart::ForceField& forceField = nativeEffect->project.effect.getForceField(forceFieldIndex);
-	
+
 	return static_cast<float>(std::fmod(nativeEffect->particleEngine.getTime() - forceField.lifetimeStart, forceField.lifetimeDuration) / forceField.lifetimeDuration);
 }
 
@@ -120,7 +120,7 @@ UNITY_INTERFACE_EXPORT int UNITY_INTERFACE_API PixelpartForceFieldGetType(Pixelp
 	}
 
 	pixelpart::ForceField& forceField = nativeEffect->project.effect.getForceField(forceFieldIndex);
-	
+
 	return static_cast<int>(forceField.type);
 }
 
@@ -196,23 +196,13 @@ UNITY_INTERFACE_EXPORT int UNITY_INTERFACE_API PixelpartForceFieldGetGridHeight(
 	return static_cast<int>(forceField.gridSize[1]);
 }
 
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec2d>* UNITY_INTERFACE_API PixelpartForceFieldGetMotionPath(PixelpartNativeEffect* nativeEffect, uint32_t forceFieldIndex) {
-	if(!nativeEffect || !nativeEffect->project.effect.hasForceField(forceFieldIndex)) {
-		return nullptr;
-	}
-
-	pixelpart::ForceField& forceField = nativeEffect->project.effect.getForceField(forceFieldIndex);
-	
-	return &forceField.motionPath;
-}
-
 UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartForceFieldGetWidth(PixelpartNativeEffect* nativeEffect, uint32_t forceFieldIndex) {
 	if(!nativeEffect || !nativeEffect->project.effect.hasForceField(forceFieldIndex)) {
 		return nullptr;
 	}
 
 	pixelpart::ForceField& forceField = nativeEffect->project.effect.getForceField(forceFieldIndex);
-	
+
 	return &forceField.width;
 }
 
@@ -222,7 +212,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	}
 
 	pixelpart::ForceField& forceField = nativeEffect->project.effect.getForceField(forceFieldIndex);
-	
+
 	return &forceField.height;
 }
 
@@ -236,13 +226,23 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	return &forceField.orientation;
 }
 
+UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec2d>* UNITY_INTERFACE_API PixelpartForceFieldGetMotionPath(PixelpartNativeEffect* nativeEffect, uint32_t forceFieldIndex) {
+	if(!nativeEffect || !nativeEffect->project.effect.hasForceField(forceFieldIndex)) {
+		return nullptr;
+	}
+
+	pixelpart::ForceField& forceField = nativeEffect->project.effect.getForceField(forceFieldIndex);
+
+	return &forceField.motionPath;
+}
+
 UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartForceFieldGetDirection(PixelpartNativeEffect* nativeEffect, uint32_t forceFieldIndex) {
 	if(!nativeEffect || !nativeEffect->project.effect.hasForceField(forceFieldIndex)) {
 		return nullptr;
 	}
 
 	pixelpart::ForceField& forceField = nativeEffect->project.effect.getForceField(forceFieldIndex);
-	
+
 	return &forceField.direction;
 }
 
@@ -252,7 +252,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	}
 
 	pixelpart::ForceField& forceField = nativeEffect->project.effect.getForceField(forceFieldIndex);
-	
+
 	return &forceField.strength;
 }
 }

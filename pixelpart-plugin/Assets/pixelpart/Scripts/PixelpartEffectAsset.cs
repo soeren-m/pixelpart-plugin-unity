@@ -19,10 +19,9 @@ public class PixelpartEffectAsset : ScriptableObject {
 #if UNITY_EDITOR
 	public static void CreateAsset(string path) {
 		byte[] data = File.ReadAllBytes(path);
+		string keyword = System.Text.Encoding.UTF8.GetString(data, 0, Math.Min(data.Length, 256));
 
-		string dataStringStart = System.Text.Encoding.UTF8.GetString(data, 0, Math.Min(data.Length, 256));
-		
-		if(dataStringStart.Contains("\"project\"")) {
+		if(keyword.Contains("\"project\"")) {
 			CreateAsset(path, data);
 		}
 	}

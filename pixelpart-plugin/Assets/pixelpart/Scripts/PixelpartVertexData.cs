@@ -2,13 +2,13 @@ using System;
 using UnityEngine;
 
 namespace pixelpart {
-public class PixelpartMeshData {
+public class PixelpartVertexData {
 	public int[] triangles;
 	public Vector3[] positions;
 	public Vector2[] uvs;
 	public Color[] colors;
 
-	public PixelpartMeshData(int numTriangles, int numVertices) {
+	public PixelpartVertexData(int numTriangles, int numVertices) {
 		triangles = new int[numTriangles * 3];
 		positions = new Vector3[numVertices];
 		uvs = new Vector2[numVertices];

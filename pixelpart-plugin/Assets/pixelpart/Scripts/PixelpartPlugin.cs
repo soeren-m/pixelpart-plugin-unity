@@ -82,10 +82,6 @@ internal static class Plugin {
 	[DllImport(pluginName)]
 	public static extern uint PixelpartGetParticleMeshNumVertices(IntPtr nativeEffect);
 	[DllImport(pluginName)]
-	public static extern bool PixelpartGetParticleSpriteTriangleData(IntPtr nativeEffect, float scaleX, float scaleY, int[] triangles, float[] positions, float[] uvs, float[] colors);
-	[DllImport(pluginName)]
-	public static extern bool PixelpartGetParticleTrailTriangleData(IntPtr nativeEffect, float scaleX, float scaleY, int[] triangles, float[] positions, float[] uvs, float[] colors);
-	[DllImport(pluginName)]
 	public static extern bool PixelpartGetParticleTriangleData(IntPtr nativeEffect, float scaleX, float scaleY, int[] triangles, float[] positions, float[] uvs, float[] colors);
 	[DllImport(pluginName)]
 	public static extern bool PixelpartGetSpriteTriangleData(IntPtr nativeEffect, float scaleX, float scaleY, int[] triangles, float[] positions, float[] uvs, float[] colors);

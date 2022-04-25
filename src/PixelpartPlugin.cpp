@@ -20,6 +20,7 @@ UNITY_INTERFACE_EXPORT void* UNITY_INTERFACE_API PixelpartLoadEffect(const char*
 		PixelpartNativeEffect* nativeEffect = new PixelpartNativeEffect();
 		nativeEffect->project = pixelpart::deserialize(data, static_cast<std::size_t>(size), nativeEffect->projectResources);
 		nativeEffect->particleEngine = pixelpart::ParticleEngine(&(nativeEffect->project.effect), maxNumParticlesPerEmitter);
+		nativeEffect->particleMeshBuilders.resize(nativeEffect->project.effect.getNumParticleEmitters());
 
 		return nativeEffect;
 	}
@@ -294,16 +295,12 @@ UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartPrepareParticleMeshBuil
 		return false;
 	}
 
-	if(nativeEffect->particleMeshBuildInfo) {
-		delete nativeEffect->particleMeshBuildInfo;
-		nativeEffect->particleMeshBuildInfo = nullptr;
-	}
-
-	const pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.getParticleEmitterByIndex(emitterIndex);
-	const pixelpart::ParticleData& particles = nativeEffect->particleEngine.getParticles(emitterIndex);
-	uint32_t numParticles = nativeEffect->particleEngine.getNumParticles(emitterIndex);
-
-	nativeEffect->particleMeshBuildInfo = new pixelpart::ParticleMeshBuildInfo(emitter, particles, numParticles);
+	nativeEffect->particleMeshBuilders[emitterIndex].update(
+		nativeEffect->project.effect.getParticleEmitterByIndex(emitterIndex),
+		nativeEffect->particleEngine.getParticles(emitterIndex),
+		nativeEffect->particleEngine.getNumParticles(emitterIndex),
+		nativeEffect->particleEngine.getTime());
+	nativeEffect->activeParticleMeshBuilder = emitterIndex;
 
 	return true;
 }
@@ -313,109 +310,58 @@ UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartPrepareSpriteMeshBuild(
 		return false;
 	}
 
-	if(nativeEffect->spriteMeshBuildInfo) {
-		delete nativeEffect->spriteMeshBuildInfo;
-		nativeEffect->spriteMeshBuildInfo = nullptr;
-	}
-
 	const pixelpart::Sprite& sprite = nativeEffect->project.effect.getSprite(spriteIndex);
-	const pixelpart::ImageResource& spriteImage = nativeEffect->projectResources.images.at(sprite.image.id);
 
-	nativeEffect->spriteMeshBuildInfo = new pixelpart::SpriteMeshBuildInfo(sprite, spriteImage, nativeEffect->particleEngine.getTime());
+	nativeEffect->spriteMeshBuilder = pixelpart::SpriteMeshBuilder(
+		sprite,
+		nativeEffect->projectResources.images.at(sprite.image.id),
+		nativeEffect->particleEngine.getTime());
 
 	return true;
 }
 
 UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartGetParticleMeshNumTriangles(PixelpartNativeEffect* nativeEffect) {
-	if(!nativeEffect || !nativeEffect->particleMeshBuildInfo) {
+	if(!nativeEffect || nativeEffect->activeParticleMeshBuilder >= nativeEffect->particleMeshBuilders.size()) {
 		return 0;
 	}
 
-	return nativeEffect->particleMeshBuildInfo->numIndices / 3;
+	return nativeEffect->particleMeshBuilders[nativeEffect->activeParticleMeshBuilder].getNumIndices() / 3;
 }
 
 UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartGetParticleMeshNumVertices(PixelpartNativeEffect* nativeEffect) {
-	if(!nativeEffect || !nativeEffect->particleMeshBuildInfo) {
+	if(!nativeEffect || nativeEffect->activeParticleMeshBuilder >= nativeEffect->particleMeshBuilders.size()) {
 		return 0;
 	}
 
-	return nativeEffect->particleMeshBuildInfo->numVertices;
-}
-
-UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartGetParticleSpriteTriangleData(PixelpartNativeEffect* nativeEffect, float scaleX, float scaleY, int* triangles, float* positions, float* uvs, float* colors) {
-	if(!nativeEffect || !nativeEffect->particleMeshBuildInfo) {
-		return false;
-	}
-
-	pixelpart::generateParticleSpriteTriangles(
-		triangles,
-		positions,
-		uvs,
-		colors,
-		*(nativeEffect->particleMeshBuildInfo),
-		scaleX,
-		scaleY);
-
-	return true;
-}
-
-UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartGetParticleTrailTriangleData(PixelpartNativeEffect* nativeEffect, float scaleX, float scaleY, int* triangles, float* positions, float* uvs, float* colors) {
-	if(!nativeEffect || !nativeEffect->particleMeshBuildInfo) {
-		return false;
-	}
-
-	pixelpart::generateParticleTrailTriangles(
-		triangles,
-		positions,
-		uvs,
-		colors,
-		*(nativeEffect->particleMeshBuildInfo),
-		scaleX,
-		scaleY);
-
-	return true;
+	return nativeEffect->particleMeshBuilders[nativeEffect->activeParticleMeshBuilder].getNumVertices();
 }
 
 UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartGetParticleTriangleData(PixelpartNativeEffect* nativeEffect, float scaleX, float scaleY, int* triangles, float* positions, float* uvs, float* colors) {
-	if(!nativeEffect || !nativeEffect->particleMeshBuildInfo) {
+	if(!nativeEffect || nativeEffect->activeParticleMeshBuilder >= nativeEffect->particleMeshBuilders.size()) {
 		return false;
 	}
 
-	if(nativeEffect->particleMeshBuildInfo->emitter.renderer == pixelpart::ParticleEmitter::RendererType::trail && nativeEffect->particleMeshBuildInfo->numParticles > 1) {
-		pixelpart::generateParticleTrailTriangles(
-			triangles,
-			positions,
-			uvs,
-			colors,
-			*nativeEffect->particleMeshBuildInfo,
-			scaleX,
-			scaleY);
-	}
-	else {
-		pixelpart::generateParticleSpriteTriangles(
-			triangles,
-			positions,
-			uvs,
-			colors,
-			*nativeEffect->particleMeshBuildInfo,
-			scaleX,
-			scaleY);
-	}
+	nativeEffect->particleMeshBuilders[nativeEffect->activeParticleMeshBuilder].build(
+		triangles,
+		positions,
+		uvs,
+		colors,
+		scaleX,
+		scaleY);
 
 	return true;
 }
 
 UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartGetSpriteTriangleData(PixelpartNativeEffect* nativeEffect, float scaleX, float scaleY, int* triangles, float* positions, float* uvs, float* colors) {
-	if(!nativeEffect || !nativeEffect->spriteMeshBuildInfo) {
+	if(!nativeEffect || !nativeEffect->spriteMeshBuilder.getSprite()) {
 		return false;
 	}
 
-	pixelpart::generateSpriteTriangles(
+	nativeEffect->spriteMeshBuilder.build(
 		triangles,
 		positions,
 		uvs,
 		colors,
-		*(nativeEffect->spriteMeshBuildInfo),
 		scaleX,
 		scaleY);
 

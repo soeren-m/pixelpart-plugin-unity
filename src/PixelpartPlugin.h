@@ -31,6 +31,7 @@ struct PixelpartNativeEffect {
 	float timeStep = 1.0f / 60.0f;
 	float simulationTime = 0.0f;
 
-	pixelpart::ParticleMeshBuildInfo* particleMeshBuildInfo = nullptr;
-	pixelpart::SpriteMeshBuildInfo* spriteMeshBuildInfo = nullptr;
+	std::vector<pixelpart::ParticleMeshBuilder> particleMeshBuilders;
+	pixelpart::SpriteMeshBuilder spriteMeshBuilder;
+	uint32_t activeParticleMeshBuilder = 0;
 };

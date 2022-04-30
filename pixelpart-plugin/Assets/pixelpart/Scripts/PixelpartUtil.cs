@@ -57,4 +57,10 @@ public enum ForceType : int {
 	Point = 0,
 	Area = 1
 }
+
+public enum BillboardMode : int {
+	Disabled = 0,
+	Enabled = 1,
+	EnabledFixedY = 2,
+}
 }

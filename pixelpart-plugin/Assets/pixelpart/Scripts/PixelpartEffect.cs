@@ -25,6 +25,7 @@ public class PixelpartEffect : MonoBehaviour {
 	public bool FlipH = false;
 	public bool FlipV = false;
 	public Shader Shader = null;
+	public BillboardMode Billboard = BillboardMode.Disabled;
 	public UnityEngine.Rendering.ShadowCastingMode CastShadows = UnityEngine.Rendering.ShadowCastingMode.Off;
 	public bool ReceiveShadows = false;
 	public bool UseLightProbes = false;
@@ -371,7 +372,7 @@ public class PixelpartEffect : MonoBehaviour {
 
 		Graphics.DrawMesh(
 			particleMeshes[emitterIndex],
-			transform.localToWorldMatrix,
+			GetFinalTransform(),
 			particleMaterials[emitterIndex],
 			gameObject.layer,
 			null,
@@ -417,7 +418,7 @@ public class PixelpartEffect : MonoBehaviour {
 
 		Graphics.DrawMesh(
 			spriteMeshes[spriteIndex],
-			transform.localToWorldMatrix,
+			GetFinalTransform(),
 			spriteMaterials[spriteIndex],
 			gameObject.layer,
 			null,
@@ -477,6 +478,28 @@ public class PixelpartEffect : MonoBehaviour {
 				material.SetInt("_DstBlendMode", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
 				break;
 		}
+	}
+
+	private Matrix4x4 GetFinalTransform() {
+		if(Billboard == BillboardMode.Enabled) {
+			Vector3 cameraPosition = Camera.main.transform.position;
+
+			return Matrix4x4.LookAt(
+				transform.position,
+				transform.position * 2.0f - cameraPosition,
+				Vector3.up);
+		}
+		else if(Billboard == BillboardMode.EnabledFixedY) {
+			Vector3 cameraPosition = Camera.main.transform.position;
+			cameraPosition.y = 0.0f;
+
+			return Matrix4x4.LookAt(
+				transform.position,
+				transform.position * 2.0f - cameraPosition,
+				Vector3.up);
+		}
+
+		return transform.localToWorldMatrix;
 	}
 }
 }

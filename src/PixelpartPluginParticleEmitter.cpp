@@ -509,7 +509,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec2d>* UNITY_INTERFACE_API P
 	return &emitter.motionPath;
 }
 
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec2d>* UNITY_INTERFACE_API PixelpartParticleEmitterParticleGetMotionPath(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
+UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec2d>* UNITY_INTERFACE_API PixelpartParticleEmitterGetParticleMotionPath(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
 	if(!nativeEffect || !nativeEffect->project.effect.hasParticleEmitter(emitterId)) {
 		return nullptr;
 	}

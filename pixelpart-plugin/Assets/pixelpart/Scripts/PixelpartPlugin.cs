@@ -377,7 +377,7 @@ internal static class Plugin {
 	[DllImport(pluginName)]
 	public static extern float PixelpartCurveGet(IntPtr curve, float position);
 	[DllImport(pluginName)]
-	public static extern float PixelpartCurveGetPoint(IntPtr curve, float position);
+	public static extern float PixelpartCurveGetPoint(IntPtr curve, uint index);
 	[DllImport(pluginName)]
 	public static extern void PixelpartCurveSet(IntPtr curve, float value);
 	[DllImport(pluginName)]
@@ -414,9 +414,9 @@ internal static class Plugin {
 	[DllImport(pluginName)]
 	public static extern float PixelpartPathGetY(IntPtr path, float position);
 	[DllImport(pluginName)]
-	public static extern float PixelpartPathGetPointX(IntPtr path, float position);
+	public static extern float PixelpartPathGetPointX(IntPtr path, uint index);
 	[DllImport(pluginName)]
-	public static extern float PixelpartPathGetPointY(IntPtr path, float position);
+	public static extern float PixelpartPathGetPointY(IntPtr path, uint index);
 	[DllImport(pluginName)]
 	public static extern void PixelpartPathSet(IntPtr path, float x, float y);
 	[DllImport(pluginName)]
@@ -457,13 +457,13 @@ internal static class Plugin {
 	[DllImport(pluginName)]
 	public static extern float PixelpartGradientGetA(IntPtr gradient, float position);
 	[DllImport(pluginName)]
-	public static extern float PixelpartGradientGetPointR(IntPtr gradient, float position);
+	public static extern float PixelpartGradientGetPointR(IntPtr gradient, uint index);
 	[DllImport(pluginName)]
-	public static extern float PixelpartGradientGetPointG(IntPtr gradient, float position);
+	public static extern float PixelpartGradientGetPointG(IntPtr gradient, uint index);
 	[DllImport(pluginName)]
-	public static extern float PixelpartGradientGetPointB(IntPtr gradient, float position);
+	public static extern float PixelpartGradientGetPointB(IntPtr gradient, uint index);
 	[DllImport(pluginName)]
-	public static extern float PixelpartGradientGetPointA(IntPtr gradient, float position);
+	public static extern float PixelpartGradientGetPointA(IntPtr gradient, uint index);
 	[DllImport(pluginName)]
 	public static extern void PixelpartGradientSet(IntPtr gradient, float r, float g, float b, float a);
 	[DllImport(pluginName)]

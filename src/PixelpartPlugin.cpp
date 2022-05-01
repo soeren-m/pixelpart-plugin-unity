@@ -196,7 +196,7 @@ UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartGetEffectNumForceFi
 	return nativeEffect->project.effect.getNumForceFields();
 }
 
-UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartGetEffectNumCollider(PixelpartNativeEffect* nativeEffect) {
+UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartGetEffectNumColliders(PixelpartNativeEffect* nativeEffect) {
 	if(!nativeEffect) {
 		return 0;
 	}

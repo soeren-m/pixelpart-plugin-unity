@@ -1,0 +1,12 @@
+*.h
+*.hpp
+*.c
+*.cpp
+*.inl
+*.a
+*.lib
+*.so
+*.dll
+*.dylib
+*.bundle
+*.wasm

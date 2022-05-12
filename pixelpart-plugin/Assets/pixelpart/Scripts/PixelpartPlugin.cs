@@ -12,10 +12,6 @@ internal static class Plugin {
 #endif
 
 	[DllImport(pluginName)]
-	public static extern void PixelpartSetMaxNumParticles(uint value);
-	[DllImport(pluginName)]
-	public static extern uint PixelpartGetMaxNumParticles();
-	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartLoadEffect(byte[] data, int size);
 	[DllImport(pluginName)]
 	public static extern void PixelpartDeleteEffect(IntPtr nativeEffect);
@@ -66,9 +62,9 @@ internal static class Plugin {
 	[DllImport(pluginName)]
 	public static extern uint PixelpartGetEffectNumParticles(IntPtr nativeEffect, uint emitterIndex);
 	[DllImport(pluginName)]
-	public static extern uint PixelpartGetParticleEmittersSortedByLayer(IntPtr nativeEffect, uint[] indices);
+	public static extern void PixelpartGetParticleEmittersSortedByLayer(IntPtr nativeEffect, uint[] indices);
 	[DllImport(pluginName)]
-	public static extern uint PixelpartGetSpritesSortedByLayer(IntPtr nativeEffect, uint[] indices);
+	public static extern void PixelpartGetSpritesSortedByLayer(IntPtr nativeEffect, uint[] indices);
 	[DllImport(pluginName)]
 	public static extern int PixelpartGetEffectParticleImageId(IntPtr nativeEffect, uint emitterIndex, byte[] buffer, int length);
 	[DllImport(pluginName)]

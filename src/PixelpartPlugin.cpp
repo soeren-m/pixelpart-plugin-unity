@@ -1,16 +1,6 @@
 #include "PixelpartPlugin.h"
 
 extern "C" {
-static uint32_t maxNumParticlesPerEmitter = 10000;
-
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartSetMaxNumParticles(uint32_t value) {
-	maxNumParticlesPerEmitter = value;
-}
-
-UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartGetMaxNumParticles() {
-	return maxNumParticlesPerEmitter;
-}
-
 UNITY_INTERFACE_EXPORT void* UNITY_INTERFACE_API PixelpartLoadEffect(const char* data, int size) {
 	if(!data || size <= 0) {
 		return nullptr;

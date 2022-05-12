@@ -75,7 +75,7 @@ public class PixelpartEffect : MonoBehaviour {
 			Plugin.PixelpartSetEffectTimeStep(nativeEffect, 1.0f / FrameRate);
 			Plugin.PixelpartUpdateEffect(nativeEffect, Time.deltaTime);
 
-			Draw();
+			DrawEffect();
 		}
 	}
 
@@ -121,17 +121,17 @@ public class PixelpartEffect : MonoBehaviour {
 			nativeEffect = EffectAsset.LoadEffect();
 
 			if(nativeEffect != IntPtr.Zero) {
-				uint numParticlesMax = Plugin.PixelpartGetMaxNumParticles();
 				uint numParticleEmitters = Plugin.PixelpartGetEffectNumParticleEmitters(nativeEffect);
 				uint numSprites = Plugin.PixelpartGetEffectNumSprites(nativeEffect);
+				uint initialVertexBufferSize = 1000 * 4;
 
 				sortedParticleEmitterIndices = new uint[numParticleEmitters];
 				particleMeshes = new Mesh[numParticleEmitters];
 				particleMaterials = new Material[numParticleEmitters];
 				particleVertexData = new PixelpartVertexData[numParticleEmitters];
-				particlePositionBuffer = new float[numParticlesMax * 4 * 2];
-				particleUVBuffer = new float[numParticlesMax * 4 * 2];
-				particleColorBuffer = new float[numParticlesMax * 4 * 4];
+				particlePositionBuffer = new float[initialVertexBufferSize * 2];
+				particleUVBuffer = new float[initialVertexBufferSize * 2];
+				particleColorBuffer = new float[initialVertexBufferSize * 4];
 
 				sortedSpriteIndices = new uint[numSprites];
 				spriteMeshes = new Mesh[numSprites];
@@ -285,11 +285,16 @@ public class PixelpartEffect : MonoBehaviour {
 		return null;
 	}
 
-	private void Draw() {
+	private void DrawEffect() {
 		uint numParticleEmitters = Plugin.PixelpartGetEffectNumParticleEmitters(nativeEffect);
 		uint numSprites = Plugin.PixelpartGetEffectNumSprites(nativeEffect);
-		Plugin.PixelpartGetParticleEmittersSortedByLayer(nativeEffect, sortedParticleEmitterIndices);
-		Plugin.PixelpartGetSpritesSortedByLayer(nativeEffect, sortedSpriteIndices);
+
+		if(numParticleEmitters > 0) {
+			Plugin.PixelpartGetParticleEmittersSortedByLayer(nativeEffect, sortedParticleEmitterIndices);
+		}
+		if(numSprites > 0) {
+			Plugin.PixelpartGetSpritesSortedByLayer(nativeEffect, sortedSpriteIndices);
+		}
 
 		uint maxLayer = Plugin.PixelpartGetEffectMaxLayer(nativeEffect);
 

@@ -12,6 +12,10 @@ internal static class Plugin {
 #endif
 
 	[DllImport(pluginName)]
+	public static extern void PixelpartSetMaxNumParticlesPerEmitter(uint value);
+	[DllImport(pluginName)]
+	public static extern uint PixelpartGetMaxNumParticlesPerEmitter();
+	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartLoadEffect(byte[] data, int size);
 	[DllImport(pluginName)]
 	public static extern void PixelpartDeleteEffect(IntPtr nativeEffect);

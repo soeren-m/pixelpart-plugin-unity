@@ -49,47 +49,23 @@ public class PixelpartParticleEmitter {
 			Plugin.PixelpartParticleEmitterSetDistribution(nativeEffect, emitterId, (int)value);
 		}
 	}
-	public EmitterSpawnModeType SpawnMode {
+	public EmitterSpawnMode SpawnMode {
 		get {
-			return (EmitterSpawnModeType)Plugin.PixelpartParticleEmitterGetSpawnMode(nativeEffect, emitterId);
+			return (EmitterSpawnMode)Plugin.PixelpartParticleEmitterGetSpawnMode(nativeEffect, emitterId);
 		}
 		set {
 			Plugin.PixelpartParticleEmitterSetSpawnMode(nativeEffect, emitterId, (int)value);
 		}
 	}
-	public bool Burst {
+	public EmitterInstantiationMode InstantiationMode {
 		get {
-			return Plugin.PixelpartParticleEmitterGetBurst(nativeEffect, emitterId);
+			return (EmitterInstantiationMode)Plugin.PixelpartParticleEmitterGetInstantiationMode(nativeEffect, emitterId);
 		}
 		set {
-			Plugin.PixelpartParticleEmitterSetBurst(nativeEffect, emitterId, value);
+			Plugin.PixelpartParticleEmitterSetInstantiationMode(nativeEffect, emitterId, (int)value);
 		}
 	}
 
-	public float AlphaThreshold {
-		get {
-			return Plugin.PixelpartParticleEmitterGetAlphaThreshold(nativeEffect, emitterId);
-		}
-		set {
-			Plugin.PixelpartParticleEmitterSetAlphaThreshold(nativeEffect, emitterId, value);
-		}
-	}
-	public BlendModeType BlendMode {
-		get {
-			return (BlendModeType)Plugin.PixelpartParticleEmitterGetBlendMode(nativeEffect, emitterId);
-		}
-		set {
-			Plugin.PixelpartParticleEmitterSetBlendMode(nativeEffect, emitterId, (int)value);
-		}
-	}
-	public ColorModeType ColorMode {
-		get {
-			return (ColorModeType)Plugin.PixelpartParticleEmitterGetColorMode(nativeEffect, emitterId);
-		}
-		set {
-			Plugin.PixelpartParticleEmitterSetColorMode(nativeEffect, emitterId, (int)value);
-		}
-	}
 	public uint Layer {
 		get {
 			return Plugin.PixelpartParticleEmitterGetLayer(nativeEffect, emitterId);
@@ -113,6 +89,16 @@ public class PixelpartParticleEmitter {
 		}
 		set {
 			Plugin.PixelpartParticleEmitterSetParticleRotationMode(nativeEffect, emitterId, (int)value);
+		}
+	}
+	public Vector2 ParticlePivot {
+		get {
+			return new Vector2(
+				Plugin.PixelpartParticleEmitterGetParticlePivotX(nativeEffect, emitterId),
+				Plugin.PixelpartParticleEmitterGetParticlePivotY(nativeEffect, emitterId));
+		}
+		set {
+			Plugin.PixelpartParticleEmitterSetParticlePivot(nativeEffect, emitterId, value.x, value.y);
 		}
 	}
 
@@ -196,6 +182,9 @@ public class PixelpartParticleEmitter {
 		}
 	}
 
+	public PixelpartPath GetShapePath() {
+		return new PixelpartPath(Plugin.PixelpartParticleEmitterGetShapePath(nativeEffect, emitterId), nativeEffect, PixelpartPath.ObjectType.ParticleEmitter);
+	}
 	public PixelpartCurve GetWidth() {
 		return new PixelpartCurve(Plugin.PixelpartParticleEmitterGetWidth(nativeEffect, emitterId), nativeEffect, PixelpartCurve.ObjectType.ParticleEmitter);
 	}

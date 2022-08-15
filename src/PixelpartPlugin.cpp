@@ -1,6 +1,8 @@
 #include "PixelpartPlugin.h"
+#include <locale>
 
 extern "C" {
+static bool initialized = false;
 static uint32_t maxNumParticlesPerEmitter = 10000;
 
 UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartSetMaxNumParticlesPerEmitter(uint32_t value) {
@@ -11,7 +13,21 @@ UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartGetMaxNumParticlesP
 	return maxNumParticlesPerEmitter;
 }
 
-UNITY_INTERFACE_EXPORT void* UNITY_INTERFACE_API PixelpartLoadEffect(const char* data, int size) {
+UNITY_INTERFACE_EXPORT void* UNITY_INTERFACE_API PixelpartLoadEffect(const char* data, int32_t size) {
+	if(!initialized) {
+		try {
+			nlohmann::ordered_json modelJson = nlohmann::json::parse(
+				#include "PixelpartShaderGraph.json"
+			);
+
+			pixelpart::ShaderGraph::graphType = modelJson;
+			initialized = true;
+		}
+		catch(...) {
+			return nullptr;
+		}
+	}
+
 	if(!data || size <= 0) {
 		return nullptr;
 	}
@@ -20,12 +36,12 @@ UNITY_INTERFACE_EXPORT void* UNITY_INTERFACE_API PixelpartLoadEffect(const char*
 		PixelpartNativeEffect* nativeEffect = new PixelpartNativeEffect();
 		nativeEffect->project = pixelpart::deserialize(data, static_cast<std::size_t>(size), nativeEffect->projectResources);
 		nativeEffect->particleEngine = pixelpart::ParticleEngine(&(nativeEffect->project.effect), maxNumParticlesPerEmitter);
-		nativeEffect->particleMeshBuilders.resize(nativeEffect->project.effect.getNumParticleEmitters());
+		nativeEffect->particleMeshBuilders.resize(nativeEffect->project.effect.particleEmitters.getCount());
 
 		return nativeEffect;
 	}
 	catch(...) {
-
+		return nullptr;
 	}
 
 	return nullptr;
@@ -65,7 +81,7 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartUpdateEffectForceSolver
 		return;
 	}
 
-	nativeEffect->particleEngine.onForceFieldUpdate();
+	nativeEffect->particleEngine.updateForceSolver();
 }
 
 UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartUpdateEffectCollisionSolver(PixelpartNativeEffect* nativeEffect) {
@@ -73,7 +89,7 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartUpdateEffectCollisionSo
 		return;
 	}
 
-	nativeEffect->particleEngine.onColliderUpdate();
+	nativeEffect->particleEngine.updateCollisionSolver();
 }
 
 UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartPlayEffect(PixelpartNativeEffect* nativeEffect, bool state) {
@@ -185,23 +201,7 @@ UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartGetEffectNumParticl
 		return 0;
 	}
 
-	return nativeEffect->project.effect.getNumParticleEmitters();
-}
-
-UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartGetEffectNumForceFields(PixelpartNativeEffect* nativeEffect) {
-	if(!nativeEffect) {
-		return 0;
-	}
-
-	return nativeEffect->project.effect.getNumForceFields();
-}
-
-UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartGetEffectNumColliders(PixelpartNativeEffect* nativeEffect) {
-	if(!nativeEffect) {
-		return 0;
-	}
-
-	return nativeEffect->project.effect.getNumColliders();
+	return nativeEffect->project.effect.particleEmitters.getCount();
 }
 
 UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartGetEffectNumSprites(PixelpartNativeEffect* nativeEffect) {
@@ -209,7 +209,23 @@ UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartGetEffectNumSprites
 		return 0;
 	}
 
-	return nativeEffect->project.effect.getNumSprites();
+	return nativeEffect->project.effect.sprites.getCount();
+}
+
+UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartGetEffectNumForceFields(PixelpartNativeEffect* nativeEffect) {
+	if(!nativeEffect) {
+		return 0;
+	}
+
+	return nativeEffect->project.effect.forceFields.getCount();
+}
+
+UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartGetEffectNumColliders(PixelpartNativeEffect* nativeEffect) {
+	if(!nativeEffect) {
+		return 0;
+	}
+
+	return nativeEffect->project.effect.colliders.getCount();
 }
 
 UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartGetEffectMaxLayer(PixelpartNativeEffect* nativeEffect) {
@@ -217,21 +233,19 @@ UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartGetEffectMaxLayer(P
 		return 0;
 	}
 
-	return nativeEffect->project.effect.getMaxLayer();
-}
-
-UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartGetParticleEmitterId(PixelpartNativeEffect* nativeEffect, uint32_t emitterIndex) {
-	if(!nativeEffect || emitterIndex >= nativeEffect->project.effect.getNumParticleEmitters()) {
-		return pixelpart::NullId;
+	uint32_t maxLayer = 0;
+	for(const pixelpart::ParticleEmitter& emitter : nativeEffect->project.effect.particleEmitters) {
+		maxLayer = std::max(maxLayer, emitter.layer);
+	}
+	for(const pixelpart::Sprite& sprite : nativeEffect->project.effect.sprites) {
+		maxLayer = std::max(maxLayer, sprite.layer);
 	}
 
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.getParticleEmitterByIndex(emitterIndex);
-
-	return emitter.id;
+	return maxLayer;
 }
 
 UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartGetEffectNumParticles(PixelpartNativeEffect* nativeEffect, uint32_t emitterIndex) {
-	if(!nativeEffect || emitterIndex >= nativeEffect->project.effect.getNumParticleEmitters()) {
+	if(!nativeEffect || emitterIndex >= nativeEffect->project.effect.particleEmitters.getCount()) {
 		return 0;
 	}
 
@@ -243,7 +257,10 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetParticleEmittersSort
 		return;
 	}
 
-	std::vector<uint32_t> sortedIndices = nativeEffect->project.effect.getParticleEmittersSortedByLayer();
+	std::vector<uint32_t> sortedIndices = nativeEffect->project.effect.particleEmitters.getSortedIndices([](const pixelpart::ParticleEmitter& emitter1, const pixelpart::ParticleEmitter& emitter2) {
+		return emitter1.layer < emitter2.layer;
+	});
+
 	for(uint32_t i = 0; i < sortedIndices.size(); i++) {
 		indices[i] = sortedIndices[i];
 	}
@@ -254,49 +271,102 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetSpritesSortedByLayer
 		return;
 	}
 
-	std::vector<uint32_t> sortedIndices = nativeEffect->project.effect.getSpritesSortedByLayer();
+	std::vector<uint32_t> sortedIndices = nativeEffect->project.effect.sprites.getSortedIndices([](const pixelpart::Sprite& sprite1, const pixelpart::Sprite& sprite2) {
+		return sprite1.layer < sprite2.layer;
+	});
+
 	for(uint32_t i = 0; i < sortedIndices.size(); i++) {
 		indices[i] = sortedIndices[i];
 	}
 }
 
-UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartGetEffectParticleImageId(PixelpartNativeEffect* nativeEffect, uint32_t emitterIndex, char* buffer, int32_t length) {
-	if(!nativeEffect || emitterIndex >= nativeEffect->project.effect.getNumParticleEmitters() || length < 2) {
-		return 0;
+UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartBuildParticleShader(PixelpartNativeEffect* nativeEffect, uint32_t emitterIndex, char* bufferCode, char* bufferTextureIds, int32_t* outLengthCode, int32_t* outLengthTextureIds, int32_t bufferSizeCode, int32_t bufferSizeTexturesIds) {
+	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.containsIndex(emitterIndex) || !bufferCode || !bufferTextureIds || !outLengthCode || !outLengthTextureIds || bufferSizeCode < 2 || bufferSizeTexturesIds < 2) {
+		return false;
 	}
 
-	const std::string& imageId = nativeEffect->project.effect.getParticleEmitterByIndex(emitterIndex).particleSprite.id;
-	const pixelpart::ImageResource& image = nativeEffect->projectResources.images.at(imageId);
+	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.getByIndex(emitterIndex);
 
-	std::size_t size = std::min(imageId.size(), static_cast<std::size_t>(length) - 1);
-	strncpy(buffer, imageId.c_str(), size);
-	buffer[size] = '\0';
+	try {
+		std::locale::global(std::locale::classic());
 
-	return static_cast<int32_t>(size);
+		pixelpart::ShaderGraph::BuildResult buildResult;
+		emitter.particleShader.build(buildResult);
+
+		std::string textureIdString;
+		for(const std::string& textureId : buildResult.textureIds) {
+			textureIdString += textureId;
+			textureIdString += ";";
+		}
+
+		if(!textureIdString.empty()) {
+			textureIdString.pop_back();
+		}
+
+		*outLengthCode = std::min(static_cast<int32_t>(buildResult.code.size()), bufferSizeCode - 1);
+		strncpy(bufferCode, buildResult.code.c_str(), *outLengthCode);
+		bufferCode[*outLengthCode] = '\0';
+
+		*outLengthTextureIds = std::min(static_cast<int32_t>(textureIdString.size()), bufferSizeTexturesIds - 1);
+		strncpy(bufferTextureIds, textureIdString.c_str(), *outLengthTextureIds);
+		bufferTextureIds[*outLengthTextureIds] = '\0';
+
+		return true;
+	}
+	catch(...) {
+		return false;
+	}
+
+	return false;
 }
 
-UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartGetEffectSpriteImageId(PixelpartNativeEffect* nativeEffect, uint32_t spriteIndex, char* buffer, int32_t length) {
-	if(!nativeEffect || !nativeEffect->project.effect.hasSprite(spriteIndex) || length < 2) {
+UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartBuildSpriteShader(PixelpartNativeEffect* nativeEffect, uint32_t spriteIndex, char* bufferCode, char* bufferTextureIds, int32_t* outLengthCode, int32_t* outLengthTextureIds, int32_t bufferSizeCode, int32_t bufferSizeTexturesIds) {
+	if(!nativeEffect || !nativeEffect->project.effect.sprites.containsIndex(spriteIndex) || !bufferCode || !bufferTextureIds || !outLengthCode || !outLengthTextureIds || bufferSizeCode < 2 || bufferSizeTexturesIds < 2) {
 		return 0;
 	}
 
-	const std::string& imageId = nativeEffect->project.effect.getSprite(spriteIndex).image.id;
-	const pixelpart::ImageResource& image = nativeEffect->projectResources.images.at(imageId);
+	pixelpart::Sprite& sprite = nativeEffect->project.effect.sprites.getByIndex(spriteIndex);
 
-	std::size_t size = std::min(imageId.size(), static_cast<std::size_t>(length) - 1);
-	strncpy(buffer, imageId.c_str(), size);
-	buffer[size] = '\0';
+	try {
+		std::locale::global(std::locale::classic());
 
-	return static_cast<int32_t>(size);
+		pixelpart::ShaderGraph::BuildResult buildResult;
+		sprite.shader.build(buildResult);
+
+		std::string textureIdString;
+		for(const std::string& textureId : buildResult.textureIds) {
+			textureIdString += textureId;
+			textureIdString += ";";
+		}
+
+		if(!textureIdString.empty()) {
+			textureIdString.pop_back();
+		}
+
+		*outLengthCode = std::min(static_cast<int32_t>(buildResult.code.size()), bufferSizeCode - 1);
+		strncpy(bufferCode, buildResult.code.c_str(), *outLengthCode);
+		bufferCode[*outLengthCode] = '\0';
+
+		*outLengthTextureIds = std::min(static_cast<int32_t>(textureIdString.size()), bufferSizeTexturesIds - 1);
+		strncpy(bufferTextureIds, textureIdString.c_str(), *outLengthTextureIds);
+		bufferTextureIds[*outLengthTextureIds] = '\0';
+
+		return true;
+	}
+	catch(...) {
+		return false;
+	}
+
+	return false;
 }
 
 UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartPrepareParticleMeshBuild(PixelpartNativeEffect* nativeEffect, uint32_t emitterIndex) {
-	if(!nativeEffect || emitterIndex >= nativeEffect->project.effect.getNumParticleEmitters()) {
+	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.containsIndex(emitterIndex)) {
 		return false;
 	}
 
 	nativeEffect->particleMeshBuilders[emitterIndex].update(
-		nativeEffect->project.effect.getParticleEmitterByIndex(emitterIndex),
+		nativeEffect->project.effect.particleEmitters.getByIndex(emitterIndex),
 		nativeEffect->particleEngine.getParticles(emitterIndex),
 		nativeEffect->particleEngine.getNumParticles(emitterIndex),
 		nativeEffect->particleEngine.getTime());
@@ -306,15 +376,12 @@ UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartPrepareParticleMeshBuil
 }
 
 UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartPrepareSpriteMeshBuild(PixelpartNativeEffect* nativeEffect, uint32_t spriteIndex) {
-	if(!nativeEffect || !nativeEffect->project.effect.hasSprite(spriteIndex)) {
+	if(!nativeEffect || !nativeEffect->project.effect.sprites.containsIndex(spriteIndex)) {
 		return false;
 	}
 
-	const pixelpart::Sprite& sprite = nativeEffect->project.effect.getSprite(spriteIndex);
-
 	nativeEffect->spriteMeshBuilder = pixelpart::SpriteMeshBuilder(
-		sprite,
-		nativeEffect->projectResources.images.at(sprite.image.id),
+		nativeEffect->project.effect.sprites.getByIndex(spriteIndex),
 		nativeEffect->particleEngine.getTime());
 
 	return true;
@@ -336,7 +403,7 @@ UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartGetParticleMeshNumV
 	return nativeEffect->particleMeshBuilders[nativeEffect->activeParticleMeshBuilder].getNumVertices();
 }
 
-UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartGetParticleTriangleData(PixelpartNativeEffect* nativeEffect, float scaleX, float scaleY, int* triangles, float* positions, float* uvs, float* colors) {
+UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartGetParticleTriangleData(PixelpartNativeEffect* nativeEffect, float scaleX, float scaleY, int* triangles, float* positions, float* textureCoords, float* colors, float* velocities, float* forces, float* lives, int* ids) {
 	if(!nativeEffect || nativeEffect->activeParticleMeshBuilder >= nativeEffect->particleMeshBuilders.size()) {
 		return false;
 	}
@@ -344,15 +411,19 @@ UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartGetParticleTriangleData
 	nativeEffect->particleMeshBuilders[nativeEffect->activeParticleMeshBuilder].build(
 		triangles,
 		positions,
-		uvs,
+		textureCoords,
 		colors,
+		velocities,
+		forces,
+		lives,
+		ids,
 		scaleX,
 		scaleY);
 
 	return true;
 }
 
-UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartGetSpriteTriangleData(PixelpartNativeEffect* nativeEffect, float scaleX, float scaleY, int* triangles, float* positions, float* uvs, float* colors) {
+UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartGetSpriteTriangleData(PixelpartNativeEffect* nativeEffect, float scaleX, float scaleY, int* triangles, float* positions, float* textureCoords, float* colors, float* lives) {
 	if(!nativeEffect || !nativeEffect->spriteMeshBuilder.getSprite()) {
 		return false;
 	}
@@ -360,12 +431,42 @@ UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartGetSpriteTriangleData(P
 	nativeEffect->spriteMeshBuilder.build(
 		triangles,
 		positions,
-		uvs,
+		textureCoords,
 		colors,
+		lives,
 		scaleX,
 		scaleY);
 
 	return true;
+}
+
+UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartGetEffectResourceImageCount(PixelpartNativeEffect* nativeEffect) {
+	if(!nativeEffect) {
+		return 0;
+	}
+
+	return static_cast<uint32_t>(nativeEffect->projectResources.images.size());
+}
+
+UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartGetEffectResourceImageId(PixelpartNativeEffect* nativeEffect, uint32_t index, char* imageIdBuffer, int32_t bufferLength) {
+	if(!nativeEffect || !imageIdBuffer) {
+		return 0;
+	}
+
+	int32_t length = 0;
+	uint32_t i = 0;
+	for(const auto& entry : nativeEffect->projectResources.images) {
+		if(index == i) {
+			length = static_cast<int32_t>(entry.first.size());
+			memcpy(imageIdBuffer, entry.first.c_str(), static_cast<std::size_t>(length));
+
+			break;
+		}
+
+		i++;
+	}
+
+	return length;
 }
 
 UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartGetEffectResourceImageWidth(PixelpartNativeEffect* nativeEffect, const char* imageId) {

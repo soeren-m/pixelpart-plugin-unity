@@ -367,10 +367,10 @@ env.Append(CPPPATH=[
 ])
 
 if env["platform"] == "osx":
-    library = env.LoadableModule("pixelpart-plugin/Assets/pixelpart/Plugins/" + target_path, source=sources)
+    library = env.LoadableModule("pixelpart-plugin/Assets/Pixelpart/Plugins/" + target_path, source=sources)
 elif env["platform"] == "ios":
-    library = env.StaticLibrary("pixelpart-plugin/Assets/pixelpart/Plugins/" + target_path, source=sources)
+    library = env.StaticLibrary("pixelpart-plugin/Assets/Pixelpart/Plugins/" + target_path, source=sources)
 else:
-    library = env.SharedLibrary("pixelpart-plugin/Assets/pixelpart/Plugins/" + target_path, source=sources)
+    library = env.SharedLibrary("pixelpart-plugin/Assets/Pixelpart/Plugins/" + target_path, source=sources)
 
 Default(library)

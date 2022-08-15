@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace pixelpart {
 public enum InterpolationType : int {
-	Step = 0,
+	None = 0,
 	Linear = 1,
 	Spline = 2
 }
@@ -14,23 +14,12 @@ public enum BlendModeType : int {
 	Subtractive = 2
 }
 
-public enum ColorModeType : int {
-	Multiply = 0,
-	Add = 1,
-	Subtract = 2,
-	Difference = 3,
-	Screen = 4,
-	Overlay = 5,
-	Lighten = 6,
-	Darken = 7,
-	ColorOnly = 8
-}
-
 public enum EmitterShapeType : int {
 	Point = 0,
 	Line = 1,
 	Ellipse = 2,
-	Rectangle = 3
+	Rectangle = 3,
+	Path = 4
 }
 
 public enum EmitterDistributionType : int {
@@ -40,10 +29,16 @@ public enum EmitterDistributionType : int {
 	Boundary = 3
 }
 
-public enum EmitterSpawnModeType : int {
+public enum EmitterSpawnMode : int {
 	Fixed = 0,
 	Out = 1,
 	In = 2
+}
+
+public enum EmitterInstantiationMode : int {
+	Continuous = 0,
+	Burst = 1,
+	BurstDeath = 2
 }
 
 public enum RotationModeType : int {

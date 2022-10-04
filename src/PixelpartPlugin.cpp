@@ -1,4 +1,5 @@
 #include "PixelpartPlugin.h"
+#include "PixelpartShaderGraph.h"
 #include <locale>
 
 extern "C" {
@@ -17,8 +18,8 @@ UNITY_INTERFACE_EXPORT void* UNITY_INTERFACE_API PixelpartLoadEffect(const char*
 	if(!initialized) {
 		try {
 			nlohmann::ordered_json modelJson = nlohmann::json::parse(
-				#include "PixelpartShaderGraph.json"
-			);
+				PixelpartShaderGraph_json,
+				PixelpartShaderGraph_json + PixelpartShaderGraph_json_size);
 
 			pixelpart::ShaderGraph::graphType = modelJson;
 			initialized = true;

@@ -248,7 +248,7 @@ elif env["platform"] == "windows":
         target_path = "x86/"
 
     target_path += "pixelpart.dll"
-    
+
 elif env["platform"] == "android":
     if host_platform == "windows":
         raise ValueError("Android build not supported by Windows host platform.")
@@ -300,7 +300,7 @@ elif env["platform"] == "android":
         },
     }
     arch_info = arch_info_table[env["android_arch"]]
-    
+
     env["CC"] = toolchain + "/bin/clang"
     env["CXX"] = toolchain + "/bin/clang++"
     env["AR"] = toolchain + "/bin/" + arch_info["tool_path"] + "-ar"
@@ -315,7 +315,7 @@ elif env["platform"] == "android":
         env.Append(CCFLAGS=["-Og", "-g"])
     elif env["target"] == "release":
         env.Append(CCFLAGS=["-O3"])
-    
+
     target_path = "Android/" + env["android_arch"] + "/libpixelpart.so"
 
 elif env["platform"] == "javascript":

@@ -3,262 +3,182 @@ using System.Text;
 using System.Runtime.InteropServices;
 using UnityEngine;
 
-namespace pixelpart {
+namespace Pixelpart {
 public class PixelpartParticleEmitter {
-	private IntPtr nativeEffect = IntPtr.Zero;
-	private uint emitterId = 0;
+	public enum ShapeType : int {
+		Point = 0,
+		Line = 1,
+		Ellipse = 2,
+		Rectangle = 3,
+		Path = 4,
+		Ellipsoid = 5,
+		Cuboid = 6,
+		Cylinder = 7
+	}
+	public enum DistributionType : int {
+		Uniform = 0,
+		Center = 1,
+		Hole = 2,
+		Boundary = 3
+	}
+	public enum EmissionModeType : int {
+		Continuous = 0,
+		BurstStart = 1,
+		BurstEnd = 2
+	}
+	public enum DirectionModeType : int {
+		Fixed = 0,
+		Outwards = 1,
+		Inwards = 2
+	}
+
+	public uint Id {
+		get {
+			return particleEmitterId;
+		}
+	}
+	private uint particleEmitterId = 0;
+
+	public uint ParentId {
+		get {
+			return Plugin.PixelpartParticleEmitterGetParentId(nativeEffect, particleEmitterId);
+		}
+	}
+
+	public string Name {
+		get {
+			byte[] buffer = new byte[256];
+			int size = Plugin.PixelpartParticleEmitterGetName(nativeEffect, particleEmitterId, buffer, buffer.Length);
+
+			return System.Text.Encoding.UTF8.GetString(buffer, 0, size);
+		}
+	}
 
 	public float LifetimeStart {
 		get {
-			return Plugin.PixelpartParticleEmitterGetLifetimeStart(nativeEffect, emitterId);
+			return Plugin.PixelpartParticleEmitterGetLifetimeStart(nativeEffect, particleEmitterId);
 		}
 		set {
-			Plugin.PixelpartParticleEmitterSetLifetimeStart(nativeEffect, emitterId, value);
+			Plugin.PixelpartParticleEmitterSetLifetimeStart(nativeEffect, particleEmitterId, value);
 		}
 	}
 	public float LifetimeDuration {
 		get {
-			return Plugin.PixelpartParticleEmitterGetLifetimeDuration(nativeEffect, emitterId);
+			return Plugin.PixelpartParticleEmitterGetLifetimeDuration(nativeEffect, particleEmitterId);
 		}
 		set {
-			Plugin.PixelpartParticleEmitterSetLifetimeDuration(nativeEffect, emitterId, value);
+			Plugin.PixelpartParticleEmitterSetLifetimeDuration(nativeEffect, particleEmitterId, value);
 		}
 	}
 	public bool Repeat {
 		get {
-			return Plugin.PixelpartParticleEmitterGetRepeat(nativeEffect, emitterId);
+			return Plugin.PixelpartParticleEmitterGetRepeat(nativeEffect, particleEmitterId);
 		}
 		set {
-			Plugin.PixelpartParticleEmitterSetRepeat(nativeEffect, emitterId, value);
+			Plugin.PixelpartParticleEmitterSetRepeat(nativeEffect, particleEmitterId, value);
+		}
+	}
+	public bool Active {
+		get {
+			return Plugin.PixelpartParticleEmitterIsActive(nativeEffect, particleEmitterId);
+		}
+	}
+	public float LocalTime {
+		get {
+			return Plugin.PixelpartParticleEmitterGetLocalTime(nativeEffect, particleEmitterId);
 		}
 	}
 
-	public EmitterShapeType Shape {
+	public PixelpartCurve3 Position {
 		get {
-			return (EmitterShapeType)Plugin.PixelpartParticleEmitterGetShape(nativeEffect, emitterId);
-		}
-		set {
-			Plugin.PixelpartParticleEmitterSetShape(nativeEffect, emitterId, (int)value);
+			return position;
 		}
 	}
-	public EmitterDistributionType Distribution {
+	private PixelpartCurve3 position;
+
+	public ShapeType Shape {
 		get {
-			return (EmitterDistributionType)Plugin.PixelpartParticleEmitterGetDistribution(nativeEffect, emitterId);
+			return (ShapeType)Plugin.PixelpartParticleEmitterGetShape(nativeEffect, particleEmitterId);
 		}
 		set {
-			Plugin.PixelpartParticleEmitterSetDistribution(nativeEffect, emitterId, (int)value);
-		}
-	}
-	public EmitterSpawnMode SpawnMode {
-		get {
-			return (EmitterSpawnMode)Plugin.PixelpartParticleEmitterGetSpawnMode(nativeEffect, emitterId);
-		}
-		set {
-			Plugin.PixelpartParticleEmitterSetSpawnMode(nativeEffect, emitterId, (int)value);
-		}
-	}
-	public EmitterInstantiationMode InstantiationMode {
-		get {
-			return (EmitterInstantiationMode)Plugin.PixelpartParticleEmitterGetInstantiationMode(nativeEffect, emitterId);
-		}
-		set {
-			Plugin.PixelpartParticleEmitterSetInstantiationMode(nativeEffect, emitterId, (int)value);
+			Plugin.PixelpartParticleEmitterSetShape(nativeEffect, particleEmitterId, (int)value);
 		}
 	}
 
-	public uint Layer {
+	public PixelpartCurve3 Path {
 		get {
-			return Plugin.PixelpartParticleEmitterGetLayer(nativeEffect, emitterId);
-		}
-		set {
-			Plugin.PixelpartParticleEmitterSetLayer(nativeEffect, emitterId, value);
+			return path;
 		}
 	}
-	public bool Visible {
+	private PixelpartCurve3 path;
+
+	public PixelpartCurve3 Size {
 		get {
-			return Plugin.PixelpartParticleEmitterIsVisible(nativeEffect, emitterId);
+			return size;
+		}
+	}
+	private PixelpartCurve3 size;
+
+	public PixelpartCurve3 Orientation {
+		get {
+			return orientation;
+		}
+	}
+	private PixelpartCurve3 orientation;
+
+	public DistributionType Distribution {
+		get {
+			return (DistributionType)Plugin.PixelpartParticleEmitterGetDistribution(nativeEffect, particleEmitterId);
 		}
 		set {
-			Plugin.PixelpartParticleEmitterSetVisible(nativeEffect, emitterId, value);
+			Plugin.PixelpartParticleEmitterSetDistribution(nativeEffect, particleEmitterId, (int)value);
 		}
 	}
 
-	public RotationModeType ParticleRotationMode {
+	public EmissionModeType EmissionMode {
 		get {
-			return (RotationModeType)Plugin.PixelpartParticleEmitterGetParticleRotationMode(nativeEffect, emitterId);
+			return (EmissionModeType)Plugin.PixelpartParticleEmitterGetEmissionMode(nativeEffect, particleEmitterId);
 		}
 		set {
-			Plugin.PixelpartParticleEmitterSetParticleRotationMode(nativeEffect, emitterId, (int)value);
-		}
-	}
-	public Vector2 ParticlePivot {
-		get {
-			return new Vector2(
-				Plugin.PixelpartParticleEmitterGetParticlePivotX(nativeEffect, emitterId),
-				Plugin.PixelpartParticleEmitterGetParticlePivotY(nativeEffect, emitterId));
-		}
-		set {
-			Plugin.PixelpartParticleEmitterSetParticlePivot(nativeEffect, emitterId, value.x, value.y);
+			Plugin.PixelpartParticleEmitterSetEmissionMode(nativeEffect, particleEmitterId, (int)value);
 		}
 	}
 
-	public float ParticleLifespanVariance {
+	public DirectionModeType DirectionMode {
 		get {
-			return Plugin.PixelpartParticleEmitterGetParticleLifespanVariance(nativeEffect, emitterId);
+			return (DirectionModeType)Plugin.PixelpartParticleEmitterGetDirectionMode(nativeEffect, particleEmitterId);
 		}
 		set {
-			Plugin.PixelpartParticleEmitterSetParticleLifespanVariance(nativeEffect, emitterId, value);
-		}
-	}
-	public float ParticleInitialVelocityVariance {
-		get {
-			return Plugin.PixelpartParticleEmitterGetParticleInitialVelocityVariance(nativeEffect, emitterId);
-		}
-		set {
-			Plugin.PixelpartParticleEmitterSetParticleInitialVelocityVariance(nativeEffect, emitterId, value);
-		}
-	}
-	public float ParticleRotationVariance {
-		get {
-			return Plugin.PixelpartParticleEmitterGetParticleRotationVariance(nativeEffect, emitterId);
-		}
-		set {
-			Plugin.PixelpartParticleEmitterSetParticleRotationVariance(nativeEffect, emitterId, value);
-		}
-	}
-	public float ParticleAngularVelocityVariance {
-		get {
-			return Plugin.PixelpartParticleEmitterGetParticleAngularVelocityVariance(nativeEffect, emitterId);
-		}
-		set {
-			Plugin.PixelpartParticleEmitterSetParticleAngularVelocityVariance(nativeEffect, emitterId, value);
-		}
-	}
-	public float ParticleSizeVariance {
-		get {
-			return Plugin.PixelpartParticleEmitterGetParticleSizeVariance(nativeEffect, emitterId);
-		}
-		set {
-			Plugin.PixelpartParticleEmitterSetParticleSizeVariance(nativeEffect, emitterId, value);
-		}
-	}
-	public float ParticleOpacityVariance {
-		get {
-			return Plugin.PixelpartParticleEmitterGetParticleOpacityVariance(nativeEffect, emitterId);
-		}
-		set {
-			Plugin.PixelpartParticleEmitterSetParticleOpacityVariance(nativeEffect, emitterId, value);
+			Plugin.PixelpartParticleEmitterSetDirectionMode(nativeEffect, particleEmitterId, (int)value);
 		}
 	}
 
-	public PixelpartParticleEmitter(IntPtr nativePtr, uint nativeId) {
-		nativeEffect = nativePtr;
-		emitterId = nativeId;
-	}
-
-	public string GetName() {
-		byte[] buffer = new byte[256];
-		int size = Plugin.PixelpartParticleEmitterGetName(nativeEffect, emitterId, buffer, buffer.Length);
-
-		return System.Text.Encoding.UTF8.GetString(buffer, 0, size);
-	}
-	public uint GetId() {
-		return emitterId;
-	}
-	public uint GetParentId() {
-		return Plugin.PixelpartParticleEmitterGetParentId(nativeEffect, emitterId);
-	}
-
-	public bool IsActive() {
-		return Plugin.PixelpartParticleEmitterIsActive(nativeEffect, emitterId);
-	}
-	public float GetLocalTime() {
-		return Plugin.PixelpartParticleEmitterGetLocalTime(nativeEffect, emitterId);
-	}
-
-	public void SpawnParticles(int count) {
-		if(count > 0) {
-			Plugin.PixelpartParticleEmitterSpawnParticles(nativeEffect, emitterId, (uint)count);
+	public PixelpartCurve3 Direction {
+		get {
+			return direction;
 		}
 	}
+	private PixelpartCurve3 direction;
 
-	public PixelpartPath GetShapePath() {
-		return new PixelpartPath(Plugin.PixelpartParticleEmitterGetShapePath(nativeEffect, emitterId), nativeEffect, PixelpartPath.ObjectType.ParticleEmitter);
+	public PixelpartCurve Spread {
+		get {
+			return spread;
+		}
 	}
-	public PixelpartCurve GetWidth() {
-		return new PixelpartCurve(Plugin.PixelpartParticleEmitterGetWidth(nativeEffect, emitterId), nativeEffect, PixelpartCurve.ObjectType.ParticleEmitter);
-	}
-	public PixelpartCurve GetHeight() {
-		return new PixelpartCurve(Plugin.PixelpartParticleEmitterGetHeight(nativeEffect, emitterId), nativeEffect, PixelpartCurve.ObjectType.ParticleEmitter);
-	}
-	public PixelpartCurve GetOrientation() {
-		return new PixelpartCurve(Plugin.PixelpartParticleEmitterGetOrientation(nativeEffect, emitterId), nativeEffect, PixelpartCurve.ObjectType.ParticleEmitter);
-	}
-	public PixelpartCurve GetDirection() {
-		return new PixelpartCurve(Plugin.PixelpartParticleEmitterGetDirection(nativeEffect, emitterId), nativeEffect, PixelpartCurve.ObjectType.ParticleEmitter);
-	}
-	public PixelpartCurve GetSpread() {
-		return new PixelpartCurve(Plugin.PixelpartParticleEmitterGetSpread(nativeEffect, emitterId), nativeEffect, PixelpartCurve.ObjectType.ParticleEmitter);
-	}
-	public PixelpartCurve GetNumParticles() {
-		return new PixelpartCurve(Plugin.PixelpartParticleEmitterGetNumParticles(nativeEffect, emitterId), nativeEffect, PixelpartCurve.ObjectType.ParticleEmitter);
-	}
-	public PixelpartCurve GetParticleLifespan() {
-		return new PixelpartCurve(Plugin.PixelpartParticleEmitterGetParticleLifespan(nativeEffect, emitterId), nativeEffect, PixelpartCurve.ObjectType.ParticleEmitter);
-	}
-	public PixelpartPath GetMotionPath() {
-		return new PixelpartPath(Plugin.PixelpartParticleEmitterGetMotionPath(nativeEffect, emitterId), nativeEffect, PixelpartPath.ObjectType.ParticleEmitter);
-	}
-	public PixelpartPath GetParticleMotionPath() {
-		return new PixelpartPath(Plugin.PixelpartParticleEmitterGetParticleMotionPath(nativeEffect, emitterId), nativeEffect, PixelpartPath.ObjectType.ParticleEmitter);
-	}
-	public PixelpartCurve GetParticleInitialVelocity() {
-		return new PixelpartCurve(Plugin.PixelpartParticleEmitterGetParticleInitialVelocity(nativeEffect, emitterId), nativeEffect, PixelpartCurve.ObjectType.ParticleEmitter);
-	}
-	public PixelpartCurve GetParticleAcceleration() {
-		return new PixelpartCurve(Plugin.PixelpartParticleEmitterGetParticleAcceleration(nativeEffect, emitterId), nativeEffect, PixelpartCurve.ObjectType.ParticleEmitter);
-	}
-	public PixelpartCurve GetParticleRadialAcceleration() {
-		return new PixelpartCurve(Plugin.PixelpartParticleEmitterGetParticleRadialAcceleration(nativeEffect, emitterId), nativeEffect, PixelpartCurve.ObjectType.ParticleEmitter);
-	}
-	public PixelpartCurve GetParticleDamping() {
-		return new PixelpartCurve(Plugin.PixelpartParticleEmitterGetParticleDamping(nativeEffect, emitterId), nativeEffect, PixelpartCurve.ObjectType.ParticleEmitter);
-	}
-	public PixelpartCurve GetParticleInitialRotation() {
-		return new PixelpartCurve(Plugin.PixelpartParticleEmitterGetParticleInitialRotation(nativeEffect, emitterId), nativeEffect, PixelpartCurve.ObjectType.ParticleEmitter);
-	}
-	public PixelpartCurve GetParticleRotation() {
-		return new PixelpartCurve(Plugin.PixelpartParticleEmitterGetParticleRotation(nativeEffect, emitterId), nativeEffect, PixelpartCurve.ObjectType.ParticleEmitter);
-	}
-	public PixelpartCurve GetParticleWeight() {
-		return new PixelpartCurve(Plugin.PixelpartParticleEmitterGetParticleWeight(nativeEffect, emitterId), nativeEffect, PixelpartCurve.ObjectType.ParticleEmitter);
-	}
-	public PixelpartCurve GetParticleBounce() {
-		return new PixelpartCurve(Plugin.PixelpartParticleEmitterGetParticleBounce(nativeEffect, emitterId), nativeEffect, PixelpartCurve.ObjectType.ParticleEmitter);
-	}
-	public PixelpartCurve GetParticleFriction() {
-		return new PixelpartCurve(Plugin.PixelpartParticleEmitterGetParticleFriction(nativeEffect, emitterId), nativeEffect, PixelpartCurve.ObjectType.ParticleEmitter);
-	}
-	public PixelpartCurve GetParticleInitialSize() {
-		return new PixelpartCurve(Plugin.PixelpartParticleEmitterGetParticleInitialSize(nativeEffect, emitterId), nativeEffect, PixelpartCurve.ObjectType.ParticleEmitter);
-	}
-	public PixelpartCurve GetParticleSize() {
-		return new PixelpartCurve(Plugin.PixelpartParticleEmitterGetParticleSize(nativeEffect, emitterId), nativeEffect, PixelpartCurve.ObjectType.ParticleEmitter);
-	}
-	public PixelpartCurve GetParticleWidth() {
-		return new PixelpartCurve(Plugin.PixelpartParticleEmitterGetParticleWidth(nativeEffect, emitterId), nativeEffect, PixelpartCurve.ObjectType.ParticleEmitter);
-	}
-	public PixelpartCurve GetParticleHeight() {
-		return new PixelpartCurve(Plugin.PixelpartParticleEmitterGetParticleHeight(nativeEffect, emitterId), nativeEffect, PixelpartCurve.ObjectType.ParticleEmitter);
-	}
-	public PixelpartGradient GetParticleColor() {
-		return new PixelpartGradient(Plugin.PixelpartParticleEmitterGetParticleColor(nativeEffect, emitterId), nativeEffect, PixelpartGradient.ObjectType.ParticleEmitter);
-	}
-	public PixelpartCurve GetParticleInitialOpacity() {
-		return new PixelpartCurve(Plugin.PixelpartParticleEmitterGetParticleInitialOpacity(nativeEffect, emitterId), nativeEffect, PixelpartCurve.ObjectType.ParticleEmitter);
-	}
-	public PixelpartCurve GetParticleOpacity() {
-		return new PixelpartCurve(Plugin.PixelpartParticleEmitterGetParticleOpacity(nativeEffect, emitterId), nativeEffect, PixelpartCurve.ObjectType.ParticleEmitter);
+	private PixelpartCurve spread;
+
+	private IntPtr nativeEffect = IntPtr.Zero;
+
+	public PixelpartParticleEmitter(IntPtr nativeEffectPtr, uint nativeId) {
+		nativeEffect = nativeEffectPtr;
+		particleEmitterId = nativeId;
+
+		position = new PixelpartCurve3(Plugin.PixelpartParticleEmitterGetPosition(nativeEffect, particleEmitterId), nativeEffect, PixelpartCurve3.ObjectType.ParticleEmitter);
+		path = new PixelpartCurve3(Plugin.PixelpartParticleEmitterGetPath(nativeEffect, particleEmitterId), nativeEffect, PixelpartCurve3.ObjectType.ParticleEmitter);
+		size = new PixelpartCurve3(Plugin.PixelpartParticleEmitterGetSize(nativeEffect, particleEmitterId), nativeEffect, PixelpartCurve3.ObjectType.ParticleEmitter);
+		orientation = new PixelpartCurve3(Plugin.PixelpartParticleEmitterGetOrientation(nativeEffect, particleEmitterId), nativeEffect, PixelpartCurve3.ObjectType.ParticleEmitter);
+		direction = new PixelpartCurve3(Plugin.PixelpartParticleEmitterGetDirection(nativeEffect, particleEmitterId), nativeEffect, PixelpartCurve3.ObjectType.ParticleEmitter);
+		spread = new PixelpartCurve(Plugin.PixelpartParticleEmitterGetSpread(nativeEffect, particleEmitterId), nativeEffect, PixelpartCurve.ObjectType.ParticleEmitter);
 	}
 }
 }

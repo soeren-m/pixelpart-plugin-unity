@@ -6,8 +6,8 @@ static std::mt19937 rng;
 
 UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartFindForceField(PixelpartNativeEffect* nativeEffect, const char* buffer) {
 	std::string name(buffer);
-	if(!nativeEffect || !nativeEffect->project.effect.forceFields.containsWithName(name)) {
-		return pixelpart::NullId;
+	if(!nativeEffect || !nativeEffect->project.effect.forceFields.containsName(name)) {
+		return pixelpart::nullId;
 	}
 
 	return nativeEffect->project.effect.forceFields.getByName(name).id;
@@ -15,10 +15,14 @@ UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartFindForceField(Pixe
 
 UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartFindForceFieldByIndex(PixelpartNativeEffect* nativeEffect, uint32_t forceFieldIndex) {
 	if(!nativeEffect || forceFieldIndex >= nativeEffect->project.effect.forceFields.getCount()) {
-		return pixelpart::NullId;
+		return pixelpart::nullId;
 	}
 
 	return nativeEffect->project.effect.forceFields.getByIndex(forceFieldIndex).id;
+}
+
+UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartHasForceField(PixelpartNativeEffect* nativeEffect, uint32_t forceFieldId) {
+	return nativeEffect && nativeEffect->project.effect.forceFields.contains(forceFieldId);
 }
 
 UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartForceFieldGetName(PixelpartNativeEffect* nativeEffect, uint32_t forceFieldId, char* buffer, int32_t length) {
@@ -113,6 +117,16 @@ UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartForceFieldGetLocalTime
 	return static_cast<float>(std::fmod(nativeEffect->particleEngine.getTime() - forceField.lifetimeStart, forceField.lifetimeDuration) / forceField.lifetimeDuration);
 }
 
+UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec3d>* UNITY_INTERFACE_API PixelpartForceFieldGetPosition(PixelpartNativeEffect* nativeEffect, uint32_t forceFieldId) {
+	if(!nativeEffect || !nativeEffect->project.effect.forceFields.contains(forceFieldId)) {
+		return nullptr;
+	}
+
+	pixelpart::ForceField& forceField = nativeEffect->project.effect.forceFields.get(forceFieldId);
+
+	return &forceField.position;
+}
+
 UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartForceFieldSetType(PixelpartNativeEffect* nativeEffect, uint32_t forceFieldId, int32_t type) {
 	if(!nativeEffect || !nativeEffect->project.effect.forceFields.contains(forceFieldId)) {
 		return;
@@ -123,14 +137,54 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartForceFieldSetType(Pixel
 	nativeEffect->particleEngine.updateForceSolver();
 }
 
-UNITY_INTERFACE_EXPORT int UNITY_INTERFACE_API PixelpartForceFieldGetType(PixelpartNativeEffect* nativeEffect, uint32_t forceFieldId) {
+UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartForceFieldGetType(PixelpartNativeEffect* nativeEffect, uint32_t forceFieldId) {
 	if(!nativeEffect || !nativeEffect->project.effect.forceFields.contains(forceFieldId)) {
 		return 0;
 	}
 
 	pixelpart::ForceField& forceField = nativeEffect->project.effect.forceFields.get(forceFieldId);
 
-	return static_cast<int>(forceField.type);
+	return static_cast<int32_t>(forceField.type);
+}
+
+UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec3d>* UNITY_INTERFACE_API PixelpartForceFieldGetSize(PixelpartNativeEffect* nativeEffect, uint32_t forceFieldId) {
+	if(!nativeEffect || !nativeEffect->project.effect.forceFields.contains(forceFieldId)) {
+		return nullptr;
+	}
+
+	pixelpart::ForceField& forceField = nativeEffect->project.effect.forceFields.get(forceFieldId);
+
+	return &forceField.size;
+}
+
+UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec3d>* UNITY_INTERFACE_API PixelpartForceFieldGetOrientation(PixelpartNativeEffect* nativeEffect, uint32_t forceFieldId) {
+	if(!nativeEffect || !nativeEffect->project.effect.forceFields.contains(forceFieldId)) {
+		return nullptr;
+	}
+
+	pixelpart::ForceField& forceField = nativeEffect->project.effect.forceFields.get(forceFieldId);
+
+	return &forceField.orientation;
+}
+
+UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec3d>* UNITY_INTERFACE_API PixelpartForceFieldGetDirection(PixelpartNativeEffect* nativeEffect, uint32_t forceFieldId) {
+	if(!nativeEffect || !nativeEffect->project.effect.forceFields.contains(forceFieldId)) {
+		return nullptr;
+	}
+
+	pixelpart::ForceField& forceField = nativeEffect->project.effect.forceFields.get(forceFieldId);
+
+	return &forceField.direction;
+}
+
+UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartForceFieldGetStrength(PixelpartNativeEffect* nativeEffect, uint32_t forceFieldId) {
+	if(!nativeEffect || !nativeEffect->project.effect.forceFields.contains(forceFieldId)) {
+		return nullptr;
+	}
+
+	pixelpart::ForceField& forceField = nativeEffect->project.effect.forceFields.get(forceFieldId);
+
+	return &forceField.strength;
 }
 
 UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartForceFieldSetDirectionVariance(PixelpartNativeEffect* nativeEffect, uint32_t forceFieldId, float value) {
@@ -173,7 +227,7 @@ UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartForceFieldGetStrengthV
 	return static_cast<float>(forceField.strengthVariance);
 }
 
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartForceFieldSetGridSize(PixelpartNativeEffect* nativeEffect, uint32_t forceFieldId, int32_t width, int32_t height) {
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartForceFieldSetGridSize(PixelpartNativeEffect* nativeEffect, uint32_t forceFieldId, int32_t width, int32_t height, int32_t depth) {
 	if(!nativeEffect || !nativeEffect->project.effect.forceFields.contains(forceFieldId)) {
 		return;
 	}
@@ -181,6 +235,7 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartForceFieldSetGridSize(P
 	pixelpart::ForceField& forceField = nativeEffect->project.effect.forceFields.get(forceFieldId);
 	forceField.gridSize[0] = static_cast<uint32_t>(std::max(width, 1));
 	forceField.gridSize[1] = static_cast<uint32_t>(std::max(height, 1));
+	forceField.gridSize[2] = static_cast<uint32_t>(std::max(depth, 1));
 	forceField.randomize(rng);
 	nativeEffect->particleEngine.updateForceSolver();
 }
@@ -205,63 +260,13 @@ UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartForceFieldGetGridHei
 	return static_cast<int32_t>(forceField.gridSize[1]);
 }
 
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartForceFieldGetWidth(PixelpartNativeEffect* nativeEffect, uint32_t forceFieldId) {
+UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartForceFieldGetGridDepth(PixelpartNativeEffect* nativeEffect, uint32_t forceFieldId) {
 	if(!nativeEffect || !nativeEffect->project.effect.forceFields.contains(forceFieldId)) {
-		return nullptr;
+		return 1;
 	}
 
 	pixelpart::ForceField& forceField = nativeEffect->project.effect.forceFields.get(forceFieldId);
 
-	return &forceField.width;
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartForceFieldGetHeight(PixelpartNativeEffect* nativeEffect, uint32_t forceFieldId) {
-	if(!nativeEffect || !nativeEffect->project.effect.forceFields.contains(forceFieldId)) {
-		return nullptr;
-	}
-
-	pixelpart::ForceField& forceField = nativeEffect->project.effect.forceFields.get(forceFieldId);
-
-	return &forceField.height;
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartForceFieldGetOrientation(PixelpartNativeEffect* nativeEffect, uint32_t forceFieldId) {
-	if(!nativeEffect || !nativeEffect->project.effect.forceFields.contains(forceFieldId)) {
-		return nullptr;
-	}
-
-	pixelpart::ForceField& forceField = nativeEffect->project.effect.forceFields.get(forceFieldId);
-
-	return &forceField.orientation;
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec2d>* UNITY_INTERFACE_API PixelpartForceFieldGetMotionPath(PixelpartNativeEffect* nativeEffect, uint32_t forceFieldId) {
-	if(!nativeEffect || !nativeEffect->project.effect.forceFields.contains(forceFieldId)) {
-		return nullptr;
-	}
-
-	pixelpart::ForceField& forceField = nativeEffect->project.effect.forceFields.get(forceFieldId);
-
-	return &forceField.motionPath;
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartForceFieldGetDirection(PixelpartNativeEffect* nativeEffect, uint32_t forceFieldId) {
-	if(!nativeEffect || !nativeEffect->project.effect.forceFields.contains(forceFieldId)) {
-		return nullptr;
-	}
-
-	pixelpart::ForceField& forceField = nativeEffect->project.effect.forceFields.get(forceFieldId);
-
-	return &forceField.direction;
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartForceFieldGetStrength(PixelpartNativeEffect* nativeEffect, uint32_t forceFieldId) {
-	if(!nativeEffect || !nativeEffect->project.effect.forceFields.contains(forceFieldId)) {
-		return nullptr;
-	}
-
-	pixelpart::ForceField& forceField = nativeEffect->project.effect.forceFields.get(forceFieldId);
-
-	return &forceField.strength;
+	return static_cast<int32_t>(forceField.gridSize[2]);
 }
 }

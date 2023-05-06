@@ -9,12 +9,12 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-namespace pixelpart {
+namespace Pixelpart {
 public class PixelpartEffectAsset : ScriptableObject {
-	public byte[] Data;
+	public byte[] Data = null;
 	public float Scale = 1.0f;
-	public PixelpartNodeAsset[] ParticleAssets = null;
-	public PixelpartNodeAsset[] SpriteAssets = null;
+
+	public PixelpartParticleTypeAsset[] ParticleTypeAssets = null;
 
 	public IntPtr LoadEffect() {
 		return Plugin.PixelpartLoadEffect(Data, Data.Length);
@@ -23,26 +23,18 @@ public class PixelpartEffectAsset : ScriptableObject {
 #if UNITY_EDITOR
 	public static void CreateAsset(string path) {
 		byte[] data = File.ReadAllBytes(path);
-		string keyword = System.Text.Encoding.UTF8.GetString(data, 0, Math.Min(data.Length, 256));
-
-		if(keyword.Contains("\"project\"")) {
-			CreateAsset(path, data);
-		}
-	}
-
-	public static void CreateAsset(string path, byte[] data) {
 		string assetPath = Path.ChangeExtension(path, ".asset");
+
 		PixelpartEffectAsset asset = AssetDatabase.LoadAssetAtPath<PixelpartEffectAsset>(assetPath);
 
 		if(asset == null) {
 			asset = CreateInstance<PixelpartEffectAsset>();
-			asset.Scale = 1.0f;
-			UpdateAsset(asset, assetPath, data);
+			UpdateAsset(asset, path, assetPath, data);
 
 			AssetDatabase.CreateAsset(asset, assetPath);
 		}
 		else {
-			UpdateAsset(asset, assetPath, data);
+			UpdateAsset(asset, path, assetPath, data);
 
 			EditorUtility.SetDirty(asset);
 		}
@@ -50,65 +42,65 @@ public class PixelpartEffectAsset : ScriptableObject {
 		AssetDatabase.Refresh();
 	}
 
-	public static void UpdateAsset(PixelpartEffectAsset asset, string assetPath, byte[] data) {
+	private static void UpdateAsset(PixelpartEffectAsset asset, string filePath, string assetPath, byte[] data) {
 		asset.Data = data;
 
 		IntPtr nativeEffect = asset.LoadEffect();
 
 		if(nativeEffect != IntPtr.Zero) {
+			byte[] nameBuffer = new byte[2048];
 			byte[] shaderCodeBuffer = new byte[16384];
 			byte[] shaderTextureIdBuffer = new byte[2048];
 
-			uint numParticleEmitters = Plugin.PixelpartGetEffectNumParticleEmitters(nativeEffect);
-			uint numSprites = Plugin.PixelpartGetEffectNumSprites(nativeEffect);
-			asset.ParticleAssets = new PixelpartNodeAsset[numParticleEmitters];
-			asset.SpriteAssets = new PixelpartNodeAsset[numSprites];
+			uint numParticleTypes = Plugin.PixelpartGetEffectNumParticleTypes(nativeEffect);
+			asset.ParticleTypeAssets = new PixelpartParticleTypeAsset[numParticleTypes];
 
-			for(uint emitterIndex = 0; emitterIndex < numParticleEmitters; emitterIndex++) {
+			for(uint particleTypeIndex = 0; particleTypeIndex < numParticleTypes; particleTypeIndex++) {
+				uint particleTypeId = Plugin.PixelpartFindParticleTypeByIndex(nativeEffect, particleTypeIndex);
+				int nameSize = Plugin.PixelpartParticleTypeGetName(nativeEffect, particleTypeId, nameBuffer, nameBuffer.Length);
+				string particleTypeName = System.Text.Encoding.UTF8.GetString(nameBuffer, 0, nameSize);
+
 				int shaderCodeLength = 0;
 				int shaderTextureIdLength = 0;
-				Plugin.PixelpartBuildParticleShader(nativeEffect, emitterIndex, shaderCodeBuffer, shaderTextureIdBuffer, out shaderCodeLength, out shaderTextureIdLength, shaderCodeBuffer.Length, shaderTextureIdBuffer.Length);
-				string shaderCode = System.Text.Encoding.UTF8.GetString(shaderCodeBuffer, 0, shaderCodeLength);
-				string[] shaderTextureIds = System.Text.Encoding.UTF8.GetString(shaderTextureIdBuffer, 0, shaderTextureIdLength).Split(new[] {';'}, 16, StringSplitOptions.RemoveEmptyEntries);
+				Plugin.PixelpartBuildParticleShader(nativeEffect, particleTypeIndex,
+					shaderCodeBuffer,
+					shaderTextureIdBuffer,
+					out shaderCodeLength,
+					out shaderTextureIdLength,
+					shaderCodeBuffer.Length,
+					shaderTextureIdBuffer.Length);
 
-				string shaderName = "PixelpartShader" + GetUniqueShaderId(shaderCode).ToString();
-				shaderCode = shaderCode.Replace("{SHADER_NAME}", "Pixelpart/" + shaderName);
+				string shaderCode = Encoding.UTF8.GetString(shaderCodeBuffer, 0, shaderCodeLength);
+				string[] shaderTextureIds = Encoding.UTF8.GetString(shaderTextureIdBuffer, 0, shaderTextureIdLength).
+					Split(new[] {';'}, 16, StringSplitOptions.RemoveEmptyEntries);
 
-				string filepath = Path.GetDirectoryName(assetPath);
-				filepath = Path.Combine(filepath, shaderName + ".shader");
+				string assetName = Path.GetFileNameWithoutExtension(assetPath);
+				string shaderName = assetName + " " + GetUniqueShaderId(shaderCode).ToString();
+				string shaderFullName = "Pixelpart/" + shaderName;
+				shaderCode = shaderCode.Replace("{SHADER_NAME}", shaderFullName);
 
-				if(!File.Exists(filepath)) {
-					StreamWriter writer = File.CreateText(filepath);
+				string shaderFilepath = Path.GetDirectoryName(assetPath);
+				shaderFilepath = Path.Combine(shaderFilepath, shaderName + ".shader");
+
+				if(!File.Exists(shaderFilepath)) {
+					StreamWriter writer = File.CreateText(shaderFilepath);
 					writer.Write(shaderCode);
 					writer.Close();
 				}
 
-				asset.ParticleAssets[emitterIndex] = new PixelpartNodeAsset("Pixelpart/" + shaderName, shaderTextureIds);
-			}
-
-			for(uint spriteIndex = 0; spriteIndex < numSprites; spriteIndex++) {
-				int shaderCodeLength = 0;
-				int shaderTextureIdLength = 0;
-				Plugin.PixelpartBuildSpriteShader(nativeEffect, spriteIndex, shaderCodeBuffer, shaderTextureIdBuffer, out shaderCodeLength, out shaderTextureIdLength, shaderCodeBuffer.Length, shaderTextureIdBuffer.Length);
-				string shaderCode = System.Text.Encoding.UTF8.GetString(shaderCodeBuffer, 0, shaderCodeLength);
-				string[] shaderTextureIds = System.Text.Encoding.UTF8.GetString(shaderTextureIdBuffer, 0, shaderTextureIdLength).Split(new[] {';'}, 16, StringSplitOptions.RemoveEmptyEntries);
-
-				string shaderName = "PixelpartShader" + GetUniqueShaderId(shaderCode).ToString();
-				shaderCode = shaderCode.Replace("{SHADER_NAME}", "Pixelpart/" + shaderName);
-
-				string filepath = Path.GetDirectoryName(assetPath);
-				filepath = Path.Combine(filepath, shaderName + ".shader");
-
-				if(!File.Exists(filepath)) {
-					StreamWriter writer = File.CreateText(filepath);
-					writer.Write(shaderCode);
-					writer.Close();
-				}
-
-				asset.SpriteAssets[spriteIndex] = new PixelpartNodeAsset("Pixelpart/" + shaderName, shaderTextureIds);
+				asset.ParticleTypeAssets[particleTypeIndex] = new PixelpartParticleTypeAsset(
+					particleTypeName,
+					shaderFullName,
+					shaderTextureIds);
 			}
 
 			Plugin.PixelpartDeleteEffect(nativeEffect);
+		}
+		else {
+			asset.Data = null;
+			asset.Scale = 1.0f;
+
+			Debug.LogError("Error importing \"" + filePath + "\" as PixelpartEffectAsset");
 		}
 	}
 

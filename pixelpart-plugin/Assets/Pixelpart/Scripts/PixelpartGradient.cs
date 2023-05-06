@@ -2,113 +2,122 @@ using System;
 using System.Text;
 using UnityEngine;
 
-namespace pixelpart {
+namespace Pixelpart {
 public class PixelpartGradient {
 	public enum ObjectType {
 		None,
 		ParticleEmitter,
+		ParticleType,
 		ForceField,
-		Collider,
-		Sprite
+		Collider
 	}
-
-	private IntPtr nativeGradient = IntPtr.Zero;
-	private IntPtr nativeEffect = IntPtr.Zero;
-	private ObjectType objectType = ObjectType.None;
 
 	public InterpolationType Interpolation {
 		get {
-			return (InterpolationType)Plugin.PixelpartGradientGetInterpolation(nativeGradient);
+			return (InterpolationType)Plugin.PixelpartCurve4GetInterpolation(nativeCurve);
 		}
 		set {
-			Plugin.PixelpartGradientSetInterpolation(nativeGradient, (int)value);
+			Plugin.PixelpartCurve4SetInterpolation(nativeCurve, (int)value);
 			UpdateSimulation();
 		}
 	}
 
-	public PixelpartGradient(IntPtr nativePtr, IntPtr nativeEff, ObjectType type) {
-		nativeGradient = nativePtr;
-		nativeEffect = nativeEff;
+	public int NumPoints {
+		get {
+			return Plugin.PixelpartCurve4GetNumPoints(nativeCurve);
+		}
+	}
+
+	public int CacheSize {
+		get {
+			return Plugin.PixelpartCurve4GetCacheSize(nativeCurve);
+		}
+	}
+
+	private IntPtr nativeCurve = IntPtr.Zero;
+	private IntPtr nativeEffect = IntPtr.Zero;
+	private ObjectType objectType = ObjectType.None;
+
+	public PixelpartGradient(IntPtr nativeCurvePtr, IntPtr nativeEffectPr, ObjectType type) {
+		nativeCurve = nativeCurvePtr;
+		nativeEffect = nativeEffectPr;
 		objectType = type;
 	}
 
 	public Color Get(float t) {
 		return new Color(
-			Plugin.PixelpartGradientGetR(nativeGradient, t),
-			Plugin.PixelpartGradientGetG(nativeGradient, t),
-			Plugin.PixelpartGradientGetB(nativeGradient, t),
-			Plugin.PixelpartGradientGetA(nativeGradient, t));
+			Plugin.PixelpartCurve4GetX(nativeCurve, t),
+			Plugin.PixelpartCurve4GetY(nativeCurve, t),
+			Plugin.PixelpartCurve4GetZ(nativeCurve, t),
+			Plugin.PixelpartCurve4GetW(nativeCurve, t));
 	}
-	public Color GetPoint(uint index) {
+	public Color GetPoint(int index) {
 		return new Color(
-			Plugin.PixelpartGradientGetPointR(nativeGradient, index),
-			Plugin.PixelpartGradientGetPointG(nativeGradient, index),
-			Plugin.PixelpartGradientGetPointB(nativeGradient, index),
-			Plugin.PixelpartGradientGetPointA(nativeGradient, index));
+			Plugin.PixelpartCurve4GetPointX(nativeCurve, index),
+			Plugin.PixelpartCurve4GetPointY(nativeCurve, index),
+			Plugin.PixelpartCurve4GetPointZ(nativeCurve, index),
+			Plugin.PixelpartCurve4GetPointW(nativeCurve, index));
 	}
 
 	public void Set(Color value) {
-		Plugin.PixelpartGradientSet(nativeGradient, value.r, value.g, value.b, value.a);
+		Plugin.PixelpartCurve4Set(nativeCurve, value.r, value.g, value.b, value.a);
 		UpdateSimulation();
 	}
 	public void AddPoint(float t, Color value) {
-		Plugin.PixelpartGradientAddPoint(nativeGradient, t, value.r, value.g, value.b, value.a);
-		UpdateSimulation();
-
-	}
-	public void SetPoint(uint index, Color value) {
-		Plugin.PixelpartGradientSetPoint(nativeGradient, index, value.r, value.g, value.b, value.a);
+		Plugin.PixelpartCurve4AddPoint(nativeCurve, t, value.r, value.g, value.b, value.a);
 		UpdateSimulation();
 	}
-	public void MovePoint(uint index, Color delta) {
-		Plugin.PixelpartGradientMovePoint(nativeGradient, index, delta.r, delta.g, delta.b, delta.a);
+	public void SetPoint(int index, Color value) {
+		Plugin.PixelpartCurve4SetPoint(nativeCurve, index, value.r, value.g, value.b, value.a);
 		UpdateSimulation();
 	}
-	public void ShiftPoint(uint index, float delta) {
-		Plugin.PixelpartGradientShiftPoint(nativeGradient, index, delta);
+	public void MovePoint(int index, Color delta) {
+		Plugin.PixelpartCurve4MovePoint(nativeCurve, index, delta.r, delta.g, delta.b, delta.a);
 		UpdateSimulation();
 	}
-	public void RemovePoint(uint index) {
-		Plugin.PixelpartGradientRemovePoint(nativeGradient, index);
+	public void ShiftPoint(int index, float delta) {
+		Plugin.PixelpartCurve4ShiftPoint(nativeCurve, index, delta);
+		UpdateSimulation();
+	}
+	public void RemovePoint(int index) {
+		Plugin.PixelpartCurve4RemovePoint(nativeCurve, index);
 		UpdateSimulation();
 	}
 	public void Clear() {
-		Plugin.PixelpartGradientClear(nativeGradient);
+		Plugin.PixelpartCurve4Clear(nativeCurve);
 		UpdateSimulation();
-	}
-	public uint GetNumPoints() {
-		return Plugin.PixelpartGradientGetNumPoints(nativeGradient);
 	}
 
 	public void Move(Color delta) {
-		Plugin.PixelpartGradientMove(nativeGradient, delta.r, delta.g, delta.b, delta.a);
+		Plugin.PixelpartCurve4Move(nativeCurve, delta.r, delta.g, delta.b, delta.a);
 		UpdateSimulation();
 	}
 	public void Shift(float delta) {
-		Plugin.PixelpartGradientShift(nativeGradient, delta);
+		Plugin.PixelpartCurve4Shift(nativeCurve, delta);
 		UpdateSimulation();
 	}
 
 	public void EnableAdaptiveCache() {
-		Plugin.PixelpartGradientEnableAdaptiveCache(nativeGradient);
+		Plugin.PixelpartCurve4EnableAdaptiveCache(nativeCurve);
 		UpdateSimulation();
 	}
-	public void EnableFixedCache(uint size) {
-		Plugin.PixelpartGradientEnableFixedCache(nativeGradient, size);
+	public void EnableFixedCache(int size) {
+		Plugin.PixelpartCurve4EnableFixedCache(nativeCurve, size);
 		UpdateSimulation();
-	}
-	public uint GetCacheSize() {
-		return Plugin.PixelpartGradientGetCacheSize(nativeGradient);
 	}
 
 	private void UpdateSimulation() {
-		if(nativeEffect != IntPtr.Zero) {
-			if(objectType == ObjectType.ForceField) {
-				Plugin.PixelpartUpdateEffectForceSolver(nativeEffect);
-			}
-			else if(objectType == ObjectType.Collider) {
-				Plugin.PixelpartUpdateEffectCollisionSolver(nativeEffect);
-			}
+		if(nativeEffect == IntPtr.Zero) {
+			return;
+		}
+
+		switch(objectType) {
+			case ObjectType.ForceField:
+				Plugin.PixelpartUpdateForceSolver(nativeEffect);
+				break;
+			case ObjectType.Collider:
+				Plugin.PixelpartUpdateCollisionSolver(nativeEffect);
+				break;
 		}
 	}
 }

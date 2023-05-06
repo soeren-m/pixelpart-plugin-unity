@@ -113,71 +113,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &457743698
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 5
-  m_Component:
-  - component: {fileID: 457743700}
-  - component: {fileID: 457743699}
-  - component: {fileID: 457743701}
-  m_Layer: 0
-  m_Name: SampleEffect
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &457743699
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 457743698}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6404f2c780b7d973e91227f51469f99f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  EffectAsset: {fileID: 11400000, guid: 4cced7f050e5a493eb0c610eda470277, type: 2}
-  Playing: 1
-  Loop: 0
-  LoopTime: 1
-  Speed: 1
-  FrameRate: 60
-  FlipH: 0
-  FlipV: 0
-  Billboard: 0
-  CastShadows: 0
-  ReceiveShadows: 0
-  UseLightProbes: 0
-  ProbeAnchor: {fileID: 0}
---- !u!4 &457743700
-Transform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 457743698}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -1, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &457743701
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 457743698}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea4f6c93661334dd78a38f5240632c72, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &867595349
 GameObject:
   m_ObjectHideFlags: 0
@@ -259,3 +194,71 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2127310261
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 2127310263}
+  - component: {fileID: 2127310264}
+  - component: {fileID: 2127310262}
+  m_Layer: 0
+  m_Name: SampleEffect
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2127310262
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2127310261}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea4f6c93661334dd78a38f5240632c72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &2127310263
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2127310261}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2127310264
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2127310261}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae89953306b284bcc811ae1d93a76850, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  EffectAsset: {fileID: 11400000, guid: f60d1491a15c645419aca7b3530b96f8, type: 2}
+  Playing: 1
+  Loop: 0
+  LoopTime: 1
+  Speed: 1
+  FrameRate: 60
+  ParticleShaders:
+  - {fileID: 4800000, guid: f0542ba96650e4232b8d08cdfca2b866, type: 3}
+  FlipH: 0
+  FlipV: 0
+  CastShadows: 0
+  ReceiveShadows: 0
+  UseLightProbes: 0
+  ProbeAnchor: {fileID: 0}
+  ParticleTypeNames:
+  - Particle

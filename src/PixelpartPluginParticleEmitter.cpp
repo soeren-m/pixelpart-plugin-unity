@@ -3,8 +3,8 @@
 extern "C" {
 UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartFindParticleEmitter(PixelpartNativeEffect* nativeEffect, const char* buffer) {
 	std::string name(buffer);
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.containsWithName(name)) {
-		return pixelpart::NullId;
+	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.containsName(name)) {
+		return pixelpart::nullId;
 	}
 
 	return nativeEffect->project.effect.particleEmitters.getByName(name).id;
@@ -12,10 +12,14 @@ UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartFindParticleEmitter
 
 UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartFindParticleEmitterByIndex(PixelpartNativeEffect* nativeEffect, uint32_t emitterIndex) {
 	if(!nativeEffect || emitterIndex >= nativeEffect->project.effect.particleEmitters.getCount()) {
-		return pixelpart::NullId;
+		return pixelpart::nullId;
 	}
 
 	return nativeEffect->project.effect.particleEmitters.getByIndex(emitterIndex).id;
+}
+
+UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartHasParticleEmitter(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
+	return nativeEffect && nativeEffect->project.effect.particleEmitters.contains(emitterId);
 }
 
 UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartParticleEmitterGetName(PixelpartNativeEffect* nativeEffect, uint32_t emitterId, char* buffer, int32_t length) {
@@ -37,7 +41,7 @@ UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartParticleEmitterGetNa
 
 UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartParticleEmitterGetParentId(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return pixelpart::NullId;
+		return pixelpart::nullId;
 	}
 
 	return nativeEffect->project.effect.particleEmitters.get(emitterId).parentId;
@@ -115,6 +119,16 @@ UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartParticleEmitterGetLoca
 	return static_cast<float>(std::fmod(nativeEffect->particleEngine.getTime() - emitter.lifetimeStart, emitter.lifetimeDuration) / emitter.lifetimeDuration);
 }
 
+UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec3d>* UNITY_INTERFACE_API PixelpartParticleEmitterGetPosition(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
+	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
+		return nullptr;
+	}
+
+	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
+
+	return &emitter.position;
+}
+
 UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleEmitterSetShape(PixelpartNativeEffect* nativeEffect, uint32_t emitterId, int32_t type) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
 		return;
@@ -122,33 +136,6 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleEmitterSetShape
 
 	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
 	emitter.shape = static_cast<pixelpart::ParticleEmitter::Shape>(type);
-}
-
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleEmitterSetDistribution(PixelpartNativeEffect* nativeEffect, uint32_t emitterId, int32_t mode) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-	emitter.distribution = static_cast<pixelpart::ParticleEmitter::Distribution>(mode);
-}
-
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleEmitterSetSpawnMode(PixelpartNativeEffect* nativeEffect, uint32_t emitterId, int32_t mode) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-	emitter.spawnMode = static_cast<pixelpart::ParticleEmitter::SpawnMode>(mode);
-}
-
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleEmitterSetInstantiationMode(PixelpartNativeEffect* nativeEffect, uint32_t emitterId, int32_t mode) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-	emitter.instantiationMode = static_cast<pixelpart::ParticleEmitter::InstantiationMode>(mode);
 }
 
 UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartParticleEmitterGetShape(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
@@ -161,6 +148,63 @@ UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartParticleEmitterGetSh
 	return static_cast<int32_t>(emitter.shape);
 }
 
+UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec3d>* UNITY_INTERFACE_API PixelpartParticleEmitterGetPath(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
+	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
+		return nullptr;
+	}
+
+	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
+
+	return &emitter.path;
+}
+
+UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec3d>* UNITY_INTERFACE_API PixelpartParticleEmitterGetSize(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
+	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
+		return nullptr;
+	}
+
+	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
+
+	return &emitter.size;
+}
+
+UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec3d>* UNITY_INTERFACE_API PixelpartParticleEmitterGetOrientation(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
+	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
+		return nullptr;
+	}
+
+	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
+
+	return &emitter.orientation;
+}
+
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleEmitterSetDistribution(PixelpartNativeEffect* nativeEffect, uint32_t emitterId, int32_t mode) {
+	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
+		return;
+	}
+
+	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
+	emitter.distribution = static_cast<pixelpart::ParticleEmitter::Distribution>(mode);
+}
+
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleEmitterSetEmissionMode(PixelpartNativeEffect* nativeEffect, uint32_t emitterId, int32_t mode) {
+	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
+		return;
+	}
+
+	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
+	emitter.emissionMode = static_cast<pixelpart::ParticleEmitter::EmissionMode>(mode);
+}
+
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleEmitterSetDirectionMode(PixelpartNativeEffect* nativeEffect, uint32_t emitterId, int32_t mode) {
+	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
+		return;
+	}
+
+	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
+	emitter.directionMode = static_cast<pixelpart::ParticleEmitter::DirectionMode>(mode);
+}
+
 UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartParticleEmitterGetDistribution(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
 		return static_cast<int32_t>(pixelpart::ParticleEmitter::Distribution::uniform);
@@ -171,287 +215,27 @@ UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartParticleEmitterGetDi
 	return static_cast<int32_t>(emitter.distribution);
 }
 
-UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartParticleEmitterGetSpawnMode(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
+UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartParticleEmitterGetEmissionMode(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return static_cast<int32_t>(pixelpart::ParticleEmitter::SpawnMode::fixed);
+		return static_cast<int32_t>(pixelpart::ParticleEmitter::EmissionMode::continuous);
 	}
 
 	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
 
-	return static_cast<int32_t>(emitter.spawnMode);
+	return static_cast<int32_t>(emitter.emissionMode);
 }
 
-UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartParticleEmitterGetInstantiationMode(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
+UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartParticleEmitterGetDirectionMode(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return false;
+		return static_cast<int32_t>(pixelpart::ParticleEmitter::DirectionMode::fixed);
 	}
 
 	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
 
-	return static_cast<int32_t>(emitter.instantiationMode);
+	return static_cast<int32_t>(emitter.directionMode);
 }
 
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleEmitterSetLayer(PixelpartNativeEffect* nativeEffect, uint32_t emitterId, uint32_t layer) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-	emitter.layer = layer;
-}
-
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleEmitterSetVisible(PixelpartNativeEffect* nativeEffect, uint32_t emitterId, bool visible) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-	emitter.visible = visible;
-}
-
-UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartParticleEmitterGetLayer(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return 0;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return emitter.layer;
-}
-
-UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartParticleEmitterIsVisible(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return false;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return emitter.visible;
-}
-
-UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartParticleEmitterGetBlendMode(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return static_cast<int32_t>(pixelpart::BlendMode::normal);
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return static_cast<int32_t>(emitter.blendMode);
-}
-
-UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartParticleEmitterGetRenderer(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return static_cast<int32_t>(pixelpart::ParticleEmitter::RendererType::sprite);
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return static_cast<int32_t>(emitter.renderer);
-}
-
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleEmitterSetParticleRotationMode(PixelpartNativeEffect* nativeEffect, uint32_t emitterId, int32_t mode) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-	emitter.particleRotationMode = static_cast<pixelpart::ParticleEmitter::RotationMode>(mode);
-}
-
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleEmitterSetParticlePivot(PixelpartNativeEffect* nativeEffect, uint32_t emitterId, float x, float y) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-	emitter.particlePivot = pixelpart::vec2d(x, y);
-}
-
-UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartParticleEmitterGetParticleRotationMode(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return static_cast<int32_t>(pixelpart::ParticleEmitter::RotationMode::angle);
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return static_cast<int32_t>(emitter.particleRotationMode);
-}
-
-UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartParticleEmitterGetParticlePivotX(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return 0.0f;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return static_cast<float>(emitter.particlePivot.x);
-}
-
-UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartParticleEmitterGetParticlePivotY(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return 0.0f;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return static_cast<float>(emitter.particlePivot.y);
-}
-
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleEmitterSetParticleLifespanVariance(PixelpartNativeEffect* nativeEffect, uint32_t emitterId, float variance) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-	emitter.particleLifespanVariance = variance;
-}
-
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleEmitterSetParticleInitialVelocityVariance(PixelpartNativeEffect* nativeEffect, uint32_t emitterId, float variance) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-	emitter.particleInitialVelocityVariance = variance;
-}
-
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleEmitterSetParticleRotationVariance(PixelpartNativeEffect* nativeEffect, uint32_t emitterId, float variance) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-	emitter.particleRotationVariance = variance;
-}
-
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleEmitterSetParticleAngularVelocityVariance(PixelpartNativeEffect* nativeEffect, uint32_t emitterId, float variance) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-	emitter.particleAngularVelocityVariance = variance;
-}
-
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleEmitterSetParticleSizeVariance(PixelpartNativeEffect* nativeEffect, uint32_t emitterId, float variance) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-	emitter.particleSizeVariance = variance;
-}
-
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleEmitterSetParticleOpacityVariance(PixelpartNativeEffect* nativeEffect, uint32_t emitterId, float variance) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-	emitter.particleOpacityVariance = variance;
-}
-
-UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartParticleEmitterGetParticleLifespanVariance(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return 0.0f;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return static_cast<float>(emitter.particleLifespanVariance);
-}
-
-UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartParticleEmitterGetParticleInitialVelocityVariance(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return 0.0f;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return static_cast<float>(emitter.particleInitialVelocityVariance);
-}
-
-UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartParticleEmitterGetParticleRotationVariance(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return 0.0f;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return static_cast<float>(emitter.particleRotationVariance);
-}
-
-UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartParticleEmitterGetParticleAngularVelocityVariance(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return 0.0f;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return static_cast<float>(emitter.particleAngularVelocityVariance);
-}
-
-UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartParticleEmitterGetParticleSizeVariance(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return 0.0f;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return static_cast<float>(emitter.particleSizeVariance);
-}
-
-UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartParticleEmitterGetParticleOpacityVariance(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return 0.0f;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return static_cast<float>(emitter.particleOpacityVariance);
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec2d>* UNITY_INTERFACE_API PixelpartParticleEmitterGetShapePath(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return nullptr;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return &emitter.shapePath;
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleEmitterGetWidth(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return nullptr;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return &emitter.width;
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleEmitterGetHeight(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return nullptr;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return &emitter.height;
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleEmitterGetOrientation(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return nullptr;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return &emitter.orientation;
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleEmitterGetDirection(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
+UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec3d>* UNITY_INTERFACE_API PixelpartParticleEmitterGetDirection(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
 		return nullptr;
 	}
@@ -469,213 +253,5 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
 
 	return &emitter.spread;
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleEmitterGetNumParticles(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return nullptr;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return &emitter.numParticles;
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleEmitterGetParticleLifespan(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return nullptr;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return &emitter.particleLifespan;
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec2d>* UNITY_INTERFACE_API PixelpartParticleEmitterGetMotionPath(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return nullptr;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return &emitter.motionPath;
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec2d>* UNITY_INTERFACE_API PixelpartParticleEmitterGetParticleMotionPath(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return nullptr;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return &emitter.particleMotionPath;
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleEmitterGetParticleInitialVelocity(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return nullptr;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return &emitter.particleInitialVelocity;
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleEmitterGetParticleAcceleration(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return nullptr;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return &emitter.particleAcceleration;
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleEmitterGetParticleRadialAcceleration(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return nullptr;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return &emitter.particleRadialAcceleration;
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleEmitterGetParticleDamping(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return nullptr;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return &emitter.particleDamping;
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleEmitterGetParticleInitialRotation(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return nullptr;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return &emitter.particleInitialRotation;
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleEmitterGetParticleRotation(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return nullptr;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return &emitter.particleRotation;
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleEmitterGetParticleWeight(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return nullptr;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return &emitter.particleWeight;
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleEmitterGetParticleBounce(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return nullptr;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return &emitter.particleBounce;
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleEmitterGetParticleFriction(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return nullptr;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return &emitter.particleFriction;
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleEmitterGetParticleInitialSize(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return nullptr;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return &emitter.particleInitialSize;
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleEmitterGetParticleSize(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return nullptr;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return &emitter.particleSize;
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleEmitterGetParticleWidth(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return nullptr;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return &emitter.particleWidth;
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleEmitterGetParticleHeight(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return nullptr;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return &emitter.particleHeight;
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec4d>* UNITY_INTERFACE_API PixelpartParticleEmitterGetParticleColor(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return nullptr;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return &emitter.particleColor;
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleEmitterGetParticleInitialOpacity(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return nullptr;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return &emitter.particleInitialOpacity;
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleEmitterGetParticleOpacity(PixelpartNativeEffect* nativeEffect, uint32_t emitterId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleEmitters.contains(emitterId)) {
-		return nullptr;
-	}
-
-	pixelpart::ParticleEmitter& emitter = nativeEffect->project.effect.particleEmitters.get(emitterId);
-
-	return &emitter.particleOpacity;
-}
-
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleEmitterSpawnParticles(PixelpartNativeEffect* nativeEffect, uint32_t emitterId, uint32_t count) {
-	if(!nativeEffect) {
-		return;
-	}
-
-	nativeEffect->particleEngine.spawnParticles(emitterId, count);
 }
 }

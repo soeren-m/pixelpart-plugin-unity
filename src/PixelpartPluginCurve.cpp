@@ -2,14 +2,12 @@
 
 extern "C" {
 UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartCurveGet(pixelpart::Curve<pixelpart::floatd>* curve, float position) {
-	if(!curve) {
-		return 0.0f;
-	}
-
-	return static_cast<float>(curve->get(position));
+	return curve != nullptr
+		? static_cast<float>(curve->get(position))
+		: 0.0f;
 }
 
-UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartCurveGetPoint(pixelpart::Curve<pixelpart::floatd>* curve, uint32_t index) {
+UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartCurveGetPoint(pixelpart::Curve<pixelpart::floatd>* curve, int32_t index) {
 	if(!curve || index < 0 || static_cast<std::size_t>(index) >= curve->getNumPoints()) {
 		return 0.0f;
 	}
@@ -33,32 +31,32 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartCurveAddPoint(pixelpart
 	curve->addPoint(position, value);
 }
 
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartCurveSetPoint(pixelpart::Curve<pixelpart::floatd>* curve, uint32_t index, float value) {
-	if(!curve) {
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartCurveSetPoint(pixelpart::Curve<pixelpart::floatd>* curve, int32_t index, float value) {
+	if(!curve || index < 0) {
 		return;
 	}
 
 	curve->setPoint(static_cast<std::size_t>(index), value);
 }
 
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartCurveMovePoint(pixelpart::Curve<pixelpart::floatd>* curve, uint32_t index, float delta) {
-	if(!curve) {
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartCurveMovePoint(pixelpart::Curve<pixelpart::floatd>* curve, int32_t index, float delta) {
+	if(!curve || index < 0) {
 		return;
 	}
 
 	curve->movePoint(static_cast<std::size_t>(index), delta);
 }
 
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartCurveShiftPoint(pixelpart::Curve<pixelpart::floatd>* curve, uint32_t index, float delta) {
-	if(!curve) {
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartCurveShiftPoint(pixelpart::Curve<pixelpart::floatd>* curve, int32_t index, float delta) {
+	if(!curve || index < 0) {
 		return;
 	}
 
 	curve->shiftPoint(static_cast<std::size_t>(index), delta);
 }
 
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartCurveRemovePoint(pixelpart::Curve<pixelpart::floatd>* curve, uint32_t index) {
-	if(!curve) {
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartCurveRemovePoint(pixelpart::Curve<pixelpart::floatd>* curve, int32_t index) {
+	if(!curve || index < 0) {
 		return;
 	}
 
@@ -73,12 +71,12 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartCurveClear(pixelpart::C
 	curve->clear();
 }
 
-UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartCurveGetNumPoints(pixelpart::Curve<pixelpart::floatd>* curve) {
+UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartCurveGetNumPoints(pixelpart::Curve<pixelpart::floatd>* curve) {
 	if(!curve) {
-		return 0U;
+		return 0;
 	}
 
-	return curve->getNumPoints();
+	return static_cast<int32_t>(curve->getNumPoints());
 }
 
 UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartCurveMove(pixelpart::Curve<pixelpart::floatd>* curve, float delta) {
@@ -107,7 +105,7 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartCurveSetInterpolation(p
 
 UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartCurveGetInterpolation(pixelpart::Curve<pixelpart::floatd>* curve) {
 	if(!curve) {
-		return 0;
+		return static_cast<int32_t>(pixelpart::CurveInterpolation::none);
 	}
 
 	return static_cast<int32_t>(curve->getInterpolation());
@@ -121,19 +119,19 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartCurveEnableAdaptiveCach
 	curve->enableAdaptiveCache();
 }
 
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartCurveEnableFixedCache(pixelpart::Curve<pixelpart::floatd>* curve, uint32_t size) {
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartCurveEnableFixedCache(pixelpart::Curve<pixelpart::floatd>* curve, int32_t size) {
 	if(!curve) {
 		return;
 	}
 
-	curve->enableFixedCache(static_cast<std::size_t>(size));
+	curve->enableFixedCache(static_cast<std::size_t>(std::max(size, 1)));
 }
 
-UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartCurveGetCacheSize(pixelpart::Curve<pixelpart::floatd>* curve) {
+UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartCurveGetCacheSize(pixelpart::Curve<pixelpart::floatd>* curve) {
 	if(!curve) {
 		return 0;
 	}
 
-	return static_cast<uint32_t>(curve->getCacheSize());
+	return static_cast<int32_t>(curve->getCacheSize());
 }
 }

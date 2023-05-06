@@ -2,7 +2,6 @@
 
 #include "Project.h"
 #include "ParticleEngine.h"
-#include "RenderUtil.h"
 
 #if defined(__CYGWIN32__)
 	#define UNITY_INTERFACE_API __stdcall
@@ -18,6 +17,49 @@
 	#define UNITY_INTERFACE_EXPORT
 #endif
 
+struct Vector2 {
+	float x;
+	float y;
+};
+struct Vector3 {
+	float x;
+	float y;
+	float z;
+};
+struct Vector4 {
+	float x;
+	float y;
+	float z;
+	float w;
+};
+struct Color {
+	float r;
+	float g;
+	float b;
+	float a;
+};
+
+struct PixelpartMeshData {
+	struct ParticleTrail {
+		uint32_t numParticles = 0;
+		pixelpart::floatd length = 0.0;
+
+		std::vector<pixelpart::vec3d> position;
+		std::vector<pixelpart::vec3d> size;
+		std::vector<pixelpart::vec4d> color;
+		std::vector<pixelpart::vec3d> velocity;
+		std::vector<pixelpart::vec3d> force;
+		std::vector<pixelpart::vec3d> direction;
+		std::vector<pixelpart::floatd> index;
+		std::vector<pixelpart::floatd> life;
+	};
+
+	pixelpart::ParticleData sortedParticleData;
+	std::vector<uint32_t> sortKeys;
+
+	std::unordered_map<uint32_t, ParticleTrail> trails;
+};
+
 struct PixelpartNativeEffect {
 	pixelpart::Project project;
 	pixelpart::ResourceDatabase projectResources;
@@ -31,7 +73,5 @@ struct PixelpartNativeEffect {
 	float timeStep = 1.0f / 60.0f;
 	float simulationTime = 0.0f;
 
-	std::vector<pixelpart::ParticleMeshBuilder> particleMeshBuilders;
-	pixelpart::SpriteMeshBuilder spriteMeshBuilder;
-	uint32_t activeParticleMeshBuilder = 0;
+	std::vector<PixelpartMeshData> meshData;
 };

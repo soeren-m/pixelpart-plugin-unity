@@ -1,10 +1,12 @@
 using System;
+using System.Linq;
+using System.Text;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace pixelpart {
-[AddComponentMenu("Pixelpart/Pixelpart Effect")]
+namespace Pixelpart {
+[AddComponentMenu("Pixelpart/Effect")]
 public class PixelpartEffect : MonoBehaviour {
 	public const uint NullId = 0xFFFFFFFF;
 
@@ -16,63 +18,90 @@ public class PixelpartEffect : MonoBehaviour {
 	public bool Loop = false;
 	[Range(0.0f, 100.0f)]
 	public float LoopTime = 1.0f;
-	[Range(0.0f, 100.0f)]
+	[Range(0.0f, 10.0f)]
 	public float Speed = 1.0f;
 	[Range(1.0f, 100.0f)]
 	public float FrameRate = 60.0f;
 
 	[Header("Rendering")]
+	public List<Shader> ParticleShaders = new List<Shader>();
 	public bool FlipH = false;
 	public bool FlipV = false;
-	public BillboardMode Billboard = BillboardMode.Disabled;
-	public UnityEngine.Rendering.ShadowCastingMode CastShadows = UnityEngine.Rendering.ShadowCastingMode.Off;
+	public ShadowCastingMode CastShadows = ShadowCastingMode.Off;
 	public bool ReceiveShadows = false;
 	public bool UseLightProbes = false;
 	public Transform ProbeAnchor = null;
 
-	private PixelpartEffectAsset cachedEffectAsset = null;
+	public bool Is3D {
+		get {
+			return nativeEffect != IntPtr.Zero
+				? Plugin.PixelpartIsEffect3D(nativeEffect)
+				: false;
+		}
+	}
+
+	public float CurrentTime {
+		get {
+			return nativeEffect != IntPtr.Zero
+				? Plugin.PixelpartGetEffectTime(nativeEffect)
+				: 0.0f;
+		}
+	}
+
+	public float AssetScale {
+		get {
+			return EffectAsset != null
+				? EffectAsset.Scale
+				: 0.0f;
+		}
+	}
+
 	private IntPtr nativeEffect = IntPtr.Zero;
 
-	private Mesh[] particleMeshes = null;
-	private Mesh[] spriteMeshes = null;
-	private Material[] particleMaterials = null;
-	private Material[] spriteMaterials = null;
+	private PixelpartEffectAsset cachedEffectAsset = null;
 
-	private PixelpartVertexData[] particleVertexData = null;
-	private float[] particlePositionBuffer = null;
-	private float[] particleTextureCoordBuffer = null;
-	private float[] particleColorBuffer = null;
-	private float[] particleVelocityBuffer = null;
-	private float[] particleForceBuffer = null;
-	private float[] particleLifeBuffer = null;
-	private int[] particleIdBuffer = null;
-
-	private PixelpartVertexData[] spriteVertexData = null;
-	private float[] spritePositionBuffer = null;
-	private float[] spriteTextureCoordBuffer = null;
-	private float[] spriteColorBuffer = null;
-	private float[] spriteLifeBuffer = null;
-
-	private uint[] sortedParticleEmitterIndices = null;
-	private uint[] sortedSpriteIndices = null;
+	private Material[] materials = null;
+	private Mesh[] meshes = null;
+	private VertexData[] vertexData = null;
+	private uint[] sortedParticleTypeIndices = null;
 
 	private Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
 
-	public void Awake() {
-		SetEffect(EffectAsset);
+	public PixelpartEffect() {
+
 	}
+
+	public void Awake() {
+		InitEffect();
+	}
+
 	public void Update() {
-		SetEffect(EffectAsset);
+		if(EffectAsset != cachedEffectAsset) {
+			InitEffect();
+		}
 
-		if(nativeEffect != IntPtr.Zero) {
-			Plugin.PixelpartPlayEffect(nativeEffect, Playing && gameObject.activeSelf);
-			Plugin.PixelpartSetEffectLoop(nativeEffect, Loop);
-			Plugin.PixelpartSetEffectLoopTime(nativeEffect, LoopTime);
-			Plugin.PixelpartSetEffectSpeed(nativeEffect, Speed);
-			Plugin.PixelpartSetEffectTimeStep(nativeEffect, 1.0f / FrameRate);
-			Plugin.PixelpartUpdateEffect(nativeEffect, Time.deltaTime);
+		if(nativeEffect == IntPtr.Zero) {
+			return;
+		}
 
-			DrawEffect();
+		Plugin.PixelpartPlayEffect(nativeEffect, Playing && gameObject.activeSelf);
+		Plugin.PixelpartSetEffectLoop(nativeEffect, Loop);
+		Plugin.PixelpartSetEffectLoopTime(nativeEffect, LoopTime);
+		Plugin.PixelpartSetEffectSpeed(nativeEffect, Speed);
+		Plugin.PixelpartSetEffectTimeStep(nativeEffect, 1.0f / FrameRate);
+		Plugin.PixelpartUpdateEffect(nativeEffect, Time.deltaTime);
+	}
+
+	public void LateUpdate() {
+		if(nativeEffect == IntPtr.Zero) {
+			return;
+		}
+
+		if(Is3D) {
+			DrawEffect3D(Camera.current);
+		}
+		else {
+			DrawEffect2D(Camera.current);
 		}
 	}
 
@@ -83,157 +112,18 @@ public class PixelpartEffect : MonoBehaviour {
 		}
 	}
 
-#if UNITY_EDITOR
-	public void OnDrawGizmos() {
-		Gizmos.DrawIcon(transform.position, "PixelpartEffectIcon.png", true);
-	}
-#endif
-
-	public void Restart() {
+	public void RestartEffect() {
 		if(nativeEffect != IntPtr.Zero) {
 			Plugin.PixelpartRestartEffect(nativeEffect);
 		}
 	}
-	public void Reset() {
+	public void ResetEffect() {
 		if(nativeEffect != IntPtr.Zero) {
 			Plugin.PixelpartResetEffect(nativeEffect);
 		}
 	}
-	public float GetTime() {
-		if(nativeEffect != IntPtr.Zero) {
-			Plugin.PixelpartGetEffectTime(nativeEffect);
-		}
 
-		return 0.0f;
-	}
-
-	public void SetEffect(PixelpartEffectAsset asset) {
-		if(asset == cachedEffectAsset) {
-			return;
-		}
-
-		if(nativeEffect != IntPtr.Zero) {
-			textures.Clear();
-			Plugin.PixelpartDeleteEffect(nativeEffect);
-			nativeEffect = IntPtr.Zero;
-		}
-
-		EffectAsset = asset;
-
-		if(EffectAsset) {
-			nativeEffect = EffectAsset.LoadEffect();
-
-			if(nativeEffect != IntPtr.Zero) {
-				uint numParticleEmitters = Plugin.PixelpartGetEffectNumParticleEmitters(nativeEffect);
-				uint numSprites = Plugin.PixelpartGetEffectNumSprites(nativeEffect);
-				uint initialVertexBufferSize = 4000;
-
-				if(EffectAsset.ParticleAssets == null ||
-				EffectAsset.SpriteAssets == null ||
-				EffectAsset.ParticleAssets.Length < numParticleEmitters ||
-				EffectAsset.SpriteAssets.Length < numSprites) {
-					throw new InvalidOperationException("Effect asset not imported");
-				}
-
-				sortedParticleEmitterIndices = new uint[numParticleEmitters];
-				particleMeshes = new Mesh[numParticleEmitters];
-				particleMaterials = new Material[numParticleEmitters];
-				particleVertexData = new PixelpartVertexData[numParticleEmitters];
-				particlePositionBuffer = new float[initialVertexBufferSize * 2];
-				particleTextureCoordBuffer = new float[initialVertexBufferSize * 2];
-				particleColorBuffer = new float[initialVertexBufferSize * 4];
-				particleVelocityBuffer = new float[initialVertexBufferSize * 2];
-				particleForceBuffer = new float[initialVertexBufferSize * 2];
-				particleLifeBuffer = new float[initialVertexBufferSize];
-				particleIdBuffer = new int[initialVertexBufferSize];
-
-				sortedSpriteIndices = new uint[numSprites];
-				spriteMeshes = new Mesh[numSprites];
-				spriteMaterials = new Material[numSprites];
-				spriteVertexData = new PixelpartVertexData[numSprites];
-				spritePositionBuffer = new float[4 * 2];
-				spriteTextureCoordBuffer = new float[4 * 2];
-				spriteColorBuffer = new float[4 * 4];
-				spriteLifeBuffer = new float[4];
-
-				uint numImageResources = Plugin.PixelpartGetEffectResourceImageCount(nativeEffect);
-
-				for(uint i = 0; i < numImageResources; i++) {
-					byte[] imageIdBuffer = new byte[2048];
-					int imageIdLength = Plugin.PixelpartGetEffectResourceImageId(nativeEffect, i, imageIdBuffer, imageIdBuffer.Length);
-					string imageId = System.Text.Encoding.UTF8.GetString(imageIdBuffer, 0, imageIdLength);
-
-					uint textureWidth = Plugin.PixelpartGetEffectResourceImageWidth(nativeEffect, imageId);
-					uint textureHeight = Plugin.PixelpartGetEffectResourceImageHeight(nativeEffect, imageId);
-					uint textureDataSize = Plugin.PixelpartGetEffectResourceImageDataSize(nativeEffect, imageId);
-					byte[] textureData = new byte[textureDataSize];
-					Plugin.PixelpartGetEffectResourceImageData(nativeEffect, imageId, textureData);
-
-					Texture2D texture = new Texture2D((int)textureWidth, (int)textureHeight, TextureFormat.RGBA32, false);
-					texture.filterMode = FilterMode.Bilinear;
-					texture.wrapMode = TextureWrapMode.Repeat;
-					texture.LoadRawTextureData(textureData);
-					texture.Apply();
-
-					textures[imageId] = texture;
-				}
-
-				for(uint emitterIndex = 0; emitterIndex < numParticleEmitters; emitterIndex++) {
-					Shader shader = Shader.Find(EffectAsset.ParticleAssets[emitterIndex].ShaderName);
-					if(shader == null) {
-						throw new InvalidOperationException("Shader for effect not found");
-					}
-
-					Material material = new Material(shader);
-					for(int samplerIndex = 0; samplerIndex < EffectAsset.ParticleAssets[emitterIndex].TextureIds.Length; samplerIndex++) {
-						string textureId = EffectAsset.ParticleAssets[emitterIndex].TextureIds[samplerIndex];
-						if(!textures.ContainsKey(textureId)) {
-							throw new InvalidOperationException("Texture \"" + textureId + "\" not found");
-						}
-
-						material.SetTexture("_Texture" + samplerIndex.ToString(), textures[textureId]);
-					}
-
-					particleMaterials[emitterIndex] = material;
-					particleMeshes[emitterIndex] = new Mesh();
-					particleVertexData[emitterIndex] = new PixelpartVertexData(2, 4);
-				}
-
-				for(uint spriteIndex = 0; spriteIndex < numSprites; spriteIndex++) {
-					Shader shader = Shader.Find(EffectAsset.SpriteAssets[spriteIndex].ShaderName);
-					if(shader == null) {
-						throw new InvalidOperationException("Shader for effect not found");
-					}
-
-					Material material = new Material(shader);
-					for(int samplerIndex = 0; samplerIndex < EffectAsset.SpriteAssets[spriteIndex].TextureIds.Length; samplerIndex++) {
-						string textureId = EffectAsset.SpriteAssets[spriteIndex].TextureIds[samplerIndex];
-						if(!textures.ContainsKey(textureId)) {
-							throw new InvalidOperationException("Texture \"" + textureId + "\" not found");
-						}
-
-						material.SetTexture("_Texture" + samplerIndex.ToString(), textures[textureId]);
-					}
-
-					spriteMaterials[spriteIndex] = material;
-					spriteMeshes[spriteIndex] = new Mesh();
-					spriteVertexData[spriteIndex] = new PixelpartVertexData(2, 4);
-				}
-			}
-		}
-
-		cachedEffectAsset = EffectAsset;
-	}
-
-	public float GetAssetScale() {
-		if(EffectAsset != null) {
-			return EffectAsset.Scale;
-		}
-
-		return 0.0f;
-	}
-
-	public PixelpartParticleEmitter GetParticleEmitter(string name) {
+	public PixelpartParticleEmitter FindParticleEmitter(string name) {
 		if(nativeEffect != IntPtr.Zero) {
 			uint id = Plugin.PixelpartFindParticleEmitter(nativeEffect, name);
 			if(id != NullId) {
@@ -243,17 +133,17 @@ public class PixelpartEffect : MonoBehaviour {
 
 		return null;
 	}
-	public PixelpartSprite GetSprite(string name) {
+	public PixelpartParticleType FindParticleType(string name) {
 		if(nativeEffect != IntPtr.Zero) {
-			uint id = Plugin.PixelpartFindSprite(nativeEffect, name);
+			uint id = Plugin.PixelpartFindParticleType(nativeEffect, name);
 			if(id != NullId) {
-				return new PixelpartSprite(nativeEffect, id);
+				return new PixelpartParticleType(nativeEffect, id);
 			}
 		}
 
 		return null;
 	}
-	public PixelpartForceField GetForceField(string name) {
+	public PixelpartForceField FindForceField(string name) {
 		if(nativeEffect != IntPtr.Zero) {
 			uint id = Plugin.PixelpartFindForceField(nativeEffect, name);
 			if(id != NullId) {
@@ -263,7 +153,7 @@ public class PixelpartEffect : MonoBehaviour {
 
 		return null;
 	}
-	public PixelpartCollider GetCollider(string name) {
+	public PixelpartCollider FindCollider(string name) {
 		if(nativeEffect != IntPtr.Zero) {
 			uint id = Plugin.PixelpartFindCollider(nativeEffect, name);
 			if(id != NullId) {
@@ -274,38 +164,38 @@ public class PixelpartEffect : MonoBehaviour {
 		return null;
 	}
 
-	public PixelpartParticleEmitter GetParticleEmitterById(uint id) {
-		if(nativeEffect != IntPtr.Zero) {
+	public PixelpartParticleEmitter GetParticleEmitter(uint id) {
+		if(nativeEffect != IntPtr.Zero && Plugin.PixelpartHasParticleEmitter(nativeEffect, id)) {
 			return new PixelpartParticleEmitter(nativeEffect, id);
 		}
 
 		return null;
 	}
-	public PixelpartSprite GetSpriteById(uint id) {
-		if(nativeEffect != IntPtr.Zero) {
-			return new PixelpartSprite(nativeEffect, id);
+	public PixelpartParticleType GetParticleType(uint id) {
+		if(nativeEffect != IntPtr.Zero && Plugin.PixelpartHasParticleType(nativeEffect, id)) {
+			return new PixelpartParticleType(nativeEffect, id);
 		}
 
 		return null;
 	}
-	public PixelpartForceField GetForceFieldById(uint id) {
-		if(nativeEffect != IntPtr.Zero) {
+	public PixelpartForceField GetForceField(uint id) {
+		if(nativeEffect != IntPtr.Zero && Plugin.PixelpartHasForceField(nativeEffect, id)) {
 			return new PixelpartForceField(nativeEffect, id);
 		}
 
 		return null;
 	}
-	public PixelpartCollider GetColliderById(uint id) {
-		if(nativeEffect != IntPtr.Zero) {
+	public PixelpartCollider GetCollider(uint id) {
+		if(nativeEffect != IntPtr.Zero && Plugin.PixelpartHasCollider(nativeEffect, id)) {
 			return new PixelpartCollider(nativeEffect, id);
 		}
 
 		return null;
 	}
 
-	public PixelpartParticleEmitter GetParticleEmitterByIndex(uint index) {
-		if(nativeEffect != IntPtr.Zero) {
-			uint id = Plugin.PixelpartFindParticleEmitterByIndex(nativeEffect, index);
+	public PixelpartParticleEmitter GetParticleEmitterAtIndex(int index) {
+		if(nativeEffect != IntPtr.Zero && index >= 0) {
+			uint id = Plugin.PixelpartFindParticleEmitterByIndex(nativeEffect, (uint)index);
 			if(id != NullId) {
 				return new PixelpartParticleEmitter(nativeEffect, id);
 			}
@@ -313,19 +203,19 @@ public class PixelpartEffect : MonoBehaviour {
 
 		return null;
 	}
-	public PixelpartSprite GetSpriteByIndex(uint index) {
-		if(nativeEffect != IntPtr.Zero) {
-			uint id = Plugin.PixelpartFindSpriteByIndex(nativeEffect, index);
+	public PixelpartParticleType GetParticleTypeAtIndex(int index) {
+		if(nativeEffect != IntPtr.Zero && index >= 0) {
+			uint id = Plugin.PixelpartFindParticleTypeByIndex(nativeEffect, (uint)index);
 			if(id != NullId) {
-				return new PixelpartSprite(nativeEffect, id);
+				return new PixelpartParticleType(nativeEffect, id);
 			}
 		}
 
 		return null;
 	}
-	public PixelpartForceField GetForceFieldByIndex(uint index) {
-		if(nativeEffect != IntPtr.Zero) {
-			uint id = Plugin.PixelpartFindForceFieldByIndex(nativeEffect, index);
+	public PixelpartForceField GetForceFieldAtIndex(int index) {
+		if(nativeEffect != IntPtr.Zero && index >= 0) {
+			uint id = Plugin.PixelpartFindForceFieldByIndex(nativeEffect, (uint)index);
 			if(id != NullId) {
 				return new PixelpartForceField(nativeEffect, id);
 			}
@@ -333,9 +223,9 @@ public class PixelpartEffect : MonoBehaviour {
 
 		return null;
 	}
-	public PixelpartCollider GetColliderByIndex(uint index) {
-		if(nativeEffect != IntPtr.Zero) {
-			uint id = Plugin.PixelpartFindColliderByIndex(nativeEffect, index);
+	public PixelpartCollider GetColliderAtIndex(int index) {
+		if(nativeEffect != IntPtr.Zero && index >= 0) {
+			uint id = Plugin.PixelpartFindColliderByIndex(nativeEffect, (uint)index);
 			if(id != NullId) {
 				return new PixelpartCollider(nativeEffect, id);
 			}
@@ -344,244 +234,179 @@ public class PixelpartEffect : MonoBehaviour {
 		return null;
 	}
 
-	private void DrawEffect() {
-		uint numParticleEmitters = Plugin.PixelpartGetEffectNumParticleEmitters(nativeEffect);
-		uint numSprites = Plugin.PixelpartGetEffectNumSprites(nativeEffect);
-		float effectTime = Plugin.PixelpartGetEffectTime(nativeEffect);
-
-		if(numParticleEmitters > 0) {
-			Plugin.PixelpartGetParticleEmittersSortedByLayer(nativeEffect, sortedParticleEmitterIndices);
-		}
-		if(numSprites > 0) {
-			Plugin.PixelpartGetSpritesSortedByLayer(nativeEffect, sortedSpriteIndices);
+	private void InitEffect() {
+		if(nativeEffect != IntPtr.Zero) {
+			Plugin.PixelpartDeleteEffect(nativeEffect);
+			nativeEffect = IntPtr.Zero;
 		}
 
-		uint maxLayer = Plugin.PixelpartGetEffectMaxLayer(nativeEffect);
+		cachedEffectAsset = EffectAsset;
 
-		for(uint l = 0, e = 0, s = 0; l <= maxLayer; l++) {
-			while(s < numSprites) {
-				uint spriteIndex = sortedSpriteIndices[s];
-				uint spriteId = Plugin.PixelpartFindSpriteByIndex(nativeEffect, spriteIndex);
-				uint spriteLayer = Plugin.PixelpartSpriteGetLayer(nativeEffect, spriteId);
-				if(spriteLayer != l) {
-					break;
+		if(EffectAsset != null) {
+			nativeEffect = EffectAsset.LoadEffect();
+
+			if(nativeEffect != IntPtr.Zero) {
+				int numParticleTypes = (int)Plugin.PixelpartGetEffectNumParticleTypes(nativeEffect);
+
+				if(EffectAsset.ParticleTypeAssets == null ||
+				EffectAsset.ParticleTypeAssets.Length < numParticleTypes ||
+				EffectAsset.ParticleTypeAssets.Any(x => x == null || x.TextureIds == null)) {
+					Debug.LogError("Error loading effect asset", this);
+
+					nativeEffect = IntPtr.Zero;
+					return;
 				}
 
-				DrawSprite(spriteIndex, spriteId, spriteLayer, effectTime);
+				materials = new Material[numParticleTypes];
+				meshes = new Mesh[numParticleTypes];
+				vertexData = new VertexData[numParticleTypes];
+				sortedParticleTypeIndices = new uint[numParticleTypes];
+				textures.Clear();
 
-				s++;
+				uint numImageResources = Plugin.PixelpartGetImageResourceCount(nativeEffect);
+
+				for(uint i = 0; i < numImageResources; i++) {
+					byte[] imageIdBuffer = new byte[2048];
+					int imageIdLength = Plugin.PixelpartGetImageResourceId(nativeEffect, i, imageIdBuffer, imageIdBuffer.Length);
+					string imageId = Encoding.UTF8.GetString(imageIdBuffer, 0, imageIdLength);
+
+					int textureWidth = Plugin.PixelpartGetImageResourceWidth(nativeEffect, imageId);
+					int textureHeight = Plugin.PixelpartGetImageResourceHeight(nativeEffect, imageId);
+					uint textureDataSize = Plugin.PixelpartGetImageResourceDataSize(nativeEffect, imageId);
+					byte[] textureData = new byte[textureDataSize];
+					Plugin.PixelpartGetImageResourceData(nativeEffect, imageId, textureData);
+
+					Texture2D texture = new Texture2D(textureWidth, textureHeight, TextureFormat.RGBA32, false);
+					texture.filterMode = FilterMode.Bilinear;
+					texture.wrapMode = TextureWrapMode.Repeat;
+					texture.LoadRawTextureData(textureData);
+					texture.Apply();
+
+					textures[imageId] = texture;
+				}
+
+				for(int particleTypeIndex = 0; particleTypeIndex < numParticleTypes; particleTypeIndex++) {
+					PixelpartParticleTypeAsset particleAsset = EffectAsset.ParticleTypeAssets[particleTypeIndex];
+
+					materials[particleTypeIndex] = new Material(particleTypeIndex < ParticleShaders.Count
+						? ParticleShaders[particleTypeIndex]
+						: null);
+
+					for(int samplerIndex = 0; samplerIndex < particleAsset.TextureIds.Length; samplerIndex++) {
+						string textureId = particleAsset.TextureIds[samplerIndex];
+
+						if(textures.ContainsKey(textureId)) {
+							materials[particleTypeIndex].SetTexture("_Texture" + samplerIndex.ToString(), textures[textureId]);
+						}
+						else {
+							Debug.LogWarning("Particle texture \"" + textureId + "\" not found", this);
+						}
+					};
+
+					meshes[particleTypeIndex] = new Mesh();
+					meshes[particleTypeIndex].MarkDynamic();
+
+					vertexData[particleTypeIndex] = new VertexData(2, 4);
+				}
 			}
-
-			while(e < numParticleEmitters) {
-				uint emitterIndex = sortedParticleEmitterIndices[e];
-				uint emitterId = Plugin.PixelpartFindParticleEmitterByIndex(nativeEffect, emitterIndex);
-				uint emitterLayer = Plugin.PixelpartParticleEmitterGetLayer(nativeEffect, emitterId);
-				if(emitterLayer != l) {
-					break;
-				}
-
-				DrawParticles(emitterIndex, emitterId, emitterLayer, effectTime);
-
-				e++;
+			else {
+				Debug.LogError("Error loading effect asset", this);
 			}
 		}
 	}
 
-	private void DrawParticles(uint emitterIndex, uint emitterId, uint layer, float effectTime) {
+	private void DrawEffect3D(Camera camera) {
+		uint numParticleTypes = Plugin.PixelpartGetEffectNumParticleTypes(nativeEffect);
+
+		for(uint particleTypeIndex = 0; particleTypeIndex < numParticleTypes; particleTypeIndex++) {
+			DrawParticles(camera,
+				particleTypeIndex,
+				Plugin.PixelpartFindParticleTypeByIndex(nativeEffect, particleTypeIndex));
+		}
+	}
+
+	private void DrawEffect2D(Camera camera) {
+		uint numParticleTypes = Plugin.PixelpartGetEffectNumParticleTypes(nativeEffect);
+
+		if(numParticleTypes > 0) {
+			Plugin.PixelpartGetParticleTypesSortedByLayer(nativeEffect, sortedParticleTypeIndices);
+		}
+
+		for(uint i = 0; i < numParticleTypes; i++) {
+			uint particleTypeIndex = sortedParticleTypeIndices[i];
+
+			DrawParticles(camera,
+				particleTypeIndex,
+				Plugin.PixelpartFindParticleTypeByIndex(nativeEffect, particleTypeIndex));
+		}
+	}
+
+	private void DrawParticles(Camera camera, uint particleTypeIndex, uint particleTypeId) {
 		float scaleX = EffectAsset.Scale * (FlipH ? -1.0f : +1.0f);
 		float scaleY = EffectAsset.Scale * (FlipV ? -1.0f : +1.0f);
-		bool visible = Plugin.PixelpartParticleEmitterIsVisible(nativeEffect, emitterId);
+		bool visible = Plugin.PixelpartParticleTypeIsVisible(nativeEffect, particleTypeId);
 		if(!visible) {
 			return;
 		}
 
-		Plugin.PixelpartPrepareParticleMeshBuild(nativeEffect, emitterIndex);
+		Material particleMaterial = materials[particleTypeIndex];
+		Mesh particleMesh = meshes[particleTypeIndex];
+		VertexData particleVertexData = vertexData[particleTypeIndex];
 
-		uint numTriangles = Plugin.PixelpartGetParticleMeshNumTriangles(nativeEffect);
-		uint numVertices = Plugin.PixelpartGetParticleMeshNumVertices(nativeEffect);
-		if(numTriangles == 0 || numVertices == 0) {
+		int numTriangles = 0;
+		int numVertices = 0;
+		bool buildResult = Plugin.PixelpartPrepareParticleMesh(nativeEffect, particleTypeIndex, out numTriangles, out numVertices);
+		if(!buildResult || numTriangles == 0 || numVertices == 0) {
 			return;
 		}
 
-		particleVertexData[emitterIndex].Resize((int)numTriangles, (int)numVertices);
+		particleVertexData.Resize(numTriangles, numVertices);
 
-		if(numVertices > particleLifeBuffer.Length) {
-			Array.Resize(ref particlePositionBuffer, (int)numVertices * 2);
-			Array.Resize(ref particleTextureCoordBuffer, (int)numVertices * 2);
-			Array.Resize(ref particleColorBuffer, (int)numVertices * 4);
-			Array.Resize(ref particleVelocityBuffer, (int)numVertices * 2);
-			Array.Resize(ref particleForceBuffer, (int)numVertices * 2);
-			Array.Resize(ref particleLifeBuffer, (int)numVertices);
-			Array.Resize(ref particleIdBuffer, (int)numVertices);
-		}
+		Plugin.PixelpartBuildParticleMesh(nativeEffect,
+			particleTypeIndex,
+			(camera != null) ? camera.transform.position : new Vector3(0.0f, 0.0f, 0.0f),
+			(camera != null) ? camera.transform.right : new Vector3(1.0f, 0.0f, 0.0f),
+			(camera != null) ? camera.transform.up : new Vector3(0.0f, 1.0f, 0.0f),
+			scaleX, scaleY,
+			particleVertexData.Triangles,
+			particleVertexData.Vertices,
+			particleVertexData.Colors,
+			particleVertexData.UV,
+			particleVertexData.UV2,
+			particleVertexData.UV3,
+			particleVertexData.UV4);
 
-		Plugin.PixelpartGetParticleTriangleData(
-			nativeEffect,
-			scaleX,
-			scaleY,
-			particleVertexData[emitterIndex].triangles,
-			particlePositionBuffer,
-			particleTextureCoordBuffer,
-			particleColorBuffer,
-			particleVelocityBuffer,
-			particleForceBuffer,
-			particleLifeBuffer,
-			particleIdBuffer);
+		UpdateMesh(particleMesh, particleVertexData);
 
-		UpdateMesh(
-			particleMeshes[emitterIndex],
-			particleVertexData[emitterIndex],
-			particlePositionBuffer,
-			particleTextureCoordBuffer,
-			particleColorBuffer,
-			particleVelocityBuffer,
-			particleForceBuffer,
-			particleLifeBuffer,
-			particleIdBuffer,
-			numVertices,
-			layer);
-		UpdateMaterial(
-			particleMaterials[emitterIndex],
-			effectTime,
-			Plugin.PixelpartParticleEmitterGetLocalTime(nativeEffect, emitterId),
-			Plugin.PixelpartParticleEmitterGetBlendMode(nativeEffect, emitterId));
+		uint particleEmitterId = Plugin.PixelpartParticleTypeGetParentId(nativeEffect, particleTypeId);
+		float localTime = Plugin.PixelpartParticleEmitterGetLocalTime(nativeEffect, particleEmitterId);
+		int blendMode = Plugin.PixelpartParticleTypeGetBlendMode(nativeEffect, particleTypeId);
 
-		Graphics.DrawMesh(
-			particleMeshes[emitterIndex],
-			GetFinalTransform(),
-			particleMaterials[emitterIndex],
+		UpdateMaterial(particleMaterial, localTime, blendMode);
+
+		Graphics.DrawMesh(particleMesh,
+			transform.localToWorldMatrix,
+			particleMaterial,
 			gameObject.layer,
-			null,
-			0,
-			null,
-			CastShadows,
-			ReceiveShadows,
-			ProbeAnchor,
-			UseLightProbes);
-	}
-	private void DrawSprite(uint spriteIndex, uint spriteId, uint layer, float effectTime) {
-		float scaleX = EffectAsset.Scale * (FlipH ? -1.0f : +1.0f);
-		float scaleY = EffectAsset.Scale * (FlipV ? -1.0f : +1.0f);
-		bool visible = Plugin.PixelpartSpriteIsVisible(nativeEffect, spriteId);
-		bool active = Plugin.PixelpartSpriteIsActive(nativeEffect, spriteId);
-		if(!visible || !active) {
-			return;
-		}
-
-		Plugin.PixelpartPrepareSpriteMeshBuild(nativeEffect, spriteIndex);
-		Plugin.PixelpartGetSpriteTriangleData(
-			nativeEffect,
-			scaleX,
-			scaleY,
-			spriteVertexData[spriteIndex].triangles,
-			spritePositionBuffer,
-			spriteTextureCoordBuffer,
-			spriteColorBuffer,
-			spriteLifeBuffer);
-
-		UpdateMesh(
-			spriteMeshes[spriteIndex],
-			spriteVertexData[spriteIndex],
-			spritePositionBuffer,
-			spriteTextureCoordBuffer,
-			spriteColorBuffer,
-			null,
-			null,
-			spriteLifeBuffer,
-			null,
-			4,
-			layer);
-		UpdateMaterial(
-			spriteMaterials[spriteIndex],
-			effectTime,
-			Plugin.PixelpartSpriteGetLocalTime(nativeEffect, spriteId),
-			Plugin.PixelpartSpriteGetBlendMode(nativeEffect, spriteId));
-
-		Graphics.DrawMesh(
-			spriteMeshes[spriteIndex],
-			GetFinalTransform(),
-			spriteMaterials[spriteIndex],
-			gameObject.layer,
-			null,
-			0,
-			null,
-			CastShadows,
-			ReceiveShadows,
-			ProbeAnchor,
-			UseLightProbes);
+			null, 0, null,
+			CastShadows, ReceiveShadows, ProbeAnchor, UseLightProbes);
 	}
 
-	private void UpdateMesh(Mesh mesh, PixelpartVertexData vertexData, float[] positionBuffer, float[] textureCoordBuffer, float[] colorBuffer, float[] velocityBuffer, float[] forceBuffer, float[] lifeBuffer, int[] idBuffer, uint size, uint layer) {
+	private void UpdateMesh(Mesh mesh, VertexData vertexData) {
 		mesh.Clear();
-		mesh.MarkDynamic();
 
-		if(positionBuffer != null) {
-			for(uint i = 0; i < size; i++) {
-				vertexData.positions[i].Set(
-					positionBuffer[i * 2 + 0],
-					positionBuffer[i * 2 + 1],
-					-0.001f * (float)layer);
-			}
+		mesh.vertices = vertexData.Vertices;
+		mesh.colors = vertexData.Colors;
+		mesh.uv = vertexData.UV;
+		mesh.SetUVs(1, vertexData.UV2.ToList());
+		mesh.SetUVs(2, vertexData.UV3.ToList());
+		mesh.SetUVs(3, vertexData.UV4.ToList());
 
-			mesh.vertices = vertexData.positions;
-		}
-
-		if(textureCoordBuffer != null) {
-			for(uint i = 0; i < size; i++) {
-				vertexData.textureCoords[i].Set(
-					textureCoordBuffer[i * 2 + 0],
-					textureCoordBuffer[i * 2 + 1]);
-			}
-
-			mesh.uv = vertexData.textureCoords;
-		}
-
-		if(colorBuffer != null) {
-			for(uint i = 0; i < size; i++) {
-				vertexData.colors[i] = new Color(
-					colorBuffer[i * 4 + 0],
-					colorBuffer[i * 4 + 1],
-					colorBuffer[i * 4 + 2],
-					colorBuffer[i * 4 + 3]);
-			}
-
-			mesh.colors = vertexData.colors;
-		}
-
-		if(velocityBuffer != null) {
-			for(uint i = 0; i < size; i++) {
-				vertexData.velocities[i].Set(
-					velocityBuffer[i * 2 + 0],
-					velocityBuffer[i * 2 + 1]);
-			}
-
-			mesh.uv2 = vertexData.velocities;
-		}
-
-		if(forceBuffer != null) {
-			for(uint i = 0; i < size; i++) {
-				vertexData.forces[i].Set(
-					forceBuffer[i * 2 + 0],
-					forceBuffer[i * 2 + 1]);
-			}
-
-			mesh.uv3 = vertexData.forces;
-		}
-
-		if(lifeBuffer != null || idBuffer != null) {
-			for(uint i = 0; i < size; i++) {
-				vertexData.objectInfo[i].Set(
-					(lifeBuffer != null) ? lifeBuffer[i] : 0.0f,
-					(idBuffer != null) ? (float)idBuffer[i] : 0.0f);
-			}
-
-			mesh.uv4 = vertexData.objectInfo;
-		}
-
-		mesh.triangles = vertexData.triangles;
+		mesh.triangles = vertexData.Triangles;
 	}
-	private void UpdateMaterial(Material material, float effectTime, float objectTime, int blendMode) {
-		material.SetFloat("_EffectTime", effectTime);
+
+	private void UpdateMaterial(Material material, float objectTime, int blendMode) {
+		material.SetFloat("_EffectTime", CurrentTime);
 		material.SetFloat("_ObjectTime", objectTime);
 
 		switch(blendMode) {
@@ -605,26 +430,46 @@ public class PixelpartEffect : MonoBehaviour {
 		}
 	}
 
-	private Matrix4x4 GetFinalTransform() {
-		if(Billboard == BillboardMode.Enabled) {
-			Vector3 cameraPosition = Camera.main.transform.position;
+#if UNITY_EDITOR
+	public List<string> ParticleTypeNames = new List<string>();
 
-			return Matrix4x4.LookAt(
-				transform.position,
-				transform.position * 2.0f - cameraPosition,
-				Vector3.up);
-		}
-		else if(Billboard == BillboardMode.EnabledFixedY) {
-			Vector3 cameraPosition = Camera.main.transform.position;
-			cameraPosition.y = 0.0f;
+	private PixelpartEffectAsset editorCachedEffectAsset = null;
 
-			return Matrix4x4.LookAt(
-				transform.position,
-				transform.position * 2.0f - cameraPosition,
-				Vector3.up);
+	public void OnValidate() {
+		if(EffectAsset == editorCachedEffectAsset) {
+			return;
 		}
 
-		return transform.localToWorldMatrix;
+		editorCachedEffectAsset = EffectAsset;
+		ParticleShaders.Clear();
+		ParticleTypeNames.Clear();
+
+		if(EffectAsset != null) {
+			if(EffectAsset.ParticleTypeAssets == null ||
+				EffectAsset.ParticleTypeAssets.Any(x => x == null || x.TextureIds == null)) {
+				Debug.LogError("Effect asset not imported properly, please reimport", this);
+				return;
+			}
+
+			for(int particleTypeIndex = 0; particleTypeIndex < EffectAsset.ParticleTypeAssets.Length; particleTypeIndex++) {
+				PixelpartParticleTypeAsset particleAsset = EffectAsset.ParticleTypeAssets[particleTypeIndex];
+
+				Shader shader = Shader.Find(particleAsset.DefaultShaderName);
+				if(shader == null) {
+					Debug.LogWarning(
+						"Particle shader \"" + particleAsset.DefaultShaderName + "\" not found",
+						this);
+				}
+
+				ParticleTypeNames.Add(particleAsset.Name);
+				ParticleShaders.Add(shader);
+			}
+		}
 	}
+
+	public void OnDrawGizmos() {
+		Gizmos.DrawIcon(transform.position, "PixelpartEffectIcon.png", true);
+	}
+#endif
 }
 }

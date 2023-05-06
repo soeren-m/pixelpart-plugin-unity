@@ -5,7 +5,9 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
+  - enabled: 0
+    path: Assets/Pixelpart/Scenes/SampleScene3D.unity
+    guid: bb41d4c146f79424b8a026e96469665e
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 2cda990e2423bbf4892e6590ba056729
-  m_configObjects: {}
+    path: Assets/Pixelpart/Scenes/SampleScene2D.unity
+    guid: 7a9067c377fcd4d29bd8fb81f78e91ac

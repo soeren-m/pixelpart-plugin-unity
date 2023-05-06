@@ -2,19 +2,15 @@ using System;
 using System.Text;
 using UnityEngine;
 
-namespace pixelpart {
+namespace Pixelpart {
 public class PixelpartCurve {
 	public enum ObjectType {
 		None,
 		ParticleEmitter,
+		ParticleType,
 		ForceField,
-		Collider,
-		Sprite
+		Collider
 	}
-
-	private IntPtr nativeCurve = IntPtr.Zero;
-	private IntPtr nativeEffect = IntPtr.Zero;
-	private ObjectType objectType = ObjectType.None;
 
 	public InterpolationType Interpolation {
 		get {
@@ -26,16 +22,32 @@ public class PixelpartCurve {
 		}
 	}
 
-	public PixelpartCurve(IntPtr nativePtr, IntPtr nativeEff, ObjectType type) {
-		nativeCurve = nativePtr;
-		nativeEffect = nativeEff;
+	public int NumPoints {
+		get {
+			return Plugin.PixelpartCurveGetNumPoints(nativeCurve);
+		}
+	}
+
+	public int CacheSize {
+		get {
+			return Plugin.PixelpartCurveGetCacheSize(nativeCurve);
+		}
+	}
+
+	private IntPtr nativeCurve = IntPtr.Zero;
+	private IntPtr nativeEffect = IntPtr.Zero;
+	private ObjectType objectType = ObjectType.None;
+
+	public PixelpartCurve(IntPtr nativeCurvePtr, IntPtr nativeEffectPr, ObjectType type) {
+		nativeCurve = nativeCurvePtr;
+		nativeEffect = nativeEffectPr;
 		objectType = type;
 	}
 
 	public float Get(float t) {
 		return Plugin.PixelpartCurveGet(nativeCurve, t);
 	}
-	public float GetPoint(uint index) {
+	public float GetPoint(int index) {
 		return Plugin.PixelpartCurveGetPoint(nativeCurve, index);
 	}
 
@@ -47,28 +59,25 @@ public class PixelpartCurve {
 		Plugin.PixelpartCurveAddPoint(nativeCurve, t, value);
 		UpdateSimulation();
 	}
-	public void SetPoint(uint index, float value) {
+	public void SetPoint(int index, float value) {
 		Plugin.PixelpartCurveSetPoint(nativeCurve, index, value);
 		UpdateSimulation();
 	}
-	public void MovePoint(uint index, float delta) {
+	public void MovePoint(int index, float delta) {
 		Plugin.PixelpartCurveMovePoint(nativeCurve, index, delta);
 		UpdateSimulation();
 	}
-	public void ShiftPoint(uint index, float delta) {
+	public void ShiftPoint(int index, float delta) {
 		Plugin.PixelpartCurveShiftPoint(nativeCurve, index, delta);
 		UpdateSimulation();
 	}
-	public void RemovePoint(uint index) {
+	public void RemovePoint(int index) {
 		Plugin.PixelpartCurveRemovePoint(nativeCurve, index);
 		UpdateSimulation();
 	}
 	public void Clear() {
 		Plugin.PixelpartCurveClear(nativeCurve);
 		UpdateSimulation();
-	}
-	public uint GetNumPoints() {
-		return Plugin.PixelpartCurveGetNumPoints(nativeCurve);
 	}
 
 	public void Move(float delta) {
@@ -84,22 +93,23 @@ public class PixelpartCurve {
 		Plugin.PixelpartCurveEnableAdaptiveCache(nativeCurve);
 		UpdateSimulation();
 	}
-	public void EnableFixedCache(uint size) {
+	public void EnableFixedCache(int size) {
 		Plugin.PixelpartCurveEnableFixedCache(nativeCurve, size);
 		UpdateSimulation();
 	}
-	public uint GetCacheSize() {
-		return Plugin.PixelpartCurveGetCacheSize(nativeCurve);
-	}
 
 	private void UpdateSimulation() {
-		if(nativeEffect != IntPtr.Zero) {
-			if(objectType == ObjectType.ForceField) {
-				Plugin.PixelpartUpdateEffectForceSolver(nativeEffect);
-			}
-			else if(objectType == ObjectType.Collider) {
-				Plugin.PixelpartUpdateEffectCollisionSolver(nativeEffect);
-			}
+		if(nativeEffect == IntPtr.Zero) {
+			return;
+		}
+
+		switch(objectType) {
+			case ObjectType.ForceField:
+				Plugin.PixelpartUpdateForceSolver(nativeEffect);
+				break;
+			case ObjectType.Collider:
+				Plugin.PixelpartUpdateCollisionSolver(nativeEffect);
+				break;
 		}
 	}
 }

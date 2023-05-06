@@ -335,7 +335,7 @@
         {
             "name": "shader_node_vertex_texturecoord",
             "category": "shader_category_inputs",
-            "code": "{outdef0} = IN.textureCoord;",
+            "code": "{outdef0} = IN.uv;",
             "inputs": [],
             "outputs": [
                 "shader_slot_uv"
@@ -382,7 +382,7 @@
                 {
                     "input_types": [],
                     "output_types": [
-                        "float2"
+                        "float3"
                     ]
                 }
             ],
@@ -401,7 +401,7 @@
                 {
                     "input_types": [],
                     "output_types": [
-                        "float2"
+                        "float3"
                     ]
                 }
             ],
@@ -430,7 +430,7 @@
         {
             "name": "shader_node_vertex_objectid",
             "category": "shader_category_inputs",
-            "code": "{outdef0} = int(IN.objectId);",
+            "code": "{outdef0} = int(IN.id);",
             "inputs": [],
             "outputs": [
                 "shader_slot_id"
@@ -908,7 +908,6 @@
             "signatures": [
                 {
                     "input_types": [
-                        "float",
                         "float"
                     ],
                     "output_types": [
@@ -917,7 +916,6 @@
                 },
                 {
                     "input_types": [
-                        "float2",
                         "float2"
                     ],
                     "output_types": [
@@ -926,7 +924,6 @@
                 },
                 {
                     "input_types": [
-                        "float3",
                         "float3"
                     ],
                     "output_types": [
@@ -935,7 +932,6 @@
                 },
                 {
                     "input_types": [
-                        "float4",
                         "float4"
                     ],
                     "output_types": [
@@ -964,7 +960,6 @@
             "signatures": [
                 {
                     "input_types": [
-                        "float",
                         "float"
                     ],
                     "output_types": [
@@ -973,7 +968,6 @@
                 },
                 {
                     "input_types": [
-                        "float2",
                         "float2"
                     ],
                     "output_types": [
@@ -982,7 +976,6 @@
                 },
                 {
                     "input_types": [
-                        "float3",
                         "float3"
                     ],
                     "output_types": [
@@ -991,7 +984,6 @@
                 },
                 {
                     "input_types": [
-                        "float4",
                         "float4"
                     ],
                     "output_types": [
@@ -2200,34 +2192,6 @@
             ]
         },
         {
-            "name": "shader_node_negate",
-            "category": "shader_category_math",
-            "code": "{outdef0} = !{in0};",
-            "inputs": [
-                "shader_slot_value"
-            ],
-            "outputs": [
-                "shader_slot_result"
-            ],
-            "signatures": [
-                {
-                    "input_types": [
-                        "bool"
-                    ],
-                    "output_types": [
-                        "bool"
-                    ]
-                }
-            ],
-            "default_inputs": [
-                {
-                    "type": null,
-                    "value": null
-                }
-            ],
-            "parameters": []
-        },
-        {
             "name": "shader_node_equal",
             "category": "shader_category_comparison",
             "code": "{outdef0} = {in0} == {in1};",
@@ -2546,6 +2510,216 @@
             "parameters": []
         },
         {
+            "name": "shader_node_negate",
+            "category": "shader_category_logic",
+            "code": "{outdef0} = !{in0};",
+            "inputs": [
+                "shader_slot_value"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "bool"
+                    ],
+                    "output_types": [
+                        "bool"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_and",
+            "category": "shader_category_logic",
+            "code": "{outdef0} = {in0} && {in1};",
+            "inputs": [
+                "shader_slot_a",
+                "shader_slot_b"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "bool",
+                        "bool"
+                    ],
+                    "output_types": [
+                        "bool"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_or",
+            "category": "shader_category_logic",
+            "code": "{outdef0} = {in0} || {in1};",
+            "inputs": [
+                "shader_slot_a",
+                "shader_slot_b"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "bool",
+                        "bool"
+                    ],
+                    "output_types": [
+                        "bool"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_xor",
+            "category": "shader_category_logic",
+            "code": "{outdef0} = {in0} != {in1};",
+            "inputs": [
+                "shader_slot_a",
+                "shader_slot_b"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "bool",
+                        "bool"
+                    ],
+                    "output_types": [
+                        "bool"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_branch",
+            "category": "shader_category_logic",
+            "code": "{outdef0} = {in0} ? {in1} : {in2};",
+            "inputs": [
+                "shader_slot_predicate",
+                "shader_slot_true",
+                "shader_slot_false"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "bool",
+                        "int",
+                        "int"
+                    ],
+                    "output_types": [
+                        "int"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "bool",
+                        "float",
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "bool",
+                        "float2",
+                        "float2"
+                    ],
+                    "output_types": [
+                        "float2"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "bool",
+                        "float3",
+                        "float3"
+                    ],
+                    "output_types": [
+                        "float3"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "bool",
+                        "float4",
+                        "float4"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": "bool",
+                    "value": true
+                },
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
             "name": "shader_node_blend",
             "category": "shader_category_colors",
             "code": "{outdef0} = float4(1.0, 1.0, 1.0, 1.0);\nif({param0} == 0) { {out0} = {in0} * {in1}; }\nelse if({param0} == 1) { {out0}.rgb = clamp({in0}.rgb + {in1}.rgb, float3(0.0, 0.0, 0.0), float3(1.0, 1.0, 1.0)); {out0}.a = {in0}.a * {in1}.a; }\nelse if({param0} == 2) { {out0}.rgb = clamp({in0}.rgb - {in1}.rgb, float3(0.0, 0.0, 0.0), float3(1.0, 1.0, 1.0)); {out0}.a = {in0}.a * {in1}.a; }\nelse if({param0} == 3) { {out0}.rgb = abs({in0}.rgb - {in1}.rgb); {out0}.a = {in0}.a * {in1}.a; }\nelse if({param0} == 4) { {out0}.rgb = float3(1.0, 1.0, 1.0) - (float3(1.0, 1.0, 1.0) - {in0}.rgb) * (float3(1.0, 1.0, 1.0) - {in1}.rgb); {out0}.a = {in0}.a * {in1}.a; }\nelse if({param0} == 5) { {out0}.r = ({in0}.r < 0.5) ? (2.0 * {in0}.r * {in1}.r) : (1.0 - 2.0 * (1.0 - {in0}.r) * (1.0 - {in1}.r)); {out0}.r = ({in0}.g < 0.5) ? (2.0 * {in0}.g * {in1}.g) : (1.0 - 2.0 * (1.0 - {in0}.g) * (1.0 - {in1}.g)); {out0}.b = ({in0}.b < 0.5) ? (2.0 * {in0}.b * {in1}.b) : (1.0 - 2.0 * (1.0 - {in0}.b) * (1.0 - {in1}.b)); {out0}.a = {in0}.a * {in1}.a; }\nelse if({param0} == 6) { {out0}.rgb = max({in0}.rgb, {in1}.rgb); {out0}.a = {in0}.a * {in1}.a; }\nelse if({param0} == 7) { {out0}.rgb = min({in0}.rgb, {in1}.rgb); {out0}.a = {in0}.a * {in1}.a; }\nelse if({param0} == 8) { {out0}.rgb = {in1}.rgb; {out0}.a = {in0}.a * {in1}.a; }",
@@ -2609,7 +2783,7 @@
         {
             "name": "shader_node_colorramp",
             "category": "shader_category_colors",
-            "code": "const float3 colorramp[100] = { {param0} };\n{outdef0} = float4(colorramp[clamp(int({in0} * 99.0), 0, 99)], 1.0);",
+            "code": "{outdef0} = float4(1.0, 1.0, 1.0, 1.0);\n{\nconst float3 values[VALUE_BUFFER_SIZE] = { {param0} };\n{out0} = float4(values[clamp(int({in0} * float(VALUE_BUFFER_SIZE - 1)), 0, VALUE_BUFFER_SIZE - 1)], 1.0);\n}",
             "inputs": [
                 "shader_slot_value"
             ],
@@ -3221,86 +3395,6 @@
             ]
         },
         {
-            "name": "shader_node_branch",
-            "category": "shader_category_util",
-            "code": "{outdef0} = {in0} ? {in1} : {in2};",
-            "inputs": [
-                "shader_slot_predicate",
-                "shader_slot_true",
-                "shader_slot_false"
-            ],
-            "outputs": [
-                "shader_slot_result"
-            ],
-            "signatures": [
-                {
-                    "input_types": [
-                        "bool",
-                        "int",
-                        "int"
-                    ],
-                    "output_types": [
-                        "int"
-                    ]
-                },
-                {
-                    "input_types": [
-                        "bool",
-                        "float",
-                        "float"
-                    ],
-                    "output_types": [
-                        "float"
-                    ]
-                },
-                {
-                    "input_types": [
-                        "bool",
-                        "float2",
-                        "float2"
-                    ],
-                    "output_types": [
-                        "float2"
-                    ]
-                },
-                {
-                    "input_types": [
-                        "bool",
-                        "float3",
-                        "float3"
-                    ],
-                    "output_types": [
-                        "float3"
-                    ]
-                },
-                {
-                    "input_types": [
-                        "bool",
-                        "float4",
-                        "float4"
-                    ],
-                    "output_types": [
-                        "float4"
-                    ]
-                }
-            ],
-            "default_inputs": [
-                {
-                    "type": "bool",
-                    "value": true
-                },
-                {
-                    "type": null,
-                    "value": null
-                },
-                {
-                    "type": null,
-                    "value": null
-                }
-            ],
-            "parameters": []
-        },
-        {
             "name": "shader_node_frameanimation",
             "category": "shader_category_util",
             "code": "{outdef0} = {param1};\n{out0} = {param3} ? (int({in0} / {param2} * float({param0})) % {param0}) : int({in0} / {param2} * float({param0}));",
@@ -3382,6 +3476,87 @@
                     "max_value": {
                         "type": "bool",
                         "value": 0
+                    },
+                    "value_names": []
+                }
+            ]
+        },
+        {
+            "name": "shader_node_curve",
+            "category": "shader_category_util",
+            "code": "{outdef0} = 0.0;\n{\nconst float values[VALUE_BUFFER_SIZE] = { {param0} };\n{out0} = values[clamp(int({in0} * float(VALUE_BUFFER_SIZE - 1)), 0, VALUE_BUFFER_SIZE - 1)];\n}",
+            "inputs": [
+                "shader_slot_value"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": "float",
+                    "value": 0.0
+                }
+            ],
+            "parameters": [
+                {
+                    "name": "shader_param_curve",
+                    "default_value": {
+                        "type": "curve",
+                        "value": {
+                            "interpolation": "linear",
+                            "points": [
+                                [
+                                    0.0,
+                                    0.0
+                                ],
+                                [
+                                    1.0,
+                                    1.0
+                                ]
+                            ]
+                        }
+                    },
+                    "min_value": {
+                        "type": "curve",
+                        "value": {
+                            "interpolation": "linear",
+                            "points": [
+                                [
+                                    0.0,
+                                    0.0
+                                ],
+                                [
+                                    1.0,
+                                    1.0
+                                ]
+                            ]
+                        }
+                    },
+                    "max_value": {
+                        "type": "curve",
+                        "value": {
+                            "interpolation": "linear",
+                            "points": [
+                                [
+                                    0.0,
+                                    0.0
+                                ],
+                                [
+                                    1.0,
+                                    1.0
+                                ]
+                            ]
+                        }
                     },
                     "value_names": []
                 }
@@ -3618,7 +3793,7 @@
         "{0}",
         "float2({0}, {1})",
         "float3({0}, {1}, {2})",
-        "float4({0}, {1}, {2}, {3})"  
+        "float4({0}, {1}, {2}, {3})"
     ],
     "type_casts": [
         [
@@ -3680,5 +3855,5 @@
         "_Texture6",
         "_Texture7"
     ],
-    "shader_template": "Shader \"{SHADER_NAME}\"\n{\nProperties\n{\n[MaterialToggle] PixelSnap (\"Pixel Snap\", Float) = 0\n_BlendOp (\"Blend Operation\", Float) = 0\n_SrcBlendMode (\"Src Blend Mode\", Float) = 0\n_DstBlendMode (\"Dst Blend Mode\", Float) = 0\n}\n\nSubShader\n{\nTags\n{\n\"Queue\"=\"Transparent\"\n\"IgnoreProjector\"=\"True\"\n\"RenderType\"=\"Transparent\"\n\"PreviewType\"=\"Plane\"\n\"CanUseSpriteAtlas\"=\"True\"\n}\n\nCull Off\nLighting Off\nZWrite Off\nBlendOp [_BlendOp]\nBlend [_SrcBlendMode] [_DstBlendMode]\n\nPass\n{\nCGPROGRAM\n#pragma vertex vert\n#pragma fragment frag\n#pragma multi_compile _ PIXELSNAP_ON\n#include \"UnityCG.cginc\"\n\nstruct appdata_t\n{\nfloat4 vertex : POSITION;\nfloat4 color : COLOR;\nfloat2 textureCoord : TEXCOORD0;\nfloat2 velocity : TEXCOORD1;\nfloat2 force : TEXCOORD2;\nfloat2 objectInfo : TEXCOORD3;\n};\n\nstruct v2f\n{\nfloat4 vertex : SV_POSITION;\nfixed4 color : COLOR;\nfloat2 textureCoord : TEXCOORD0;\nfloat2 velocity : TEXCOORD1;\nfloat2 force : TEXCOORD2;\nfloat life : TEXCOORD3;\nfloat objectId : TEXCOORD4;\n};\n\nv2f vert(appdata_t IN)\n{\nv2f OUT;\nOUT.vertex = UnityObjectToClipPos(IN.vertex);\nOUT.textureCoord = IN.textureCoord;\nOUT.color = IN.color;\nOUT.velocity = IN.velocity;\nOUT.force = IN.force;\nOUT.life = IN.objectInfo.x;\nOUT.objectId = IN.objectInfo.y;\n#ifdef PIXELSNAP_ON\nOUT.vertex = UnityPixelSnap(OUT.vertex);\n#endif\nreturn OUT;\n}\n\nsampler2D _Texture0;\nsampler2D _Texture1;\nsampler2D _Texture2;\nsampler2D _Texture3;\nsampler2D _Texture4;\nsampler2D _Texture5;\nsampler2D _Texture6;\nsampler2D _Texture7;\nfloat _EffectTime;\nfloat _ObjectTime;\n\nfloat3 simplex_permute(float3 x) {\nreturn fmod(((x * 34.0) + 1.0) * x, 289.0);\n}\nfloat simplex_noise(float2 v) {\nconst float4 C = float4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);\nfloat2 i = floor(v + dot(v, C.yy));\nfloat2 x0 = v - i + dot(i, C.xx);\nfloat2 i1 = (x0.x > x0.y) ? float2(1.0, 0.0) : float2(0.0, 1.0);\nfloat4 x12 = x0.xyxy + C.xxzz;\nx12.xy -= i1;\ni = fmod(i, 289.0);\nfloat3 p = simplex_permute(simplex_permute(i.y + float3(0.0, i1.y, 1.0)) + i.x + float3(0.0, i1.x, 1.0));\nfloat3 m = max(0.5 - float3(dot(x0, x0), dot(x12.xy, x12.xy), dot(x12.zw, x12.zw)), 0.0);\nm = m * m;\nm = m * m;\nfloat3 x = 2.0 * frac(p * C.www) - 1.0;\nfloat3 h = abs(x) - 0.5;\nfloat3 ox = floor(x + 0.5);\nfloat3 a0 = x - ox;\nm *= 1.79284291400159 - 0.85373472095314 * (a0 * a0 + h * h);\nfloat3 g;\ng.x = a0.x * x0.x + h.x * x0.y;\ng.yz = a0.yz * x12.xz + h.yz * x12.yw;\nreturn 130.0 * dot(m, g);\n}\n\nfixed4 frag(v2f IN) : SV_Target\n{\n{0}\n}\nENDCG\n}\n}\n}"
+    "shader_template": "Shader \"{SHADER_NAME}\"\n{\nProperties\n{\n[MaterialToggle] PixelSnap (\"Pixel Snap\", Float) = 0\n_BlendOp (\"Blend Operation\", Float) = 0\n_SrcBlendMode (\"Src Blend Mode\", Float) = 0\n_DstBlendMode (\"Dst Blend Mode\", Float) = 0\n}\n\nSubShader\n{\nTags\n{\n\"Queue\"=\"Transparent\"\n\"IgnoreProjector\"=\"True\"\n\"RenderType\"=\"Transparent\"\n\"PreviewType\"=\"Plane\"\n\"CanUseSpriteAtlas\"=\"True\"\n}\n\nCull Off\nLighting Off\nZWrite Off\nBlendOp [_BlendOp]\nBlend [_SrcBlendMode] [_DstBlendMode]\n\nPass\n{\nCGPROGRAM\n#pragma vertex vert\n#pragma fragment frag\n#pragma multi_compile _ PIXELSNAP_ON\n#include \"UnityCG.cginc\"\n\nstatic const int VALUE_BUFFER_SIZE = 100;\n\nstruct appdata_t\n{\nfloat4 vertex : POSITION;\nfloat4 color : COLOR;\nfloat2 uv : TEXCOORD0;\nfloat4 velocity : TEXCOORD1;\nfloat4 force : TEXCOORD2;\nfloat4 info : TEXCOORD3;\n};\n\nstruct v2f\n{\nfloat4 vertex : SV_POSITION;\nfixed4 color : COLOR;\nfloat2 uv : TEXCOORD0;\nfloat3 velocity : TEXCOORD1;\nfloat3 force : TEXCOORD2;\nfloat life : TEXCOORD3;\nfloat id : TEXCOORD4;\n};\n\nv2f vert(appdata_t IN)\n{\nv2f OUT;\nOUT.vertex = UnityObjectToClipPos(IN.vertex);\nOUT.uv = IN.uv;\nOUT.color = IN.color;\nOUT.velocity = IN.velocity.xyz;\nOUT.force = IN.force.xyz;\nOUT.life = IN.info.x;\nOUT.id = IN.info.y;\n#ifdef PIXELSNAP_ON\nOUT.vertex = UnityPixelSnap(OUT.vertex);\n#endif\nreturn OUT;\n}\n\nsampler2D _Texture0;\nsampler2D _Texture1;\nsampler2D _Texture2;\nsampler2D _Texture3;\nsampler2D _Texture4;\nsampler2D _Texture5;\nsampler2D _Texture6;\nsampler2D _Texture7;\nfloat _EffectTime;\nfloat _ObjectTime;\n\nfloat3 simplex_permute(float3 x) {\nreturn fmod(((x * 34.0) + 1.0) * x, 289.0);\n}\nfloat simplex_noise(float2 v) {\nconst float4 C = float4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);\nfloat2 i = floor(v + dot(v, C.yy));\nfloat2 x0 = v - i + dot(i, C.xx);\nfloat2 i1 = (x0.x > x0.y) ? float2(1.0, 0.0) : float2(0.0, 1.0);\nfloat4 x12 = x0.xyxy + C.xxzz;\nx12.xy -= i1;\ni = fmod(i, 289.0);\nfloat3 p = simplex_permute(simplex_permute(i.y + float3(0.0, i1.y, 1.0)) + i.x + float3(0.0, i1.x, 1.0));\nfloat3 m = max(0.5 - float3(dot(x0, x0), dot(x12.xy, x12.xy), dot(x12.zw, x12.zw)), 0.0);\nm = m * m;\nm = m * m;\nfloat3 x = 2.0 * frac(p * C.www) - 1.0;\nfloat3 h = abs(x) - 0.5;\nfloat3 ox = floor(x + 0.5);\nfloat3 a0 = x - ox;\nm *= 1.79284291400159 - 0.85373472095314 * (a0 * a0 + h * h);\nfloat3 g;\ng.x = a0.x * x0.x + h.x * x0.y;\ng.yz = a0.yz * x12.xz + h.yz * x12.yw;\nreturn 130.0 * dot(m, g);\n}\n\nfixed4 frag(v2f IN) : SV_Target\n{\n{0}\n}\nENDCG\n}\n}\n}"
 }

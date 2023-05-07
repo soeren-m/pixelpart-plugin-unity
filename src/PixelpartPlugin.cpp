@@ -2,10 +2,6 @@
 #include "PixelpartShaderGraph.h"
 #include <locale>
 
-extern "C" {
-static bool initialized = false;
-static int32_t particleCapacity = 10000;
-
 pixelpart::vec3d rotate2d(const pixelpart::vec3d& p, const pixelpart::vec3d& o, pixelpart::floatd a) {
 	pixelpart::floatd s = std::sin(glm::radians(a));
 	pixelpart::floatd c = std::cos(glm::radians(a));
@@ -37,6 +33,10 @@ pixelpart::mat3d lookAt(const pixelpart::vec3d& direction) {
 
 	return pixelpart::mat3d(right, up, front);
 }
+
+extern "C" {
+static bool initialized = false;
+static int32_t particleCapacity = 10000;
 
 UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartSetParticleCapacity(int32_t value) {
 	particleCapacity = std::max(value, 1);
@@ -94,7 +94,7 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartUpdateEffect(PixelpartN
 	}
 
 	if(nativeEffect->playing) {
-		nativeEffect->simulationTime += std::clamp(dt, 0.0f, 1.0f) * nativeEffect->speed;
+		nativeEffect->simulationTime += glm::clamp(dt, 0.0f, 1.0f) * nativeEffect->speed;
 
 		while(nativeEffect->simulationTime > nativeEffect->timeStep) {
 			nativeEffect->simulationTime -= nativeEffect->timeStep;

@@ -10,10 +10,8 @@ namespace Pixelpart {
 public class PixelpartEffect : MonoBehaviour {
 	public const uint NullId = 0xFFFFFFFF;
 
-	[Header("Asset")]
 	public PixelpartEffectAsset EffectAsset = null;
 
-	[Header("Playback")]
 	public bool Playing = true;
 	public bool Loop = false;
 	[Range(0.0f, 100.0f)]
@@ -23,14 +21,9 @@ public class PixelpartEffect : MonoBehaviour {
 	[Range(1.0f, 100.0f)]
 	public float FrameRate = 60.0f;
 
-	[Header("Rendering")]
 	public List<Shader> ParticleShaders = new List<Shader>();
 	public bool FlipH = false;
 	public bool FlipV = false;
-	public ShadowCastingMode CastShadows = ShadowCastingMode.Off;
-	public bool ReceiveShadows = false;
-	public bool UseLightProbes = false;
-	public Transform ProbeAnchor = null;
 
 	public bool Is3D {
 		get {
@@ -98,10 +91,10 @@ public class PixelpartEffect : MonoBehaviour {
 		}
 
 		if(Is3D) {
-			DrawEffect3D(Camera.current);
+			DrawEffect3D(Camera.main);
 		}
 		else {
-			DrawEffect2D(Camera.current);
+			DrawEffect2D(Camera.main);
 		}
 	}
 
@@ -388,8 +381,11 @@ public class PixelpartEffect : MonoBehaviour {
 			transform.localToWorldMatrix,
 			particleMaterial,
 			gameObject.layer,
-			null, 0, null,
-			CastShadows, ReceiveShadows, ProbeAnchor, UseLightProbes);
+			null,
+			0,
+			null,
+			UnityEngine.Rendering.ShadowCastingMode.Off, false,
+			null, false);
 	}
 
 	private void UpdateMesh(Mesh mesh, VertexData vertexData) {

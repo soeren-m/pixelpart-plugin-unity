@@ -573,7 +573,7 @@ UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartPrepareParticleMesh(Pix
 	return false;
 }
 
-UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartBuildParticleMesh(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeIndex, Vector3 cameraPosition, Vector3 viewRight, Vector3 viewUp, float scaleX, float scaleY, int32_t* triangles, Vector3* vertices, Color* colors, Vector2* uv, Vector4* uv2, Vector4* uv3, Vector4* uv4) {
+UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartBuildParticleMesh(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeIndex, Vector3 cameraPosition, Vector3 viewRight, Vector3 viewUp, Vector3 scale, int32_t* triangles, Vector3* vertices, Color* colors, Vector2* uv, Vector4* uv2, Vector4* uv3, Vector4* uv4) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.containsIndex(particleTypeIndex)) {
 		return false;
 	}
@@ -586,6 +586,7 @@ UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartBuildParticleMesh(Pixel
 	uint32_t numParticles = nativeEffect->particleEngine.getNumParticles(particleTypeIndex);
 	pixelpart::floatd alpha = std::fmod(nativeEffect->particleEngine.getTime() - particleEmitter.lifetimeStart, particleEmitter.lifetimeDuration) / particleEmitter.lifetimeDuration;
 
+	pixelpart::vec3d effectScale = pixelpart::vec3d(scale.x, scale.y, scale.z);
 	pixelpart::vec3d cameraRight = pixelpart::vec3d(viewRight.x, viewRight.y, viewRight.z);
 	pixelpart::vec3d cameraUp = pixelpart::vec3d(viewUp.x, viewUp.y, viewUp.z);
 
@@ -672,70 +673,70 @@ UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartBuildParticleMesh(Pixel
 				pixelpart::vec3d pivot = particleType.pivot * particleRenderData->size[p];
 				pixelpart::vec3d worldPosition[4];
 				pixelpart::vec3d localPosition[4] = {
-					rotationMatrix * (pixelpart::vec3d(-0.5, -0.5, 0.0) * particleRenderData->size[p] - pivot) + pivot,
-					rotationMatrix * (pixelpart::vec3d(+0.5, -0.5, 0.0) * particleRenderData->size[p] - pivot) + pivot,
-					rotationMatrix * (pixelpart::vec3d(+0.5, +0.5, 0.0) * particleRenderData->size[p] - pivot) + pivot,
-					rotationMatrix * (pixelpart::vec3d(-0.5, +0.5, 0.0) * particleRenderData->size[p] - pivot) + pivot };
+					(rotationMatrix * (pixelpart::vec3d(-0.5, -0.5, 0.0) * particleRenderData->size[p] - pivot) + pivot) * effectScale,
+					(rotationMatrix * (pixelpart::vec3d(+0.5, -0.5, 0.0) * particleRenderData->size[p] - pivot) + pivot) * effectScale,
+					(rotationMatrix * (pixelpart::vec3d(+0.5, +0.5, 0.0) * particleRenderData->size[p] - pivot) + pivot) * effectScale,
+					(rotationMatrix * (pixelpart::vec3d(-0.5, +0.5, 0.0) * particleRenderData->size[p] - pivot) + pivot) * effectScale };
 
 				switch(particleType.alignmentMode) {
 					case pixelpart::AlignmentMode::camera: {
-						worldPosition[0] = particleRenderData->globalPosition[p] + cameraRight * localPosition[0].x + cameraUp * localPosition[0].y;
-						worldPosition[1] = particleRenderData->globalPosition[p] + cameraRight * localPosition[1].x + cameraUp * localPosition[1].y;
-						worldPosition[2] = particleRenderData->globalPosition[p] + cameraRight * localPosition[2].x + cameraUp * localPosition[2].y;
-						worldPosition[3] = particleRenderData->globalPosition[p] + cameraRight * localPosition[3].x + cameraUp * localPosition[3].y;
+						worldPosition[0] = particleRenderData->globalPosition[p] * effectScale + cameraRight * localPosition[0].x + cameraUp * localPosition[0].y;
+						worldPosition[1] = particleRenderData->globalPosition[p] * effectScale + cameraRight * localPosition[1].x + cameraUp * localPosition[1].y;
+						worldPosition[2] = particleRenderData->globalPosition[p] * effectScale + cameraRight * localPosition[2].x + cameraUp * localPosition[2].y;
+						worldPosition[3] = particleRenderData->globalPosition[p] * effectScale + cameraRight * localPosition[3].x + cameraUp * localPosition[3].y;
 						break;
 					}
 					case pixelpart::AlignmentMode::motion: {
-						pixelpart::mat3d lookAtMatrix = lookAt(particleRenderData->velocity[p]);
-						worldPosition[0] = particleRenderData->globalPosition[p] + lookAtMatrix * localPosition[0];
-						worldPosition[1] = particleRenderData->globalPosition[p] + lookAtMatrix * localPosition[1];
-						worldPosition[2] = particleRenderData->globalPosition[p] + lookAtMatrix * localPosition[2];
-						worldPosition[3] = particleRenderData->globalPosition[p] + lookAtMatrix * localPosition[3];
+						pixelpart::mat3d lookAtMatrix = lookAt(particleRenderData->velocity[p] * effectScale);
+						worldPosition[0] = particleRenderData->globalPosition[p] * effectScale + lookAtMatrix * localPosition[0];
+						worldPosition[1] = particleRenderData->globalPosition[p] * effectScale + lookAtMatrix * localPosition[1];
+						worldPosition[2] = particleRenderData->globalPosition[p] * effectScale + lookAtMatrix * localPosition[2];
+						worldPosition[3] = particleRenderData->globalPosition[p] * effectScale + lookAtMatrix * localPosition[3];
 						break;
 					}
 					case pixelpart::AlignmentMode::emission: {
 						pixelpart::mat3d lookAtMatrix = lookAt(particleEmitter.position.get(alpha) - particleRenderData->globalPosition[p]);
-						worldPosition[0] = particleRenderData->globalPosition[p] + lookAtMatrix * localPosition[0];
-						worldPosition[1] = particleRenderData->globalPosition[p] + lookAtMatrix * localPosition[1];
-						worldPosition[2] = particleRenderData->globalPosition[p] + lookAtMatrix * localPosition[2];
-						worldPosition[3] = particleRenderData->globalPosition[p] + lookAtMatrix * localPosition[3];
+						worldPosition[0] = particleRenderData->globalPosition[p] * effectScale + lookAtMatrix * localPosition[0];
+						worldPosition[1] = particleRenderData->globalPosition[p] * effectScale + lookAtMatrix * localPosition[1];
+						worldPosition[2] = particleRenderData->globalPosition[p] * effectScale + lookAtMatrix * localPosition[2];
+						worldPosition[3] = particleRenderData->globalPosition[p] * effectScale + lookAtMatrix * localPosition[3];
 						break;
 					}
 					case pixelpart::AlignmentMode::emitter: {
 						pixelpart::mat3d lookAtMatrix = rotation3d(particleEmitter.orientation.get(alpha));
-						worldPosition[0] = particleRenderData->globalPosition[p] + lookAtMatrix * localPosition[0];
-						worldPosition[1] = particleRenderData->globalPosition[p] + lookAtMatrix * localPosition[1];
-						worldPosition[2] = particleRenderData->globalPosition[p] + lookAtMatrix * localPosition[2];
-						worldPosition[3] = particleRenderData->globalPosition[p] + lookAtMatrix * localPosition[3];
+						worldPosition[0] = particleRenderData->globalPosition[p] * effectScale + lookAtMatrix * localPosition[0];
+						worldPosition[1] = particleRenderData->globalPosition[p] * effectScale + lookAtMatrix * localPosition[1];
+						worldPosition[2] = particleRenderData->globalPosition[p] * effectScale + lookAtMatrix * localPosition[2];
+						worldPosition[3] = particleRenderData->globalPosition[p] * effectScale + lookAtMatrix * localPosition[3];
 						break;
 					}
 					default: {
-						worldPosition[0] = particleRenderData->globalPosition[p] + localPosition[0];
-						worldPosition[1] = particleRenderData->globalPosition[p] + localPosition[1];
-						worldPosition[2] = particleRenderData->globalPosition[p] + localPosition[2];
-						worldPosition[3] = particleRenderData->globalPosition[p] + localPosition[3];
+						worldPosition[0] = particleRenderData->globalPosition[p] * effectScale + localPosition[0];
+						worldPosition[1] = particleRenderData->globalPosition[p] * effectScale + localPosition[1];
+						worldPosition[2] = particleRenderData->globalPosition[p] * effectScale + localPosition[2];
+						worldPosition[3] = particleRenderData->globalPosition[p] * effectScale + localPosition[3];
 						break;
 					}
 				}
 
 				vertices[p * 4 + 0] = Vector3{
-					static_cast<float>(worldPosition[0].x) * scaleX,
-					static_cast<float>(worldPosition[0].y) * scaleY,
+					static_cast<float>(worldPosition[0].x),
+					static_cast<float>(worldPosition[0].y),
 					static_cast<float>(worldPosition[0].z)
 				};
 				vertices[p * 4 + 1] = Vector3{
-					static_cast<float>(worldPosition[1].x) * scaleX,
-					static_cast<float>(worldPosition[1].y) * scaleY,
+					static_cast<float>(worldPosition[1].x),
+					static_cast<float>(worldPosition[1].y),
 					static_cast<float>(worldPosition[1].z)
 				};
 				vertices[p * 4 + 2] = Vector3{
-					static_cast<float>(worldPosition[2].x) * scaleX,
-					static_cast<float>(worldPosition[2].y) * scaleY,
+					static_cast<float>(worldPosition[2].x),
+					static_cast<float>(worldPosition[2].y),
 					static_cast<float>(worldPosition[2].z)
 				};
 				vertices[p * 4 + 3] = Vector3{
-					static_cast<float>(worldPosition[3].x) * scaleX,
-					static_cast<float>(worldPosition[3].y) * scaleY,
+					static_cast<float>(worldPosition[3].x),
+					static_cast<float>(worldPosition[3].y),
 					static_cast<float>(worldPosition[3].z)
 				};
 			}
@@ -788,24 +789,24 @@ UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartBuildParticleMesh(Pixel
 				}
 
 				vertices[p * 4 + 0] = Vector3{
-					static_cast<float>(worldPosition[0].x) * scaleX,
-					static_cast<float>(worldPosition[0].y) * scaleY,
-					static_cast<float>(worldPosition[0].z + zOffset)
+					static_cast<float>(worldPosition[0].x * effectScale.x),
+					static_cast<float>(worldPosition[0].y * effectScale.y),
+					static_cast<float>(worldPosition[0].z * effectScale.z + zOffset)
 				};
 				vertices[p * 4 + 1] = Vector3{
-					static_cast<float>(worldPosition[1].x) * scaleX,
-					static_cast<float>(worldPosition[1].y) * scaleY,
-					static_cast<float>(worldPosition[1].z + zOffset)
+					static_cast<float>(worldPosition[1].x * effectScale.x),
+					static_cast<float>(worldPosition[1].y * effectScale.y),
+					static_cast<float>(worldPosition[1].z * effectScale.z + zOffset)
 				};
 				vertices[p * 4 + 2] = Vector3{
-					static_cast<float>(worldPosition[2].x) * scaleX,
-					static_cast<float>(worldPosition[2].y) * scaleY,
-					static_cast<float>(worldPosition[2].z + zOffset)
+					static_cast<float>(worldPosition[2].x * effectScale.x),
+					static_cast<float>(worldPosition[2].y * effectScale.y),
+					static_cast<float>(worldPosition[2].z * effectScale.z + zOffset)
 				};
 				vertices[p * 4 + 3] = Vector3{
-					static_cast<float>(worldPosition[3].x) * scaleX,
-					static_cast<float>(worldPosition[3].y) * scaleY,
-					static_cast<float>(worldPosition[3].z + zOffset)
+					static_cast<float>(worldPosition[3].x * effectScale.x),
+					static_cast<float>(worldPosition[3].y * effectScale.y),
+					static_cast<float>(worldPosition[3].z * effectScale.z + zOffset)
 				};
 			}
 		}
@@ -891,29 +892,29 @@ UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartBuildParticleMesh(Pixel
 			for(uint32_t p = 0; p < trail.numParticles - 1; p++) {
 				pixelpart::vec3d n0 = trail.direction[p] * std::max(trail.size[p].x, trail.size[p].y) * 0.5;
 				pixelpart::vec3d n1 = trail.direction[p + 1] * std::max(trail.size[p + 1].x, trail.size[p + 1].y) * 0.5;
-				pixelpart::vec3d p0 = trail.position[p] + n0;
-				pixelpart::vec3d p1 = trail.position[p] - n0;
-				pixelpart::vec3d p2 = trail.position[p + 1] + n1;
-				pixelpart::vec3d p3 = trail.position[p + 1] - n1;
+				pixelpart::vec3d p0 = (trail.position[p] + n0) * effectScale;
+				pixelpart::vec3d p1 = (trail.position[p] - n0) * effectScale;
+				pixelpart::vec3d p2 = (trail.position[p + 1] + n1) * effectScale;
+				pixelpart::vec3d p3 = (trail.position[p + 1] - n1) * effectScale;
 
 				vertices[v0 + p * 4 + 0] = Vector3{
-					static_cast<float>(p0.x) * scaleX,
-					static_cast<float>(p0.y) * scaleY,
+					static_cast<float>(p0.x),
+					static_cast<float>(p0.y),
 					static_cast<float>(p0.z + zOffset)
 				};
 				vertices[v0 + p * 4 + 1] = Vector3{
-					static_cast<float>(p1.x) * scaleX,
-					static_cast<float>(p1.y) * scaleY,
+					static_cast<float>(p1.x),
+					static_cast<float>(p1.y),
 					static_cast<float>(p1.z + zOffset)
 				};
 				vertices[v0 + p * 4 + 2] = Vector3{
-					static_cast<float>(p2.x) * scaleX,
-					static_cast<float>(p2.y) * scaleY,
+					static_cast<float>(p2.x),
+					static_cast<float>(p2.y),
 					static_cast<float>(p2.z + zOffset)
 				};
 				vertices[v0 + p * 4 + 3] = Vector3{
-					static_cast<float>(p3.x) * scaleX,
-					static_cast<float>(p3.y) * scaleY,
+					static_cast<float>(p3.x),
+					static_cast<float>(p3.y),
 					static_cast<float>(p3.z + zOffset)
 				};
 			}

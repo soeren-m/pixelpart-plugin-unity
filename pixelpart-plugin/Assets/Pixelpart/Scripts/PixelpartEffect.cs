@@ -335,8 +335,6 @@ public class PixelpartEffect : MonoBehaviour {
 	}
 
 	private void DrawParticles(Camera camera, uint particleTypeIndex, uint particleTypeId) {
-		float scaleX = EffectAsset.Scale * (FlipH ? -1.0f : +1.0f);
-		float scaleY = EffectAsset.Scale * (FlipV ? -1.0f : +1.0f);
 		bool visible = Plugin.PixelpartParticleTypeIsVisible(nativeEffect, particleTypeId);
 		if(!visible) {
 			return;
@@ -360,7 +358,7 @@ public class PixelpartEffect : MonoBehaviour {
 			(camera != null) ? camera.transform.position : new Vector3(0.0f, 0.0f, 0.0f),
 			(camera != null) ? camera.transform.right : new Vector3(1.0f, 0.0f, 0.0f),
 			(camera != null) ? camera.transform.up : new Vector3(0.0f, 1.0f, 0.0f),
-			scaleX, scaleY,
+			new Vector3(EffectAsset.Scale * (FlipH ? -1.0f : +1.0f), EffectAsset.Scale * (FlipV ? -1.0f : +1.0f), EffectAsset.Scale),
 			particleVertexData.Triangles,
 			particleVertexData.Vertices,
 			particleVertexData.Colors,

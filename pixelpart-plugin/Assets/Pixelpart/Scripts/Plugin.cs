@@ -72,7 +72,7 @@ internal static class Plugin {
 	[DllImport(pluginName)]
 	public static extern bool PixelpartPrepareParticleMesh(IntPtr nativeEffect, uint particleTypeIndex, out int numTriangles, out int numVertices);
 	[DllImport(pluginName)]
-	public static extern bool PixelpartBuildParticleMesh(IntPtr nativeEffect, uint particleTypeIndex, Vector3 cameraPosition, Vector3 viewRight, Vector3 viewUp, float scaleX, float scaleY, int[] triangles, [In, Out] Vector3[] vertices, [In, Out] Color[] colors, [In, Out] Vector2[] uv, [In, Out] Vector4[] uv2, [In, Out] Vector4[] uv3, [In, Out] Vector4[] uv4);
+	public static extern bool PixelpartBuildParticleMesh(IntPtr nativeEffect, uint particleTypeIndex, Vector3 cameraPosition, Vector3 viewRight, Vector3 viewUp, Vector3 scale, int[] triangles, [In, Out] Vector3[] vertices, [In, Out] Color[] colors, [In, Out] Vector2[] uv, [In, Out] Vector4[] uv2, [In, Out] Vector4[] uv3, [In, Out] Vector4[] uv4);
 	[DllImport(pluginName)]
 	public static extern uint PixelpartGetImageResourceCount(IntPtr nativeEffect);
 	[DllImport(pluginName)]

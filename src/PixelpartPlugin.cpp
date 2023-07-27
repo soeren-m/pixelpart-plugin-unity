@@ -1,5 +1,6 @@
 #include "PixelpartPlugin.h"
 #include "PixelpartShaderGraph.h"
+#include "SortUtil.h"
 #include <locale>
 
 pixelpart::vec3d rotate2d(const pixelpart::vec3d& p, const pixelpart::vec3d& o, pixelpart::floatd a) {
@@ -35,8 +36,13 @@ pixelpart::mat3d lookAt(const pixelpart::vec3d& direction) {
 }
 
 extern "C" {
-static bool initialized = false;
 static int32_t particleCapacity = 10000;
+
+static bool initialized = false;
+
+#ifndef __EMSCRIPTEN__
+static std::unique_ptr<pixelpart::ThreadPool> sortThreadPool = nullptr;
+#endif
 
 UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartSetParticleCapacity(int32_t value) {
 	particleCapacity = std::max(value, 1);
@@ -54,6 +60,12 @@ UNITY_INTERFACE_EXPORT void* UNITY_INTERFACE_API PixelpartLoadEffect(const char*
 				PixelpartShaderGraph_json + PixelpartShaderGraph_json_size);
 
 			pixelpart::ShaderGraph::graphType = modelJson;
+
+#ifndef __EMSCRIPTEN__
+			sortThreadPool = std::unique_ptr<pixelpart::ThreadPool>(
+				new pixelpart::ThreadPool(std::thread::hardware_concurrency()));
+#endif
+
 			initialized = true;
 		}
 		catch(...) {
@@ -301,8 +313,14 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetParticleTypesSortedB
 	}
 }
 
-UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartBuildParticleShader(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeIndex, char* bufferCode, char* bufferTextureIds, int32_t* outLengthCode, int32_t* outLengthTextureIds, int32_t bufferSizeCode, int32_t bufferSizeTexturesIds) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.containsIndex(particleTypeIndex) || !bufferCode || !bufferTextureIds || !outLengthCode || !outLengthTextureIds || bufferSizeCode < 2 || bufferSizeTexturesIds < 2) {
+UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartBuildParticleShader(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeIndex,
+char* bufferCode, char* bufferTextureIds,
+int32_t* outLengthCode, int32_t* outLengthTextureIds,
+int32_t bufferSizeCode, int32_t bufferSizeTexturesIds) {
+	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.containsIndex(particleTypeIndex) ||
+	!bufferCode || !bufferTextureIds ||
+	!outLengthCode || !outLengthTextureIds ||
+	bufferSizeCode < 2 || bufferSizeTexturesIds < 2) {
 		return false;
 	}
 
@@ -581,60 +599,54 @@ UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartBuildParticleMesh(Pixel
 			triangles[p * 6 + 5] = p * 4 + 3;
 		}
 
+		const pixelpart::ParticleData* particleRenderData = &particles;
+
 		if(effect.is3d) {
-			const pixelpart::ParticleData* particleRenderData = &particles;
-
-			if(particleType.spriteRendererSettings.sortCriterion != pixelpart::ParticleSortCriterion::none && numParticles > 0) {
-				if(meshData.sortedParticleData.id.size() != particles.id.size()) {
-					meshData.sortedParticleData.resize(particles.id.size());
-					meshData.sortKeys.resize(particles.id.size());
-				}
-
+			if(particleType.spriteRendererSettings.sortCriterion != pixelpart::ParticleSortCriterion::none && numParticles > 1) {
+				meshData.sortedParticleData.resize(particles.id.size());
+				meshData.sortKeys.resize(particles.id.size());
 				std::iota(meshData.sortKeys.begin(), meshData.sortKeys.begin() + numParticles, 0);
-
-				uint32_t numSortPasses = std::min(particleType.spriteRendererSettings.sortPasses, numParticles - 1);
 
 				switch(particleType.spriteRendererSettings.sortCriterion) {
 					case pixelpart::ParticleSortCriterion::age: {
-						for(uint32_t i = 0; i < numSortPasses; i++) {
-							bool swapped = false;
-							for(uint32_t j = 0; j < numParticles - i - 1; j++) {
-								if(particles.id[meshData.sortKeys[j]] >
-								particles.id[meshData.sortKeys[j + 1]]) {
-									std::swap(meshData.sortKeys[j], meshData.sortKeys[j + 1]);
-									swapped = true;
-								}
-							}
+#ifndef __EMSCRIPTEN__
+						if(sortThreadPool) {
+							util::parallelInsertionSort(*sortThreadPool, 64u, meshData.sortKeys.begin(), meshData.sortKeys.begin() + numParticles,
+								[&particles](uint32_t i, uint32_t j) {
+									return particles.id[i] < particles.id[j];
+								});
 
-							if(!swapped) {
-								break;
-							}
+							break;
 						}
+#endif
+
+						util::insertionSort(meshData.sortKeys.begin(), meshData.sortKeys.begin() + numParticles,
+							[&particles](uint32_t i, uint32_t j) {
+								return particles.id[i] < particles.id[j];
+							});
 
 						break;
 					}
 
 					case pixelpart::ParticleSortCriterion::distance: {
 						pixelpart::vec3d cameraPos = pixelpart::vec3d(cameraPosition.x, cameraPosition.y, cameraPosition.z);
-						for(uint32_t i = 0; i < numSortPasses; i++) {
-							bool swapped = false;
-							for(uint32_t j = 0; j < numParticles - i - 1; j++) {
-								if(glm::distance2(particles.globalPosition[meshData.sortKeys[j]], cameraPos) <
-								glm::distance2(particles.globalPosition[meshData.sortKeys[j + 1]], cameraPos)) {
-									std::swap(meshData.sortKeys[j], meshData.sortKeys[j + 1]);
-									swapped = true;
-								}
-							}
 
-							if(!swapped) {
-								break;
-							}
+#ifndef __EMSCRIPTEN__
+						if(sortThreadPool) {
+							util::parallelInsertionSort(*sortThreadPool, 64u, meshData.sortKeys.begin(), meshData.sortKeys.begin() + numParticles,
+								[&particles, cameraPos](uint32_t i, uint32_t j) {
+									return glm::distance2(particles.globalPosition[i], cameraPos) > glm::distance2(particles.globalPosition[j], cameraPos);
+								});
+
+							break;
 						}
+#endif
 
-						break;
-					}
+						util::insertionSort(meshData.sortKeys.begin(), meshData.sortKeys.begin() + numParticles,
+							[&particles, cameraPos](uint32_t i, uint32_t j) {
+								return glm::distance2(particles.globalPosition[i], cameraPos) > glm::distance2(particles.globalPosition[j], cameraPos);
+							});
 
-					default: {
 						break;
 					}
 				}
@@ -800,28 +812,28 @@ UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartBuildParticleMesh(Pixel
 
 		for(uint32_t p = 0; p < numParticles; p++) {
 			colors[p * 4 + 0] = Color{
-				static_cast<float>(particles.color[p].r),
-				static_cast<float>(particles.color[p].g),
-				static_cast<float>(particles.color[p].b),
-				static_cast<float>(particles.color[p].a)
+				static_cast<float>(particleRenderData->color[p].r),
+				static_cast<float>(particleRenderData->color[p].g),
+				static_cast<float>(particleRenderData->color[p].b),
+				static_cast<float>(particleRenderData->color[p].a)
 			};
 			colors[p * 4 + 1] = Color{
-				static_cast<float>(particles.color[p].r),
-				static_cast<float>(particles.color[p].g),
-				static_cast<float>(particles.color[p].b),
-				static_cast<float>(particles.color[p].a)
+				static_cast<float>(particleRenderData->color[p].r),
+				static_cast<float>(particleRenderData->color[p].g),
+				static_cast<float>(particleRenderData->color[p].b),
+				static_cast<float>(particleRenderData->color[p].a)
 			};
 			colors[p * 4 + 2] = Color{
-				static_cast<float>(particles.color[p].r),
-				static_cast<float>(particles.color[p].g),
-				static_cast<float>(particles.color[p].b),
-				static_cast<float>(particles.color[p].a)
+				static_cast<float>(particleRenderData->color[p].r),
+				static_cast<float>(particleRenderData->color[p].g),
+				static_cast<float>(particleRenderData->color[p].b),
+				static_cast<float>(particleRenderData->color[p].a)
 			};
 			colors[p * 4 + 3] = Color{
-				static_cast<float>(particles.color[p].r),
-				static_cast<float>(particles.color[p].g),
-				static_cast<float>(particles.color[p].b),
-				static_cast<float>(particles.color[p].a)
+				static_cast<float>(particleRenderData->color[p].r),
+				static_cast<float>(particleRenderData->color[p].g),
+				static_cast<float>(particleRenderData->color[p].b),
+				static_cast<float>(particleRenderData->color[p].a)
 			};
 		}
 
@@ -833,24 +845,24 @@ UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartBuildParticleMesh(Pixel
 		}
 
 		for(uint32_t p = 0; p < numParticles; p++) {
-			uv2[p * 4 + 0] = Vector4{ static_cast<float>(particles.velocity[p].x), static_cast<float>(particles.velocity[p].y), static_cast<float>(particles.velocity[p].z), 0.0f };
-			uv2[p * 4 + 1] = Vector4{ static_cast<float>(particles.velocity[p].x), static_cast<float>(particles.velocity[p].y), static_cast<float>(particles.velocity[p].z), 0.0f };
-			uv2[p * 4 + 2] = Vector4{ static_cast<float>(particles.velocity[p].x), static_cast<float>(particles.velocity[p].y), static_cast<float>(particles.velocity[p].z), 0.0f };
-			uv2[p * 4 + 3] = Vector4{ static_cast<float>(particles.velocity[p].x), static_cast<float>(particles.velocity[p].y), static_cast<float>(particles.velocity[p].z), 0.0f };
+			uv2[p * 4 + 0] = Vector4{ static_cast<float>(particleRenderData->velocity[p].x), static_cast<float>(particleRenderData->velocity[p].y), static_cast<float>(particleRenderData->velocity[p].z), 0.0f };
+			uv2[p * 4 + 1] = Vector4{ static_cast<float>(particleRenderData->velocity[p].x), static_cast<float>(particleRenderData->velocity[p].y), static_cast<float>(particleRenderData->velocity[p].z), 0.0f };
+			uv2[p * 4 + 2] = Vector4{ static_cast<float>(particleRenderData->velocity[p].x), static_cast<float>(particleRenderData->velocity[p].y), static_cast<float>(particleRenderData->velocity[p].z), 0.0f };
+			uv2[p * 4 + 3] = Vector4{ static_cast<float>(particleRenderData->velocity[p].x), static_cast<float>(particleRenderData->velocity[p].y), static_cast<float>(particleRenderData->velocity[p].z), 0.0f };
 		}
 
 		for(uint32_t p = 0; p < numParticles; p++) {
-			uv3[p * 4 + 0] = Vector4{ static_cast<float>(particles.force[p].x), static_cast<float>(particles.force[p].y), static_cast<float>(particles.force[p].z), 0.0f };
-			uv3[p * 4 + 1] = Vector4{ static_cast<float>(particles.force[p].x), static_cast<float>(particles.force[p].y), static_cast<float>(particles.force[p].z), 0.0f };
-			uv3[p * 4 + 2] = Vector4{ static_cast<float>(particles.force[p].x), static_cast<float>(particles.force[p].y), static_cast<float>(particles.force[p].z), 0.0f };
-			uv3[p * 4 + 3] = Vector4{ static_cast<float>(particles.force[p].x), static_cast<float>(particles.force[p].y), static_cast<float>(particles.force[p].z), 0.0f };
+			uv3[p * 4 + 0] = Vector4{ static_cast<float>(particleRenderData->force[p].x), static_cast<float>(particleRenderData->force[p].y), static_cast<float>(particleRenderData->force[p].z), 0.0f };
+			uv3[p * 4 + 1] = Vector4{ static_cast<float>(particleRenderData->force[p].x), static_cast<float>(particleRenderData->force[p].y), static_cast<float>(particleRenderData->force[p].z), 0.0f };
+			uv3[p * 4 + 2] = Vector4{ static_cast<float>(particleRenderData->force[p].x), static_cast<float>(particleRenderData->force[p].y), static_cast<float>(particleRenderData->force[p].z), 0.0f };
+			uv3[p * 4 + 3] = Vector4{ static_cast<float>(particleRenderData->force[p].x), static_cast<float>(particleRenderData->force[p].y), static_cast<float>(particleRenderData->force[p].z), 0.0f };
 		}
 
 		for(uint32_t p = 0; p < numParticles; p++) {
-			uv4[p * 4 + 0] = Vector4{ static_cast<float>(particles.life[p]), static_cast<float>(particles.id[p]), 0.0f, 0.0f };
-			uv4[p * 4 + 1] = Vector4{ static_cast<float>(particles.life[p]), static_cast<float>(particles.id[p]), 0.0f, 0.0f };
-			uv4[p * 4 + 2] = Vector4{ static_cast<float>(particles.life[p]), static_cast<float>(particles.id[p]), 0.0f, 0.0f };
-			uv4[p * 4 + 3] = Vector4{ static_cast<float>(particles.life[p]), static_cast<float>(particles.id[p]), 0.0f, 0.0f };
+			uv4[p * 4 + 0] = Vector4{ static_cast<float>(particleRenderData->life[p]), static_cast<float>(particleRenderData->id[p]), 0.0f, 0.0f };
+			uv4[p * 4 + 1] = Vector4{ static_cast<float>(particleRenderData->life[p]), static_cast<float>(particleRenderData->id[p]), 0.0f, 0.0f };
+			uv4[p * 4 + 2] = Vector4{ static_cast<float>(particleRenderData->life[p]), static_cast<float>(particleRenderData->id[p]), 0.0f, 0.0f };
+			uv4[p * 4 + 3] = Vector4{ static_cast<float>(particleRenderData->life[p]), static_cast<float>(particleRenderData->id[p]), 0.0f, 0.0f };
 		}
 	}
 	else if(particleType.renderer == pixelpart::ParticleType::Renderer::trail && numParticles > 1) {

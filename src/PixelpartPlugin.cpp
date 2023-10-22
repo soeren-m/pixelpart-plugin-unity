@@ -3,6 +3,44 @@
 #include "SortUtil.h"
 #include <locale>
 
+inline Vector2 toUnity(const pixelpart::vec2d& v) {
+	return Vector2{
+		static_cast<float>(v.x),
+		static_cast<float>(v.y)
+	};
+}
+inline Vector3 toUnity(const pixelpart::vec3d& v) {
+	return Vector3{
+		static_cast<float>(v.x),
+		static_cast<float>(v.y),
+		static_cast<float>(v.z)
+	};
+}
+inline Vector4 toUnity(const pixelpart::vec3d& v, pixelpart::floatd w) {
+	return Vector4{
+		static_cast<float>(v.x),
+		static_cast<float>(v.y),
+		static_cast<float>(v.z),
+		static_cast<float>(w)
+	};
+}
+inline Vector4 toUnity(const pixelpart::vec4d& v) {
+	return Vector4{
+		static_cast<float>(v.x),
+		static_cast<float>(v.y),
+		static_cast<float>(v.z),
+		static_cast<float>(v.w)
+	};
+}
+inline Color toUnityColor(const pixelpart::vec4d& v) {
+	return Color{
+		static_cast<float>(v.x),
+		static_cast<float>(v.y),
+		static_cast<float>(v.z),
+		static_cast<float>(v.w)
+	};
+}
+
 pixelpart::vec3d rotate2d(const pixelpart::vec3d& p, const pixelpart::vec3d& o, pixelpart::floatd a) {
 	pixelpart::floatd s = std::sin(glm::radians(a));
 	pixelpart::floatd c = std::cos(glm::radians(a));
@@ -360,6 +398,8 @@ int32_t bufferSizeCode, int32_t bufferSizeTexturesIds) {
 }
 
 UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartPrepareParticleMesh(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeIndex, int32_t* numTriangles, int32_t* numVertices) {
+	const pixelpart::floatd epsilon = 0.000001;
+
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.containsIndex(particleTypeIndex) || !numTriangles || !numVertices) {
 		return false;
 	}
@@ -374,10 +414,13 @@ UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartPrepareParticleMesh(Pix
 	uint32_t numParticles = nativeEffect->particleEngine.getNumParticles(particleTypeIndex);
 
 	if(particleTypeIndex > nativeEffect->meshData.size()) {
-		nativeEffect->meshData.resize(particleTypeIndex + 1);
+		nativeEffect->meshData.resize(particleTypeIndex + 1u);
 	}
 
 	PixelpartMeshData& meshData = nativeEffect->meshData[particleTypeIndex];
+
+	*numTriangles = 0;
+	*numVertices = 0;
 
 	if(particleType.renderer == pixelpart::ParticleType::Renderer::sprite) {
 		*numTriangles = static_cast<int32_t>(numParticles) * 6 / 3;
@@ -385,190 +428,182 @@ UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartPrepareParticleMesh(Pix
 
 		return true;
 	}
-	else if(particleType.renderer == pixelpart::ParticleType::Renderer::trail && numParticles > 1) {
+	else if(particleType.renderer == pixelpart::ParticleType::Renderer::trail) {
+		if(numParticles < 2u) {
+			return true;
+		}
+
 		std::vector<uint32_t> sortKeys(numParticles);
-		std::iota(sortKeys.begin(), sortKeys.end(), 0);
+		std::iota(sortKeys.begin(), sortKeys.end(), 0u);
 		std::sort(sortKeys.begin(), sortKeys.end(), [&particles](uint32_t p0, uint32_t p1) {
 			return (particles.parentId[p0] != particles.parentId[p1])
 				? particles.parentId[p0] > particles.parentId[p1]
 				: particles.id[p0] > particles.id[p1];
 		});
 
-		for(auto& entry : meshData.trails) {
-			entry.second.numParticles = 0;
+		std::unordered_map<uint32_t, PixelpartMeshData::ParticleTrail>& trails = meshData.trails;
+
+		for(auto& entry : trails) {
+			entry.second.numParticles = 0u;
 		}
 
-		PixelpartMeshData::ParticleTrail* trail = nullptr;
-		uint32_t trailId = 0xFFFFFFFF - 1;
-		uint32_t particleParentId = 0;
-
-		for(uint32_t p = 0; p < numParticles; p++) {
+		PixelpartMeshData::ParticleTrail* currentTrail = nullptr;
+		for(uint32_t p = 0u, particleParentId = 0u, trailId = 0xFFFFFFFEu; p < numParticles; p++) {
 			particleParentId = particles.parentId[sortKeys[p]];
 
 			if(particleParentId != trailId) {
 				trailId = particleParentId;
-
-				if(meshData.trails.count(trailId) == 0) {
-					meshData.trails[trailId] = PixelpartMeshData::ParticleTrail();
-				}
-
-				trail = &meshData.trails.at(trailId);
+				currentTrail = &trails[trailId];
 			}
 
-			trail->numParticles++;
+			currentTrail->numParticles++;
 		}
 
-		for(auto it = meshData.trails.begin(); it != meshData.trails.end(); ) {
-			if(it->second.numParticles == 0) {
-				it = meshData.trails.erase(it);
+		for(auto it = trails.begin(); it != trails.end(); ) {
+			if(it->second.numParticles == 0u) {
+				it = trails.erase(it);
 			}
 			else {
 				it++;
 			}
 		}
 
-		trail = nullptr;
-		trailId = 0xFFFFFFFF - 1;
-		particleParentId = 0;
+		currentTrail = nullptr;
 
-		if(particleType.trailRendererSettings.numTrailSegments > 0) {
-			for(uint32_t p = 0; p < numParticles; p++) {
+		if(particleType.trailRendererSettings.numTrailSegments > 0u) {
+			for(uint32_t p = 0u, particleParentId = 0u, trailId = 0xFFFFFFFEu; p < numParticles; p++) {
 				uint32_t particleIndex = sortKeys[p];
 				particleParentId = particles.parentId[particleIndex];
 
 				if(particleParentId != trailId) {
 					trailId = particleParentId;
-					trail = &meshData.trails.at(trailId);
+					currentTrail = &trails.at(trailId);
 
-					trail->length = 0.0;
-					std::vector<pixelpart::floatd> relativeParticlePosition(trail->numParticles, 0.0);
-					for(uint32_t q = 1; q < trail->numParticles; q++) {
-						trail->length += glm::length(particles.globalPosition[sortKeys[p + q]] - particles.globalPosition[sortKeys[p + q - 1]]);
-						relativeParticlePosition[q] = trail->length;
+					std::vector<pixelpart::floatd> relativeParticlePosition(currentTrail->numParticles);
+					relativeParticlePosition[0u] = 0.0;
+
+					currentTrail->length = 0.0;
+					for(uint32_t q = 1u; q < currentTrail->numParticles; q++) {
+						currentTrail->length += glm::length(particles.globalPosition[sortKeys[p + q]] - particles.globalPosition[sortKeys[p + q - 1u]]);
+						relativeParticlePosition[q] = currentTrail->length;
 					}
-					for(uint32_t q = 0; q < trail->numParticles; q++) {
-						relativeParticlePosition[q] /= trail->length;
+					for(uint32_t q = 1u; q < currentTrail->numParticles; q++) {
+						relativeParticlePosition[q] /= currentTrail->length;
 					}
 
 					pixelpart::Curve<pixelpart::vec3d> positionCurve(pixelpart::CurveInterpolation::spline);
 					positionCurve.enableFixedCache(particleType.trailRendererSettings.numTrailSegments);
-					positionCurve.setPointsOrdered<uint32_t>(relativeParticlePosition.data(), particles.globalPosition.data(), sortKeys.data() + p, trail->numParticles);
+					positionCurve.setPointsOrdered<uint32_t>(relativeParticlePosition.data(), particles.globalPosition.data(), sortKeys.data() + p, currentTrail->numParticles);
 
 					pixelpart::Curve<pixelpart::vec3d> sizeCurve(pixelpart::CurveInterpolation::spline);
 					sizeCurve.enableFixedCache(particleType.trailRendererSettings.numTrailSegments);
-					sizeCurve.setPointsOrdered<uint32_t>(relativeParticlePosition.data(), particles.size.data(), sortKeys.data() + p, trail->numParticles);
+					sizeCurve.setPointsOrdered<uint32_t>(relativeParticlePosition.data(), particles.size.data(), sortKeys.data() + p, currentTrail->numParticles);
 
 					pixelpart::Curve<pixelpart::vec4d> colorCurve(pixelpart::CurveInterpolation::spline);
 					colorCurve.enableFixedCache(particleType.trailRendererSettings.numTrailSegments);
-					colorCurve.setPointsOrdered<uint32_t>(relativeParticlePosition.data(), particles.color.data(), sortKeys.data() + p, trail->numParticles);
+					colorCurve.setPointsOrdered<uint32_t>(relativeParticlePosition.data(), particles.color.data(), sortKeys.data() + p, currentTrail->numParticles);
 
 					pixelpart::Curve<pixelpart::vec3d> velocityCurve(pixelpart::CurveInterpolation::spline);
 					velocityCurve.enableFixedCache(particleType.trailRendererSettings.numTrailSegments);
-					velocityCurve.setPointsOrdered<uint32_t>(relativeParticlePosition.data(), particles.velocity.data(), sortKeys.data() + p, trail->numParticles);
+					velocityCurve.setPointsOrdered<uint32_t>(relativeParticlePosition.data(), particles.velocity.data(), sortKeys.data() + p, currentTrail->numParticles);
 
 					pixelpart::Curve<pixelpart::vec3d> forceCurve(pixelpart::CurveInterpolation::spline);
 					forceCurve.enableFixedCache(particleType.trailRendererSettings.numTrailSegments);
-					forceCurve.setPointsOrdered<uint32_t>(relativeParticlePosition.data(), particles.force.data(), sortKeys.data() + p, trail->numParticles);
+					forceCurve.setPointsOrdered<uint32_t>(relativeParticlePosition.data(), particles.force.data(), sortKeys.data() + p, currentTrail->numParticles);
 
 					pixelpart::Curve<pixelpart::floatd> lifeCurve(pixelpart::CurveInterpolation::spline);
 					lifeCurve.enableFixedCache(particleType.trailRendererSettings.numTrailSegments);
-					lifeCurve.setPointsOrdered<uint32_t>(relativeParticlePosition.data(), particles.life.data(), sortKeys.data() + p, trail->numParticles);
+					lifeCurve.setPointsOrdered<uint32_t>(relativeParticlePosition.data(), particles.life.data(), sortKeys.data() + p, currentTrail->numParticles);
 
-					trail->position = positionCurve.getCache();
-					trail->size = sizeCurve.getCache();
-					trail->color = colorCurve.getCache();
-					trail->velocity = velocityCurve.getCache();
-					trail->force = forceCurve.getCache();
-					trail->direction.resize(particleType.trailRendererSettings.numTrailSegments);
-					trail->index.resize(particleType.trailRendererSettings.numTrailSegments);
-					trail->life = lifeCurve.getCache();
+					currentTrail->position = positionCurve.getCache();
+					currentTrail->size = sizeCurve.getCache();
+					currentTrail->color = colorCurve.getCache();
+					currentTrail->velocity = velocityCurve.getCache();
+					currentTrail->force = forceCurve.getCache();
+					currentTrail->life = lifeCurve.getCache();
+					currentTrail->direction.resize(particleType.trailRendererSettings.numTrailSegments);
+					currentTrail->index.resize(particleType.trailRendererSettings.numTrailSegments);
 				}
 			}
 		}
 		else {
-			for(uint32_t p = 0, q = 0; p < numParticles; p++, q++) {
+			for(uint32_t p = 0u, q = 0u, particleParentId = 0u, trailId = 0xFFFFFFFEu; p < numParticles; p++, q++) {
 				uint32_t particleIndex = sortKeys[p];
 				particleParentId = particles.parentId[particleIndex];
 
 				if(particleParentId != trailId) {
 					trailId = particleParentId;
-					q = 0;
+					q = 0u;
 
-					trail = &meshData.trails.at(trailId);
-					trail->position.resize(trail->numParticles);
-					trail->size.resize(trail->numParticles);
-					trail->color.resize(trail->numParticles);
-					trail->velocity.resize(trail->numParticles);
-					trail->force.resize(trail->numParticles);
-					trail->direction.resize(trail->numParticles);
-					trail->index.resize(trail->numParticles);
-					trail->life.resize(trail->numParticles);
+					currentTrail = &trails.at(trailId);
+					currentTrail->position.resize(currentTrail->numParticles);
+					currentTrail->size.resize(currentTrail->numParticles);
+					currentTrail->color.resize(currentTrail->numParticles);
+					currentTrail->velocity.resize(currentTrail->numParticles);
+					currentTrail->force.resize(currentTrail->numParticles);
+					currentTrail->life.resize(currentTrail->numParticles);
+					currentTrail->direction.resize(currentTrail->numParticles);
+					currentTrail->index.resize(currentTrail->numParticles);
 				}
 
-				trail->position[q] = particles.globalPosition[particleIndex];
-				trail->size[q] = particles.size[particleIndex];
-				trail->color[q] = particles.color[particleIndex];
-				trail->velocity[q] = particles.velocity[particleIndex];
-				trail->force[q] = particles.force[particleIndex];
-				trail->life[q] = particles.life[particleIndex];
+				currentTrail->position[q] = particles.globalPosition[particleIndex];
+				currentTrail->size[q] = particles.size[particleIndex];
+				currentTrail->color[q] = particles.color[particleIndex];
+				currentTrail->velocity[q] = particles.velocity[particleIndex];
+				currentTrail->force[q] = particles.force[particleIndex];
+				currentTrail->life[q] = particles.life[particleIndex];
 			}
 		}
 
-		*numTriangles = 0;
-		*numVertices = 0;
-
-		for(auto& entry : meshData.trails) {
+		for(auto& entry : trails) {
 			PixelpartMeshData::ParticleTrail& trail = entry.second;
 			trail.length = 0.0;
 
-			if(trail.numParticles < 2) {
+			if(trail.position.size() < 2u) {
 				continue;
 			}
 
-			std::size_t last = trail.numParticles - 1;
-			for(std::size_t i = 0; i < last; i++) {
-				pixelpart::vec3d toNext = trail.position[i + 1] - trail.position[i];
-				pixelpart::floatd distance = std::max(glm::length(toNext), 0.000001);
+			std::size_t last = trail.position.size() - 1u;
+			for(std::size_t i = 0u; i < last; i++) {
+				pixelpart::vec3d toNext = trail.position[i + 1u] - trail.position[i];
+				pixelpart::floatd distance = std::max(glm::length(toNext), epsilon);
 
 				trail.direction[i] = toNext / distance;
 				trail.index[i] = trail.length;
 				trail.length += distance;
 			}
 
-			trail.direction[last] = trail.direction[last - 1];
+			trail.direction[last] = trail.direction[last - 1u];
 			trail.index[last] = trail.length;
 
-			trail.direction[0] = pixelpart::vec3d(-trail.direction[0].y, trail.direction[0].x, trail.direction[0].z);
-
-			for(std::size_t i = last; i > 0; i--) {
-				pixelpart::vec3d h = trail.direction[i] - trail.direction[i - 1];
-				pixelpart::floatd l = glm::length(h);
-				if(l < 0.0001) {
+			for(std::size_t i = last; i > 0u; i--) {
+				pixelpart::vec3d toEdge = trail.direction[i] - trail.direction[i - 1u];
+				pixelpart::floatd toEdgeLength = glm::length(toEdge);
+				if(toEdgeLength < epsilon) {
 					trail.direction[i] = pixelpart::vec3d(
 						-trail.direction[i].y,
 						trail.direction[i].x,
 						trail.direction[i].z);
 				}
 				else {
-					trail.direction[i] = (glm::dot(glm::cross(trail.direction[i], pixelpart::vec3d(0.0, 0.0, 1.0)), h / l) < 0.0)
-						? +h / l
-						: -h / l;
+					trail.direction[i] = (glm::dot(glm::cross(trail.direction[i], pixelpart::vec3d(0.0, 0.0, 1.0)), toEdge / toEdgeLength) < 0.0)
+						? +toEdge / toEdgeLength
+						: -toEdge / toEdgeLength;
 				}
 			}
 
-			for(pixelpart::floatd& x : trail.index) {
-				x /= trail.length;
+			trail.direction[0u] = pixelpart::vec3d(-trail.direction[0u].y, trail.direction[0u].x, trail.direction[0u].z);
+
+			for(pixelpart::floatd& index : trail.index) {
+				index /= trail.length;
 			}
 
-			*numTriangles += (trail.numParticles - 1) * 6 / 3;
-			*numVertices += (trail.numParticles - 1) * 4;
+			*numTriangles += (static_cast<int32_t>(trail.position.size()) - 1) * 12 / 3;
+			*numVertices += (static_cast<int32_t>(trail.position.size()) - 1) * 5;
 		}
 
 		return true;
 	}
-
-	*numTriangles = 0;
-	*numVertices = 0;
 
 	return false;
 }
@@ -719,26 +754,10 @@ UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartBuildParticleMesh(Pixel
 					}
 				}
 
-				vertices[p * 4 + 0] = Vector3{
-					static_cast<float>(worldPosition[0].x),
-					static_cast<float>(worldPosition[0].y),
-					static_cast<float>(worldPosition[0].z)
-				};
-				vertices[p * 4 + 1] = Vector3{
-					static_cast<float>(worldPosition[1].x),
-					static_cast<float>(worldPosition[1].y),
-					static_cast<float>(worldPosition[1].z)
-				};
-				vertices[p * 4 + 2] = Vector3{
-					static_cast<float>(worldPosition[2].x),
-					static_cast<float>(worldPosition[2].y),
-					static_cast<float>(worldPosition[2].z)
-				};
-				vertices[p * 4 + 3] = Vector3{
-					static_cast<float>(worldPosition[3].x),
-					static_cast<float>(worldPosition[3].y),
-					static_cast<float>(worldPosition[3].z)
-				};
+				vertices[p * 4 + 0] = toUnity(worldPosition[0]);
+				vertices[p * 4 + 1] = toUnity(worldPosition[1]);
+				vertices[p * 4 + 2] = toUnity(worldPosition[2]);
+				vertices[p * 4 + 3] = toUnity(worldPosition[3]);
 			}
 		}
 		else {
@@ -788,54 +807,27 @@ UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartBuildParticleMesh(Pixel
 					}
 				}
 
-				vertices[p * 4 + 0] = Vector3{
-					static_cast<float>(worldPosition[0].x * effectScale.x),
-					static_cast<float>(worldPosition[0].y * effectScale.y),
-					static_cast<float>(worldPosition[0].z * effectScale.z + zOffset)
-				};
-				vertices[p * 4 + 1] = Vector3{
-					static_cast<float>(worldPosition[1].x * effectScale.x),
-					static_cast<float>(worldPosition[1].y * effectScale.y),
-					static_cast<float>(worldPosition[1].z * effectScale.z + zOffset)
-				};
-				vertices[p * 4 + 2] = Vector3{
-					static_cast<float>(worldPosition[2].x * effectScale.x),
-					static_cast<float>(worldPosition[2].y * effectScale.y),
-					static_cast<float>(worldPosition[2].z * effectScale.z + zOffset)
-				};
-				vertices[p * 4 + 3] = Vector3{
-					static_cast<float>(worldPosition[3].x * effectScale.x),
-					static_cast<float>(worldPosition[3].y * effectScale.y),
-					static_cast<float>(worldPosition[3].z * effectScale.z + zOffset)
-				};
+				worldPosition[0] *= effectScale;
+				worldPosition[1] *= effectScale;
+				worldPosition[2] *= effectScale;
+				worldPosition[3] *= effectScale;
+				worldPosition[0].z += zOffset;
+				worldPosition[1].z += zOffset;
+				worldPosition[2].z += zOffset;
+				worldPosition[3].z += zOffset;
+
+				vertices[p * 4 + 0] = toUnity(worldPosition[0]);
+				vertices[p * 4 + 1] = toUnity(worldPosition[1]);
+				vertices[p * 4 + 2] = toUnity(worldPosition[2]);
+				vertices[p * 4 + 3] = toUnity(worldPosition[3]);
 			}
 		}
 
 		for(uint32_t p = 0; p < numParticles; p++) {
-			colors[p * 4 + 0] = Color{
-				static_cast<float>(particleRenderData->color[p].r),
-				static_cast<float>(particleRenderData->color[p].g),
-				static_cast<float>(particleRenderData->color[p].b),
-				static_cast<float>(particleRenderData->color[p].a)
-			};
-			colors[p * 4 + 1] = Color{
-				static_cast<float>(particleRenderData->color[p].r),
-				static_cast<float>(particleRenderData->color[p].g),
-				static_cast<float>(particleRenderData->color[p].b),
-				static_cast<float>(particleRenderData->color[p].a)
-			};
-			colors[p * 4 + 2] = Color{
-				static_cast<float>(particleRenderData->color[p].r),
-				static_cast<float>(particleRenderData->color[p].g),
-				static_cast<float>(particleRenderData->color[p].b),
-				static_cast<float>(particleRenderData->color[p].a)
-			};
-			colors[p * 4 + 3] = Color{
-				static_cast<float>(particleRenderData->color[p].r),
-				static_cast<float>(particleRenderData->color[p].g),
-				static_cast<float>(particleRenderData->color[p].b),
-				static_cast<float>(particleRenderData->color[p].a)
-			};
+			colors[p * 4 + 0] = toUnityColor(particleRenderData->color[p]);
+			colors[p * 4 + 1] = toUnityColor(particleRenderData->color[p]);
+			colors[p * 4 + 2] = toUnityColor(particleRenderData->color[p]);
+			colors[p * 4 + 3] = toUnityColor(particleRenderData->color[p]);
 		}
 
 		for(uint32_t p = 0; p < numParticles; p++) {
@@ -846,17 +838,17 @@ UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartBuildParticleMesh(Pixel
 		}
 
 		for(uint32_t p = 0; p < numParticles; p++) {
-			uv2[p * 4 + 0] = Vector4{ static_cast<float>(particleRenderData->velocity[p].x), static_cast<float>(particleRenderData->velocity[p].y), static_cast<float>(particleRenderData->velocity[p].z), 0.0f };
-			uv2[p * 4 + 1] = Vector4{ static_cast<float>(particleRenderData->velocity[p].x), static_cast<float>(particleRenderData->velocity[p].y), static_cast<float>(particleRenderData->velocity[p].z), 0.0f };
-			uv2[p * 4 + 2] = Vector4{ static_cast<float>(particleRenderData->velocity[p].x), static_cast<float>(particleRenderData->velocity[p].y), static_cast<float>(particleRenderData->velocity[p].z), 0.0f };
-			uv2[p * 4 + 3] = Vector4{ static_cast<float>(particleRenderData->velocity[p].x), static_cast<float>(particleRenderData->velocity[p].y), static_cast<float>(particleRenderData->velocity[p].z), 0.0f };
+			uv2[p * 4 + 0] = toUnity(particleRenderData->velocity[p], 0.0);
+			uv2[p * 4 + 1] = toUnity(particleRenderData->velocity[p], 0.0);
+			uv2[p * 4 + 2] = toUnity(particleRenderData->velocity[p], 0.0);
+			uv2[p * 4 + 3] = toUnity(particleRenderData->velocity[p], 0.0);
 		}
 
 		for(uint32_t p = 0; p < numParticles; p++) {
-			uv3[p * 4 + 0] = Vector4{ static_cast<float>(particleRenderData->force[p].x), static_cast<float>(particleRenderData->force[p].y), static_cast<float>(particleRenderData->force[p].z), 0.0f };
-			uv3[p * 4 + 1] = Vector4{ static_cast<float>(particleRenderData->force[p].x), static_cast<float>(particleRenderData->force[p].y), static_cast<float>(particleRenderData->force[p].z), 0.0f };
-			uv3[p * 4 + 2] = Vector4{ static_cast<float>(particleRenderData->force[p].x), static_cast<float>(particleRenderData->force[p].y), static_cast<float>(particleRenderData->force[p].z), 0.0f };
-			uv3[p * 4 + 3] = Vector4{ static_cast<float>(particleRenderData->force[p].x), static_cast<float>(particleRenderData->force[p].y), static_cast<float>(particleRenderData->force[p].z), 0.0f };
+			uv3[p * 4 + 0] = toUnity(particleRenderData->force[p], 0.0);
+			uv3[p * 4 + 1] = toUnity(particleRenderData->force[p], 0.0);
+			uv3[p * 4 + 2] = toUnity(particleRenderData->force[p], 0.0);
+			uv3[p * 4 + 3] = toUnity(particleRenderData->force[p], 0.0);
 		}
 
 		for(uint32_t p = 0; p < numParticles; p++) {
@@ -866,148 +858,132 @@ UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartBuildParticleMesh(Pixel
 			uv4[p * 4 + 3] = Vector4{ static_cast<float>(particleRenderData->life[p]), static_cast<float>(particleRenderData->id[p]), 0.0f, 0.0f };
 		}
 	}
-	else if(particleType.renderer == pixelpart::ParticleType::Renderer::trail && numParticles > 1) {
-		uint32_t i0 = 0;
-		uint32_t v0 = 0;
+	else if(particleType.renderer == pixelpart::ParticleType::Renderer::trail) {
+		if(numParticles < 2u) {
+			return true;
+		}
 
-		pixelpart::floatd zOffset = !effect.is3d ?
-			-0.001 * static_cast<pixelpart::floatd>(particleType.layer)
+		int32_t elementIndex = 0;
+		int32_t vertexIndex = 0;
+
+		pixelpart::floatd zOffset = !effect.is3d
+			? static_cast<pixelpart::floatd>(particleType.layer) * -0.001
 			: 0.0;
 
 		for(const auto& entry : meshData.trails) {
 			const PixelpartMeshData::ParticleTrail& trail = entry.second;
-			if(trail.numParticles < 2) {
+			if(trail.position.size() < 2u) {
 				continue;
 			}
 
-			for(int32_t p = 0; p < static_cast<int32_t>(trail.numParticles) - 1; p++) {
-				triangles[i0 + p * 6 + 0] = v0 + p * 4 + 0;
-				triangles[i0 + p * 6 + 1] = v0 + p * 4 + 2;
-				triangles[i0 + p * 6 + 2] = v0 + p * 4 + 1;
-				triangles[i0 + p * 6 + 3] = v0 + p * 4 + 2;
-				triangles[i0 + p * 6 + 4] = v0 + p * 4 + 3;
-				triangles[i0 + p * 6 + 5] = v0 + p * 4 + 1;
+			int32_t numTrailSegments = static_cast<int32_t>(trail.position.size()) - 1;
+
+			for(int32_t p = 0; p < numTrailSegments; p++) {
+				triangles[elementIndex + p * 12 + 0] = vertexIndex + p * 5 + 0;
+				triangles[elementIndex + p * 12 + 1] = vertexIndex + p * 5 + 1;
+				triangles[elementIndex + p * 12 + 2] = vertexIndex + p * 5 + 4;
+				triangles[elementIndex + p * 12 + 3] = vertexIndex + p * 5 + 2;
+				triangles[elementIndex + p * 12 + 4] = vertexIndex + p * 5 + 0;
+				triangles[elementIndex + p * 12 + 5] = vertexIndex + p * 5 + 4;
+				triangles[elementIndex + p * 12 + 6] = vertexIndex + p * 5 + 1;
+				triangles[elementIndex + p * 12 + 7] = vertexIndex + p * 5 + 3;
+				triangles[elementIndex + p * 12 + 8] = vertexIndex + p * 5 + 4;
+				triangles[elementIndex + p * 12 + 9] = vertexIndex + p * 5 + 3;
+				triangles[elementIndex + p * 12 + 10] = vertexIndex + p * 5 + 2;
+				triangles[elementIndex + p * 12 + 11] = vertexIndex + p * 5 + 4;
 			}
 
-			for(uint32_t p = 0; p < trail.numParticles - 1; p++) {
-				pixelpart::vec3d n0 = trail.direction[p] * std::max(trail.size[p].x, trail.size[p].y) * 0.5;
-				pixelpart::vec3d n1 = trail.direction[p + 1] * std::max(trail.size[p + 1].x, trail.size[p + 1].y) * 0.5;
-				pixelpart::vec3d p0 = (trail.position[p] + n0) * effectScale;
-				pixelpart::vec3d p1 = (trail.position[p] - n0) * effectScale;
-				pixelpart::vec3d p2 = (trail.position[p + 1] + n1) * effectScale;
-				pixelpart::vec3d p3 = (trail.position[p + 1] - n1) * effectScale;
+			for(int32_t p = 0; p < numTrailSegments; p++) {
+				pixelpart::vec3d startToEdge = trail.direction[p] * std::max(trail.size[p].x, trail.size[p].y) * 0.5;
+				pixelpart::vec3d endToEdge = trail.direction[p + 1] * std::max(trail.size[p + 1].x, trail.size[p + 1].y) * 0.5;
+				pixelpart::vec3d vertexPositions[5] = {
+					(trail.position[p] + startToEdge) * effectScale + pixelpart::vec3d(0.0, 0.0, zOffset),
+					(trail.position[p] - startToEdge) * effectScale + pixelpart::vec3d(0.0, 0.0, zOffset),
+					(trail.position[p + 1] + endToEdge) * effectScale + pixelpart::vec3d(0.0, 0.0, zOffset),
+					(trail.position[p + 1] - endToEdge) * effectScale + pixelpart::vec3d(0.0, 0.0, zOffset),
+					(trail.position[p] + trail.position[p + 1]) * 0.5 * effectScale + pixelpart::vec3d(0.0, 0.0, zOffset)
+				};
 
-				vertices[v0 + p * 4 + 0] = Vector3{
-					static_cast<float>(p0.x),
-					static_cast<float>(p0.y),
-					static_cast<float>(p0.z + zOffset)
-				};
-				vertices[v0 + p * 4 + 1] = Vector3{
-					static_cast<float>(p1.x),
-					static_cast<float>(p1.y),
-					static_cast<float>(p1.z + zOffset)
-				};
-				vertices[v0 + p * 4 + 2] = Vector3{
-					static_cast<float>(p2.x),
-					static_cast<float>(p2.y),
-					static_cast<float>(p2.z + zOffset)
-				};
-				vertices[v0 + p * 4 + 3] = Vector3{
-					static_cast<float>(p3.x),
-					static_cast<float>(p3.y),
-					static_cast<float>(p3.z + zOffset)
-				};
+				vertices[vertexIndex + p * 5 + 0] = toUnity(vertexPositions[0]);
+				vertices[vertexIndex + p * 5 + 1] = toUnity(vertexPositions[1]);
+				vertices[vertexIndex + p * 5 + 2] = toUnity(vertexPositions[2]);
+				vertices[vertexIndex + p * 5 + 3] = toUnity(vertexPositions[3]);
+				vertices[vertexIndex + p * 5 + 4] = toUnity(vertexPositions[4]);
 			}
 
-			for(uint32_t p = 0; p < trail.numParticles - 1; p++) {
-				colors[v0 + p * 4 + 0] = Color{
-					static_cast<float>(trail.color[p].r),
-					static_cast<float>(trail.color[p].g),
-					static_cast<float>(trail.color[p].b),
-					static_cast<float>(trail.color[p].a)
-				};
-				colors[v0 + p * 4 + 1] = Color{
-					static_cast<float>(trail.color[p].r),
-					static_cast<float>(trail.color[p].g),
-					static_cast<float>(trail.color[p].b),
-					static_cast<float>(trail.color[p].a)
-				};
-				colors[v0 + p * 4 + 2] = Color{
-					static_cast<float>(trail.color[p].r),
-					static_cast<float>(trail.color[p].g),
-					static_cast<float>(trail.color[p].b),
-					static_cast<float>(trail.color[p].a)
-				};
-				colors[v0 + p * 4 + 3] = Color{
-					static_cast<float>(trail.color[p].r),
-					static_cast<float>(trail.color[p].g),
-					static_cast<float>(trail.color[p].b),
-					static_cast<float>(trail.color[p].a)
-				};
+			for(int32_t p = 0; p < numTrailSegments; p++) {
+				colors[vertexIndex + p * 5 + 0] = toUnityColor(trail.color[p]);
+				colors[vertexIndex + p * 5 + 1] = toUnityColor(trail.color[p]);
+				colors[vertexIndex + p * 5 + 2] = toUnityColor(trail.color[p + 1]);
+				colors[vertexIndex + p * 5 + 3] = toUnityColor(trail.color[p + 1]);
+				colors[vertexIndex + p * 5 + 4] = toUnityColor((trail.color[p] + trail.color[p + 1]) * 0.5);
 			}
 
 			switch(particleType.trailRendererSettings.textureRotation) {
-				case 1: {
-					for(uint32_t p = 0; p < trail.numParticles - 1; p++) {
-						uv[v0 + p * 4 + 0] = Vector2{ static_cast<float>(trail.index[p] * particleType.trailRendererSettings.textureUVFactor), 1.0f };
-						uv[v0 + p * 4 + 1] = Vector2{ static_cast<float>(trail.index[p] * particleType.trailRendererSettings.textureUVFactor), 0.0f };
-						uv[v0 + p * 4 + 2] = Vector2{ static_cast<float>(trail.index[p + 1] * particleType.trailRendererSettings.textureUVFactor), 1.0f };
-						uv[v0 + p * 4 + 3] = Vector2{ static_cast<float>(trail.index[p + 1] * particleType.trailRendererSettings.textureUVFactor), 1.0f };
+				case 1u:
+					for(int32_t p = 0; p < numTrailSegments; p++) {
+						uv[vertexIndex + p * 5 + 0] = Vector2{ static_cast<float>(trail.index[p] * particleType.trailRendererSettings.textureUVFactor), 1.0f };
+						uv[vertexIndex + p * 5 + 1] = Vector2{ static_cast<float>(trail.index[p] * particleType.trailRendererSettings.textureUVFactor), 0.0f };
+						uv[vertexIndex + p * 5 + 2] = Vector2{ static_cast<float>(trail.index[p + 1] * particleType.trailRendererSettings.textureUVFactor), 1.0f };
+						uv[vertexIndex + p * 5 + 3] = Vector2{ static_cast<float>(trail.index[p + 1] * particleType.trailRendererSettings.textureUVFactor), 0.0f };
+						uv[vertexIndex + p * 5 + 4] = Vector2{ static_cast<float>((trail.index[p] + trail.index[p + 1]) * 0.5 * particleType.trailRendererSettings.textureUVFactor), 0.5f };
 					}
 					break;
-				}
-				case 2: {
-					for(uint32_t p = 0; p < trail.numParticles - 1; p++) {
-						uv[v0 + p * 4 + 0] = Vector2{ 1.0f, 1.0f - static_cast<float>(trail.index[p] * particleType.trailRendererSettings.textureUVFactor) };
-						uv[v0 + p * 4 + 1] = Vector2{ 0.0f, 1.0f - static_cast<float>(trail.index[p] * particleType.trailRendererSettings.textureUVFactor) };
-						uv[v0 + p * 4 + 2] = Vector2{ 1.0f, 1.0f - static_cast<float>(trail.index[p + 1] * particleType.trailRendererSettings.textureUVFactor) };
-						uv[v0 + p * 4 + 3] = Vector2{ 0.0f, 1.0f - static_cast<float>(trail.index[p + 1] * particleType.trailRendererSettings.textureUVFactor) };
+				case 2u:
+					for(int32_t p = 0; p < numTrailSegments; p++) {
+						uv[vertexIndex + p * 5 + 0] = Vector2{ 1.0f, 1.0f - static_cast<float>(trail.index[p] * particleType.trailRendererSettings.textureUVFactor) };
+						uv[vertexIndex + p * 5 + 1] = Vector2{ 0.0f, 1.0f - static_cast<float>(trail.index[p] * particleType.trailRendererSettings.textureUVFactor) };
+						uv[vertexIndex + p * 5 + 2] = Vector2{ 1.0f, 1.0f - static_cast<float>(trail.index[p + 1] * particleType.trailRendererSettings.textureUVFactor) };
+						uv[vertexIndex + p * 5 + 3] = Vector2{ 0.0f, 1.0f - static_cast<float>(trail.index[p + 1] * particleType.trailRendererSettings.textureUVFactor) };
+						uv[vertexIndex + p * 5 + 4] = Vector2{ 0.5f, 1.0f - static_cast<float>((trail.index[p] + trail.index[p + 1]) * 0.5 * particleType.trailRendererSettings.textureUVFactor) };
 					}
 					break;
-				}
-				case 3: {
-					for(uint32_t p = 0; p < trail.numParticles - 1; p++) {
-						uv[v0 + p * 4 + 0] = Vector2{ 1.0f - static_cast<float>(trail.index[p] * particleType.trailRendererSettings.textureUVFactor), 0.0f };
-						uv[v0 + p * 4 + 1] = Vector2{ 1.0f - static_cast<float>(trail.index[p] * particleType.trailRendererSettings.textureUVFactor), 1.0f };
-						uv[v0 + p * 4 + 2] = Vector2{ 1.0f - static_cast<float>(trail.index[p + 1] * particleType.trailRendererSettings.textureUVFactor), 0.0f };
-						uv[v0 + p * 4 + 3] = Vector2{ 1.0f - static_cast<float>(trail.index[p + 1] * particleType.trailRendererSettings.textureUVFactor), 1.0f };
+				case 3u:
+					for(int32_t p = 0; p < numTrailSegments; p++) {
+						uv[vertexIndex + p * 5 + 0] = Vector2{ 1.0f - static_cast<float>(trail.index[p] * particleType.trailRendererSettings.textureUVFactor), 0.0f };
+						uv[vertexIndex + p * 5 + 1] = Vector2{ 1.0f - static_cast<float>(trail.index[p] * particleType.trailRendererSettings.textureUVFactor), 1.0f };
+						uv[vertexIndex + p * 5 + 2] = Vector2{ 1.0f - static_cast<float>(trail.index[p + 1] * particleType.trailRendererSettings.textureUVFactor), 0.0f };
+						uv[vertexIndex + p * 5 + 3] = Vector2{ 1.0f - static_cast<float>(trail.index[p + 1] * particleType.trailRendererSettings.textureUVFactor), 1.0f };
+						uv[vertexIndex + p * 5 + 4] = Vector2{ 1.0f - static_cast<float>((trail.index[p] + trail.index[p + 1]) * 0.5 * particleType.trailRendererSettings.textureUVFactor), 0.5f };
 					}
 					break;
-				}
-				default: {
-					for(uint32_t p = 0; p < trail.numParticles - 1; p++) {
-						uv[v0 + p * 4 + 0] = Vector2{ 0.0f, static_cast<float>(trail.index[p] * particleType.trailRendererSettings.textureUVFactor) };
-						uv[v0 + p * 4 + 1] = Vector2{ 1.0f, static_cast<float>(trail.index[p] * particleType.trailRendererSettings.textureUVFactor) };
-						uv[v0 + p * 4 + 2] = Vector2{ 0.0f, static_cast<float>(trail.index[p + 1] * particleType.trailRendererSettings.textureUVFactor) };
-						uv[v0 + p * 4 + 3] = Vector2{ 1.0f, static_cast<float>(trail.index[p + 1] * particleType.trailRendererSettings.textureUVFactor) };
+				default:
+					for(int32_t p = 0; p < numTrailSegments; p++) {
+						uv[vertexIndex + p * 5 + 0] = Vector2{ 0.0f, static_cast<float>(trail.index[p] * particleType.trailRendererSettings.textureUVFactor) };
+						uv[vertexIndex + p * 5 + 1] = Vector2{ 1.0f, static_cast<float>(trail.index[p] * particleType.trailRendererSettings.textureUVFactor) };
+						uv[vertexIndex + p * 5 + 2] = Vector2{ 0.0f, static_cast<float>(trail.index[p + 1] * particleType.trailRendererSettings.textureUVFactor) };
+						uv[vertexIndex + p * 5 + 3] = Vector2{ 1.0f, static_cast<float>(trail.index[p + 1] * particleType.trailRendererSettings.textureUVFactor) };
+						uv[vertexIndex + p * 5 + 4] = Vector2{ 0.5f, static_cast<float>((trail.index[p] + trail.index[p + 1]) * 0.5 * particleType.trailRendererSettings.textureUVFactor) };
 					}
 					break;
-				}
 			}
 
-			for(uint32_t p = 0; p < trail.numParticles - 1; p++) {
-				uv2[v0 + p * 4 + 0] = Vector4{ static_cast<float>(trail.velocity[p].x), static_cast<float>(trail.velocity[p].y), static_cast<float>(trail.velocity[p].z), 0.0f };
-				uv2[v0 + p * 4 + 1] = Vector4{ static_cast<float>(trail.velocity[p].x), static_cast<float>(trail.velocity[p].y), static_cast<float>(trail.velocity[p].z), 0.0f };
-				uv2[v0 + p * 4 + 2] = Vector4{ static_cast<float>(trail.velocity[p].x), static_cast<float>(trail.velocity[p].y), static_cast<float>(trail.velocity[p].z), 0.0f };
-				uv2[v0 + p * 4 + 3] = Vector4{ static_cast<float>(trail.velocity[p].x), static_cast<float>(trail.velocity[p].y), static_cast<float>(trail.velocity[p].z), 0.0f };
+			for(int32_t p = 0; p < numTrailSegments; p++) {
+				uv2[vertexIndex + p * 5 + 0] = toUnity(trail.velocity[p], 0.0);
+				uv2[vertexIndex + p * 5 + 1] = toUnity(trail.velocity[p], 0.0);
+				uv2[vertexIndex + p * 5 + 2] = toUnity(trail.velocity[p + 1], 0.0);
+				uv2[vertexIndex + p * 5 + 3] = toUnity(trail.velocity[p + 1], 0.0);
+				uv2[vertexIndex + p * 5 + 4] = toUnity((trail.velocity[p] + trail.velocity[p + 1]) * 0.5, 0.0);
 			}
 
-			for(uint32_t p = 0; p < trail.numParticles - 1; p++) {
-				uv3[v0 + p * 4 + 0] = Vector4{ static_cast<float>(trail.force[p].x), static_cast<float>(trail.force[p].y), static_cast<float>(trail.force[p].z), 0.0f };
-				uv3[v0 + p * 4 + 1] = Vector4{ static_cast<float>(trail.force[p].x), static_cast<float>(trail.force[p].y), static_cast<float>(trail.force[p].z), 0.0f };
-				uv3[v0 + p * 4 + 2] = Vector4{ static_cast<float>(trail.force[p].x), static_cast<float>(trail.force[p].y), static_cast<float>(trail.force[p].z), 0.0f };
-				uv3[v0 + p * 4 + 3] = Vector4{ static_cast<float>(trail.force[p].x), static_cast<float>(trail.force[p].y), static_cast<float>(trail.force[p].z), 0.0f };
+			for(int32_t p = 0; p < numTrailSegments; p++) {
+				uv3[vertexIndex + p * 5 + 0] = toUnity(trail.force[p], 0.0);
+				uv3[vertexIndex + p * 5 + 1] = toUnity(trail.force[p], 0.0);
+				uv3[vertexIndex + p * 5 + 2] = toUnity(trail.force[p + 1], 0.0);
+				uv3[vertexIndex + p * 5 + 3] = toUnity(trail.force[p + 1], 0.0);
+				uv3[vertexIndex + p * 5 + 4] = toUnity((trail.force[p] + trail.force[p + 1]) * 0.5, 0.0);
 			}
 
-			for(uint32_t p = 0; p < trail.numParticles - 1; p++) {
-				uv4[v0 + p * 4 + 0] = Vector4{ static_cast<float>(trail.life[p]), static_cast<float>(entry.first), 0.0f, 0.0f };
-				uv4[v0 + p * 4 + 1] = Vector4{ static_cast<float>(trail.life[p]), static_cast<float>(entry.first), 0.0f, 0.0f };
-				uv4[v0 + p * 4 + 2] = Vector4{ static_cast<float>(trail.life[p]), static_cast<float>(entry.first), 0.0f, 0.0f };
-				uv4[v0 + p * 4 + 3] = Vector4{ static_cast<float>(trail.life[p]), static_cast<float>(entry.first), 0.0f, 0.0f };
+			for(int32_t p = 0; p < numTrailSegments; p++) {
+				uv4[vertexIndex + p * 5 + 0] = Vector4{ static_cast<float>(trail.life[p]), static_cast<float>(entry.first), 0.0f, 0.0f };
+				uv4[vertexIndex + p * 5 + 1] = Vector4{ static_cast<float>(trail.life[p]), static_cast<float>(entry.first), 0.0f, 0.0f };
+				uv4[vertexIndex + p * 5 + 2] = Vector4{ static_cast<float>(trail.life[p + 1]), static_cast<float>(entry.first), 0.0f, 0.0f };
+				uv4[vertexIndex + p * 5 + 3] = Vector4{ static_cast<float>(trail.life[p + 1]), static_cast<float>(entry.first), 0.0f, 0.0f };
+				uv4[vertexIndex + p * 5 + 4] = Vector4{ static_cast<float>(trail.life[p] + trail.life[p + 1]) * 0.5f, static_cast<float>(entry.first), 0.0f, 0.0f };
 			}
 
-			i0 += (trail.numParticles - 1) * 6;
-			v0 += (trail.numParticles - 1) * 4;
+			elementIndex += numTrailSegments * 12;
+			vertexIndex += numTrailSegments * 5;
 		}
 	}
 

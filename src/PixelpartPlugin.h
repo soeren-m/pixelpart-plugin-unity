@@ -41,7 +41,7 @@ struct Color {
 
 struct PixelpartMeshData {
 	struct ParticleTrail {
-		uint32_t numParticles = 0;
+		uint32_t numParticles = 0u;
 		pixelpart::floatd length = 0.0;
 
 		std::vector<pixelpart::vec3d> position;
@@ -49,9 +49,10 @@ struct PixelpartMeshData {
 		std::vector<pixelpart::vec4d> color;
 		std::vector<pixelpart::vec3d> velocity;
 		std::vector<pixelpart::vec3d> force;
+		std::vector<pixelpart::floatd> life;
+
 		std::vector<pixelpart::vec3d> direction;
 		std::vector<pixelpart::floatd> index;
-		std::vector<pixelpart::floatd> life;
 	};
 
 	pixelpart::ParticleData sortedParticleData;

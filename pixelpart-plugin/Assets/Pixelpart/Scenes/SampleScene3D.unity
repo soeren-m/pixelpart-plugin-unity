@@ -151,10 +151,6 @@ MonoBehaviour:
   - {fileID: 4800000, guid: b11b7fe347a65456b829bbc04563e9fc, type: 3}
   FlipH: 0
   FlipV: 0
-  CastShadows: 0
-  ReceiveShadows: 0
-  UseLightProbes: 0
-  ProbeAnchor: {fileID: 0}
   ParticleTypeNames:
   - Particle
 --- !u!4 &120736011
@@ -256,7 +252,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1376166288}
   m_LocalRotation: {x: 0.34618863, y: -0.5198367, z: 0.24240384, w: 0.742404}
-  m_LocalPosition: {x: 4.33, y: 6.29, z: -4.68}
+  m_LocalPosition: {x: 1.16, y: 2.27, z: -3.53}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

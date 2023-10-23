@@ -1,4 +1,5 @@
 #include "PixelpartPlugin.h"
+#include "ParticleSolverCPU.h"
 #include "PixelpartShaderGraph.h"
 #include "SortUtil.h"
 #include <locale>
@@ -118,7 +119,7 @@ UNITY_INTERFACE_EXPORT void* UNITY_INTERFACE_API PixelpartLoadEffect(const char*
 	try {
 		PixelpartNativeEffect* nativeEffect = new PixelpartNativeEffect();
 		nativeEffect->project = pixelpart::deserialize(data, static_cast<std::size_t>(size), nativeEffect->projectResources);
-		nativeEffect->particleEngine = pixelpart::ParticleEngine(&(nativeEffect->project.effect), particleCapacity);
+		nativeEffect->particleEngine = pixelpart::ParticleEngine::create<pixelpart::ParticleSolverCPU>(&(nativeEffect->project.effect), particleCapacity);
 		nativeEffect->meshData.resize(nativeEffect->project.effect.particleTypes.getCount());
 
 		return nativeEffect;

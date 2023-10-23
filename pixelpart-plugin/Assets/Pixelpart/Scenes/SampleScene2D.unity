@@ -256,9 +256,5 @@ MonoBehaviour:
   - {fileID: 4800000, guid: f0542ba96650e4232b8d08cdfca2b866, type: 3}
   FlipH: 0
   FlipV: 0
-  CastShadows: 0
-  ReceiveShadows: 0
-  UseLightProbes: 0
-  ProbeAnchor: {fileID: 0}
   ParticleTypeNames:
   - Particle

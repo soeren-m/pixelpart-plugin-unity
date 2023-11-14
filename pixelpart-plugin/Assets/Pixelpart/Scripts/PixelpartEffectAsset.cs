@@ -74,8 +74,7 @@ public class PixelpartEffectAsset : ScriptableObject {
 				string[] shaderTextureIds = Encoding.UTF8.GetString(shaderTextureIdBuffer, 0, shaderTextureIdLength).
 					Split(new[] {';'}, 16, StringSplitOptions.RemoveEmptyEntries);
 
-				string assetName = Path.GetFileNameWithoutExtension(assetPath);
-				string shaderName = assetName + " " + GetUniqueShaderId(shaderCode).ToString();
+				string shaderName = "Effect-" + GetUniqueShaderId(shaderCode).ToString();
 				string shaderFullName = "Pixelpart/" + shaderName;
 				shaderCode = shaderCode.Replace("{SHADER_NAME}", shaderFullName);
 

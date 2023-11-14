@@ -1,4 +1,4 @@
-Shader "Pixelpart/SampleEffect3D 611684106"
+Shader "Pixelpart/Effect-611684106"
 {
 Properties
 {

@@ -148,7 +148,7 @@ MonoBehaviour:
   Speed: 1
   FrameRate: 60
   ParticleShaders:
-  - {fileID: 4800000, guid: b11b7fe347a65456b829bbc04563e9fc, type: 3}
+  - {fileID: 4800000, guid: fd53fab1b876942d49419909c6b2797e, type: 3}
   FlipH: 0
   FlipV: 0
   ParticleTypeNames:

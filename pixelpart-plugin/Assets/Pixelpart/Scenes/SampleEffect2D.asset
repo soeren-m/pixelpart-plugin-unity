@@ -15,6 +15,6 @@ MonoBehaviour:
   Scale: 1
   ParticleTypeAssets:
   - Name: Particle
-    DefaultShaderName: Pixelpart/SampleEffect2D 611684106
+    DefaultShaderName: Pixelpart/Effect-611684106
     TextureIds:
     - __default__

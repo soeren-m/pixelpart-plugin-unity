@@ -11,8 +11,8 @@ elif "platform=linux" in sys.argv:
     subprocess.run("scons platform=linux bits=32 target=release", shell = True)
     subprocess.run("scons platform=linux bits=64 target=release", shell = True)
 
-elif "platform=osx" in sys.argv:
-    subprocess.run("scons platform=osx bits=64 target=release", shell = True)
+elif "platform=macos" in sys.argv:
+    subprocess.run("scons platform=macos bits=64 target=release", shell = True)
 
 elif "platform=android" in sys.argv:
     subprocess.run("scons platform=android android_arch=armv7 target=release", shell = True)
@@ -24,7 +24,7 @@ elif "platform=ios" in sys.argv:
     subprocess.run("scons platform=ios ios_arch=arm64 target=release", shell = True)
     subprocess.run("lipo -create pixelpart-plugin/Assets/Pixelpart/Plugins/iOS/libpixelpart.arm64.a -output pixelpart-plugin/Assets/Pixelpart/Plugins/iOS/libpixelpart.a", shell = True)
 
-elif "platform=javascript" in sys.argv:
+elif "platform=web" in sys.argv:
     def filter_files(dir, files):
         return [f for f in files if
             os.path.isfile(os.path.join(dir, f)) and not (

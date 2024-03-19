@@ -1,4 +1,4 @@
-#include "PixelpartPlugin.h"
+#include "PixelpartPluginUtil.h"
 
 extern "C" {
 UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartFindCollider(PixelpartNativeEffect* nativeEffect, const char* buffer) {
@@ -32,8 +32,8 @@ UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartColliderGetName(Pixe
 		return 0;
 	}
 
-	std::size_t size = std::min(collider.name.size(), static_cast<std::size_t>(length) - 1);
-	strncpy(buffer, collider.name.c_str(), size);
+	std::size_t size = std::min(collider.name.size(), static_cast<std::size_t>(length) - 1u);
+	std::strncpy(buffer, collider.name.c_str(), size);
 	buffer[size] = '\0';
 
 	return static_cast<int32_t>(size);
@@ -45,8 +45,8 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartColliderSetLifetimeStar
 	}
 
 	pixelpart::Collider& collider = nativeEffect->project.effect.colliders.get(colliderId);
-	collider.lifetimeStart = value;
-	nativeEffect->particleEngine.updateCollisionSolver();
+	collider.lifetimeStart = util::fromUnity(value);
+	nativeEffect->particleEngine.refreshCollisionSolver();
 }
 
 UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartColliderSetLifetimeDuration(PixelpartNativeEffect* nativeEffect, uint32_t colliderId, float value) {
@@ -55,8 +55,8 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartColliderSetLifetimeDura
 	}
 
 	pixelpart::Collider& collider = nativeEffect->project.effect.colliders.get(colliderId);
-	collider.lifetimeDuration = value;
-	nativeEffect->particleEngine.updateCollisionSolver();
+	collider.lifetimeDuration = util::fromUnity(value);
+	nativeEffect->particleEngine.refreshCollisionSolver();
 }
 
 UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartColliderSetRepeat(PixelpartNativeEffect* nativeEffect, uint32_t colliderId, bool value) {
@@ -66,7 +66,7 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartColliderSetRepeat(Pixel
 
 	pixelpart::Collider& collider = nativeEffect->project.effect.colliders.get(colliderId);
 	collider.repeat = value;
-	nativeEffect->particleEngine.updateCollisionSolver();
+	nativeEffect->particleEngine.refreshCollisionSolver();
 }
 
 UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartColliderGetLifetimeStart(PixelpartNativeEffect* nativeEffect, uint32_t colliderId) {
@@ -74,7 +74,7 @@ UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartColliderGetLifetimeSta
 		return 0.0f;
 	}
 
-	return static_cast<float>(nativeEffect->project.effect.colliders.get(colliderId).lifetimeStart);
+	return util::toUnity(nativeEffect->project.effect.colliders.get(colliderId).lifetimeStart);
 }
 
 UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartColliderGetLifetimeDuration(PixelpartNativeEffect* nativeEffect, uint32_t colliderId) {
@@ -82,7 +82,7 @@ UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartColliderGetLifetimeDur
 		return 0.0f;
 	}
 
-	return static_cast<float>(nativeEffect->project.effect.colliders.get(colliderId).lifetimeDuration);
+	return util::toUnity(nativeEffect->project.effect.colliders.get(colliderId).lifetimeDuration);
 }
 
 UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartColliderGetRepeat(PixelpartNativeEffect* nativeEffect, uint32_t colliderId) {
@@ -111,28 +111,29 @@ UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartColliderGetLocalTime(P
 
 	pixelpart::Collider& collider = nativeEffect->project.effect.colliders.get(colliderId);
 
-	return static_cast<float>(std::fmod(nativeEffect->particleEngine.getTime() - collider.lifetimeStart, collider.lifetimeDuration) / collider.lifetimeDuration);
+	return util::toUnity(std::fmod(
+		nativeEffect->particleEngine.getTime() - collider.lifetimeStart, collider.lifetimeDuration) / collider.lifetimeDuration);
 }
 
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartColliderAddPoint(PixelpartNativeEffect* nativeEffect, uint32_t colliderId, float x, float y, float z) {
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartColliderAddPoint(PixelpartNativeEffect* nativeEffect, uint32_t colliderId, Vector3 point) {
 	if(!nativeEffect || !nativeEffect->project.effect.colliders.contains(colliderId)) {
 		return;
 	}
 
 	pixelpart::Collider& collider = nativeEffect->project.effect.colliders.get(colliderId);
-	collider.points.push_back(pixelpart::vec3d(x, y, z));
-	nativeEffect->particleEngine.updateCollisionSolver();
+	collider.points.push_back(util::fromUnity(point));
+	nativeEffect->particleEngine.refreshCollisionSolver();
 }
 
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartColliderSetPoint(PixelpartNativeEffect* nativeEffect, uint32_t colliderId, int32_t index, float x, float y, float z) {
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartColliderSetPoint(PixelpartNativeEffect* nativeEffect, uint32_t colliderId, int32_t index, Vector3 point) {
 	if(!nativeEffect || !nativeEffect->project.effect.colliders.contains(colliderId)) {
 		return;
 	}
 
 	pixelpart::Collider& collider = nativeEffect->project.effect.colliders.get(colliderId);
 	if(index >= 0 && index < static_cast<int32_t>(collider.points.size())) {
-		collider.points[index] = pixelpart::vec3d(x, y, z);
-		nativeEffect->particleEngine.updateCollisionSolver();
+		collider.points[index] = util::fromUnity(point);
+		nativeEffect->particleEngine.refreshCollisionSolver();
 	}
 }
 
@@ -144,7 +145,7 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartColliderRemovePoint(Pix
 	pixelpart::Collider& collider = nativeEffect->project.effect.colliders.get(colliderId);
 	if(index >= 0 && index < static_cast<int32_t>(collider.points.size())) {
 		collider.points.erase(collider.points.begin() + index);
-		nativeEffect->particleEngine.updateCollisionSolver();
+		nativeEffect->particleEngine.refreshCollisionSolver();
 	}
 }
 
@@ -158,7 +159,7 @@ UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartColliderGetPointX(Pixe
 		return 0.0f;
 	}
 
-	return static_cast<float>(collider.points[index].x);
+	return util::toUnity(collider.points[index].x);
 }
 
 UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartColliderGetPointY(PixelpartNativeEffect* nativeEffect, uint32_t colliderId, int32_t index) {
@@ -171,7 +172,7 @@ UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartColliderGetPointY(Pixe
 		return 0.0f;
 	}
 
-	return static_cast<float>(collider.points[index].y);
+	return util::toUnity(collider.points[index].y);
 }
 
 UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartColliderGetPointZ(PixelpartNativeEffect* nativeEffect, uint32_t colliderId, int32_t index) {
@@ -184,7 +185,7 @@ UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartColliderGetPointZ(Pixe
 		return 0.0f;
 	}
 
-	return static_cast<float>(collider.points[index].z);
+	return util::toUnity(collider.points[index].z);
 }
 
 UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartColliderGetNumPoints(PixelpartNativeEffect* nativeEffect, uint32_t colliderId) {
@@ -197,7 +198,29 @@ UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartColliderGetNumPoints
 	return static_cast<int32_t>(collider.points.size());
 }
 
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartColliderGetBounce(PixelpartNativeEffect* nativeEffect, uint32_t colliderId) {
+UNITY_INTERFACE_EXPORT pixelpart::StaticProperty<pixelpart::float_t>* UNITY_INTERFACE_API PixelpartColliderGetWidth(PixelpartNativeEffect* nativeEffect, uint32_t colliderId) {
+	if(!nativeEffect || !nativeEffect->project.effect.colliders.contains(colliderId)) {
+		return nullptr;
+	}
+
+	pixelpart::Collider& collider = nativeEffect->project.effect.colliders.get(colliderId);
+
+	return &collider.width;
+}
+
+UNITY_INTERFACE_EXPORT pixelpart::StaticProperty<pixelpart::float_t>* UNITY_INTERFACE_API PixelpartColliderGetOrientation(PixelpartNativeEffect* nativeEffect, uint32_t colliderId) {
+	if(!nativeEffect || !nativeEffect->project.effect.colliders.contains(colliderId)) {
+		return nullptr;
+	}
+
+	pixelpart::Collider& collider = nativeEffect->project.effect.colliders.get(colliderId);
+
+	return &collider.orientation;
+}
+
+// TODO: kill on contact
+
+UNITY_INTERFACE_EXPORT pixelpart::AnimatedProperty<pixelpart::float_t>* UNITY_INTERFACE_API PixelpartColliderGetBounce(PixelpartNativeEffect* nativeEffect, uint32_t colliderId) {
 	if(!nativeEffect || !nativeEffect->project.effect.colliders.contains(colliderId)) {
 		return nullptr;
 	}
@@ -207,7 +230,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	return &collider.bounce;
 }
 
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartColliderGetFriction(PixelpartNativeEffect* nativeEffect, uint32_t colliderId) {
+UNITY_INTERFACE_EXPORT pixelpart::AnimatedProperty<pixelpart::float_t>* UNITY_INTERFACE_API PixelpartColliderGetFriction(PixelpartNativeEffect* nativeEffect, uint32_t colliderId) {
 	if(!nativeEffect || !nativeEffect->project.effect.colliders.contains(colliderId)) {
 		return nullptr;
 	}

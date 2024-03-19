@@ -32,8 +32,8 @@ UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartParticleTypeGetName(
 		return 0;
 	}
 
-	std::size_t size = std::min(particleType.name.size(), static_cast<std::size_t>(length) - 1);
-	strncpy(buffer, particleType.name.c_str(), size);
+	std::size_t size = std::min(particleType.name.size(), static_cast<std::size_t>(length) - 1u);
+	std::strncpy(buffer, particleType.name.c_str(), size);
 	buffer[size] = '\0';
 
 	return static_cast<int32_t>(size);
@@ -47,7 +47,7 @@ UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartParticleTypeGetPare
 	return nativeEffect->project.effect.particleTypes.get(particleTypeId).parentId;
 }
 
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec3d>* UNITY_INTERFACE_API PixelpartParticleTypeGetPosition(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
+UNITY_INTERFACE_EXPORT pixelpart::AnimatedProperty<pixelpart::vec3_t>* UNITY_INTERFACE_API PixelpartParticleTypeGetPosition(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
 		return nullptr;
 	}
@@ -57,7 +57,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec3d>* UNITY_INTERFACE_API P
 	return &particleType.position;
 }
 
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleTypeGetNumParticles(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
+UNITY_INTERFACE_EXPORT pixelpart::AnimatedProperty<pixelpart::float_t>* UNITY_INTERFACE_API PixelpartParticleTypeGetNumParticles(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
 		return nullptr;
 	}
@@ -67,7 +67,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	return &particleType.numParticles;
 }
 
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleTypeGetLifespan(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
+UNITY_INTERFACE_EXPORT pixelpart::AnimatedProperty<pixelpart::float_t>* UNITY_INTERFACE_API PixelpartParticleTypeGetLifespan(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
 		return nullptr;
 	}
@@ -77,23 +77,14 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	return &particleType.lifespan;
 }
 
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleTypeSetLifespanVariance(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId, float variance) {
+UNITY_INTERFACE_EXPORT pixelpart::StaticProperty<pixelpart::float_t>* UNITY_INTERFACE_API PixelpartParticleTypeGetLifespanVariance(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
-		return;
-	}
-
-	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
-	particleType.lifespanVariance = variance;
-}
-
-UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartParticleTypeGetLifespanVariance(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
-		return 0.0f;
+		return nullptr;
 	}
 
 	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
 
-	return static_cast<float>(particleType.lifespanVariance);
+	return &particleType.lifespanVariance;
 }
 
 UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleTypeSetPositionRelative(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId, bool relative) {
@@ -115,26 +106,17 @@ UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartParticleTypeGetPosition
 	return particleType.positionRelative;
 }
 
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleTypeSetMotionPathForce(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId, float force) {
+UNITY_INTERFACE_EXPORT pixelpart::StaticProperty<pixelpart::float_t>* UNITY_INTERFACE_API PixelpartParticleTypeGetMotionPathForce(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
-		return;
-	}
-
-	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
-	particleType.motionPathForce = force;
-}
-
-UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartParticleTypeGetMotionPathForce(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
-		return 0.0f;
+		return nullptr;
 	}
 
 	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
 
-	return static_cast<float>(particleType.motionPathForce);
+	return &particleType.motionPathForce;
 }
 
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleTypeGetInitialVelocity(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
+UNITY_INTERFACE_EXPORT pixelpart::AnimatedProperty<pixelpart::float_t>* UNITY_INTERFACE_API PixelpartParticleTypeGetInitialVelocity(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
 		return nullptr;
 	}
@@ -144,26 +126,27 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	return &particleType.initialVelocity;
 }
 
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleTypeSetVelocityVariance(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId, float variance) {
+UNITY_INTERFACE_EXPORT pixelpart::AnimatedProperty<pixelpart::float_t>* UNITY_INTERFACE_API PixelpartParticleTypeGetInheritedVelocity(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
-		return;
-	}
-
-	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
-	particleType.velocityVariance = variance;
-}
-
-UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartParticleTypeGetVelocityVariance(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
-		return 0.0f;
+		return nullptr;
 	}
 
 	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
 
-	return static_cast<float>(particleType.velocityVariance);
+	return &particleType.inheritedVelocity;
 }
 
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleTypeGetAcceleration(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
+UNITY_INTERFACE_EXPORT pixelpart::StaticProperty<pixelpart::float_t>* UNITY_INTERFACE_API PixelpartParticleTypeGetVelocityVariance(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
+	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
+		return nullptr;
+	}
+
+	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
+
+	return &particleType.velocityVariance;
+}
+
+UNITY_INTERFACE_EXPORT pixelpart::AnimatedProperty<pixelpart::float_t>* UNITY_INTERFACE_API PixelpartParticleTypeGetAcceleration(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
 		return nullptr;
 	}
@@ -173,7 +156,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	return &particleType.acceleration;
 }
 
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleTypeGetRadialAcceleration(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
+UNITY_INTERFACE_EXPORT pixelpart::AnimatedProperty<pixelpart::float_t>* UNITY_INTERFACE_API PixelpartParticleTypeGetRadialAcceleration(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
 		return nullptr;
 	}
@@ -183,16 +166,6 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	return &particleType.radialAcceleration;
 }
 
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleTypeGetDamping(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
-		return nullptr;
-	}
-
-	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
-
-	return &particleType.damping;
-}
-
 UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleTypeSetRotationMode(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId, int32_t mode) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
 		return;
@@ -200,15 +173,6 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleTypeSetRotation
 
 	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
 	particleType.rotationMode = static_cast<pixelpart::RotationMode>(mode);
-}
-
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleTypeSetAlignmentMode(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId, int32_t mode) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
-		return;
-	}
-
-	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
-	particleType.alignmentMode = static_cast<pixelpart::AlignmentMode>(mode);
 }
 
 UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartParticleTypeGetRotationMode(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
@@ -221,6 +185,15 @@ UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartParticleTypeGetRotat
 	return static_cast<int32_t>(particleType.rotationMode);
 }
 
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleTypeSetAlignmentMode(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId, int32_t mode) {
+	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
+		return;
+	}
+
+	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
+	particleType.alignmentMode = static_cast<pixelpart::AlignmentMode>(mode);
+}
+
 UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartParticleTypeGetAlignmentMode(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
 		return static_cast<int32_t>(pixelpart::AlignmentMode::none);
@@ -231,7 +204,7 @@ UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartParticleTypeGetAlign
 	return static_cast<int32_t>(particleType.alignmentMode);
 }
 
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec3d>* UNITY_INTERFACE_API PixelpartParticleTypeGetInitialRotation(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
+UNITY_INTERFACE_EXPORT pixelpart::AnimatedProperty<pixelpart::vec3_t>* UNITY_INTERFACE_API PixelpartParticleTypeGetInitialRotation(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
 		return nullptr;
 	}
@@ -241,7 +214,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec3d>* UNITY_INTERFACE_API P
 	return &particleType.initialRotation;
 }
 
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec3d>* UNITY_INTERFACE_API PixelpartParticleTypeGetRotation(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
+UNITY_INTERFACE_EXPORT pixelpart::AnimatedProperty<pixelpart::vec3_t>* UNITY_INTERFACE_API PixelpartParticleTypeGetRotation(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
 		return nullptr;
 	}
@@ -251,124 +224,47 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec3d>* UNITY_INTERFACE_API P
 	return &particleType.rotation;
 }
 
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleTypeSetRotationVariance(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId, float varianceRoll, float varianceYaw, float variancePitch) {
+UNITY_INTERFACE_EXPORT pixelpart::AnimatedProperty<pixelpart::vec3_t>* UNITY_INTERFACE_API PixelpartParticleTypeGetRotationBySpeed(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
-		return;
-	}
-
-	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
-	particleType.rotationVariance = pixelpart::vec3d(varianceRoll, varianceYaw, variancePitch);
-}
-
-UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartParticleTypeGetRotationVarianceRoll(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
-		return 0.0f;
+		return nullptr;
 	}
 
 	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
 
-	return static_cast<float>(particleType.rotationVariance.x);
+	return &particleType.rotationBySpeed;
 }
 
-UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartParticleTypeGetRotationVarianceYaw(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
+UNITY_INTERFACE_EXPORT pixelpart::StaticProperty<pixelpart::vec3_t>* UNITY_INTERFACE_API PixelpartParticleTypeGetRotationVariance(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
-		return 0.0f;
+		return nullptr;
 	}
 
 	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
 
-	return static_cast<float>(particleType.rotationVariance.y);
+	return &particleType.rotationVariance;
 }
 
-UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartParticleTypeGetRotationVariancePitch(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
+UNITY_INTERFACE_EXPORT pixelpart::StaticProperty<pixelpart::vec3_t>* UNITY_INTERFACE_API PixelpartParticleTypeGetAngularVelocityVariance(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
-		return 0.0f;
+		return nullptr;
 	}
 
 	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
 
-	return static_cast<float>(particleType.rotationVariance.z);
+	return &particleType.angularVelocityVariance;
 }
 
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleTypeSetAngularVelocityVariance(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId, float varianceRoll, float varianceYaw, float variancePitch) {
+UNITY_INTERFACE_EXPORT pixelpart::StaticProperty<pixelpart::vec3_t>* UNITY_INTERFACE_API PixelpartParticleTypeGetPivot(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
-		return;
-	}
-
-	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
-	particleType.angularVelocityVariance = pixelpart::vec3d(varianceRoll, varianceYaw, variancePitch);
-}
-
-UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartParticleTypeGetAngularVelocityVarianceRoll(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
-		return 0.0f;
+		return nullptr;
 	}
 
 	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
 
-	return static_cast<float>(particleType.angularVelocityVariance.x);
+	return &particleType.pivot;
 }
 
-UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartParticleTypeGetAngularVelocityVarianceYaw(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
-		return 0.0f;
-	}
-
-	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
-
-	return static_cast<float>(particleType.angularVelocityVariance.y);
-}
-
-UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartParticleTypeGetAngularVelocityVariancePitch(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
-		return 0.0f;
-	}
-
-	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
-
-	return static_cast<float>(particleType.angularVelocityVariance.z);
-}
-
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleTypeSetPivot(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId, float x, float y, float z) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
-		return;
-	}
-
-	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
-	particleType.pivot = pixelpart::vec3d(x, y, z);
-}
-
-UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartParticleTypeGetPivotX(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
-		return 0.0f;
-	}
-
-	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
-
-	return static_cast<float>(particleType.pivot.x);
-}
-
-UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartParticleTypeGetPivotY(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
-		return 0.0f;
-	}
-
-	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
-
-	return static_cast<float>(particleType.pivot.y);
-}
-
-UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartParticleTypeGetPivotZ(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
-		return 0.0f;
-	}
-
-	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
-
-	return static_cast<float>(particleType.pivot.z);
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleTypeGetWeight(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
+UNITY_INTERFACE_EXPORT pixelpart::AnimatedProperty<pixelpart::float_t>* UNITY_INTERFACE_API PixelpartParticleTypeGetWeight(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
 		return nullptr;
 	}
@@ -378,7 +274,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	return &particleType.weight;
 }
 
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleTypeGetBounce(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
+UNITY_INTERFACE_EXPORT pixelpart::AnimatedProperty<pixelpart::float_t>* UNITY_INTERFACE_API PixelpartParticleTypeGetBounce(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
 		return nullptr;
 	}
@@ -388,7 +284,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	return &particleType.bounce;
 }
 
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleTypeGetFriction(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
+UNITY_INTERFACE_EXPORT pixelpart::AnimatedProperty<pixelpart::float_t>* UNITY_INTERFACE_API PixelpartParticleTypeGetFriction(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
 		return nullptr;
 	}
@@ -436,26 +332,7 @@ UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartParticleTypeGetLayer
 	return static_cast<int32_t>(particleType.layer);
 }
 
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleTypeSetBlendMode(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId, int32_t mode) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
-		return;
-	}
-
-	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
-	particleType.blendMode = static_cast<pixelpart::BlendMode>(mode);
-}
-
-UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartParticleTypeGetBlendMode(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
-		return static_cast<int32_t>(pixelpart::BlendMode::normal);
-	}
-
-	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
-
-	return static_cast<int32_t>(particleType.blendMode);
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleTypeGetInitialSize(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
+UNITY_INTERFACE_EXPORT pixelpart::AnimatedProperty<pixelpart::float_t>* UNITY_INTERFACE_API PixelpartParticleTypeGetInitialSize(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
 		return nullptr;
 	}
@@ -465,7 +342,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	return &particleType.initialSize;
 }
 
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec3d>* UNITY_INTERFACE_API PixelpartParticleTypeGetSize(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
+UNITY_INTERFACE_EXPORT pixelpart::AnimatedProperty<pixelpart::vec3_t>* UNITY_INTERFACE_API PixelpartParticleTypeGetSize(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
 		return nullptr;
 	}
@@ -475,26 +352,27 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec3d>* UNITY_INTERFACE_API P
 	return &particleType.size;
 }
 
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleTypeSetSizeVariance(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId, float variance) {
+UNITY_INTERFACE_EXPORT pixelpart::StaticProperty<pixelpart::float_t>* UNITY_INTERFACE_API PixelpartParticleTypeGetSizeVariance(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
-		return;
-	}
-
-	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
-	particleType.sizeVariance = variance;
-}
-
-UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartParticleTypeGetSizeVariance(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
-		return 0.0f;
+		return nullptr;
 	}
 
 	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
 
-	return static_cast<float>(particleType.sizeVariance);
+	return &particleType.sizeVariance;
 }
 
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec4d>* UNITY_INTERFACE_API PixelpartParticleTypeGetColor(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
+UNITY_INTERFACE_EXPORT pixelpart::AnimatedProperty<pixelpart::vec3_t>* UNITY_INTERFACE_API PixelpartParticleTypeGetStretch(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
+	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
+		return nullptr;
+	}
+
+	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
+
+	return &particleType.stretch;
+}
+
+UNITY_INTERFACE_EXPORT pixelpart::AnimatedProperty<pixelpart::vec4_t>* UNITY_INTERFACE_API PixelpartParticleTypeGetColor(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
 		return nullptr;
 	}
@@ -504,46 +382,17 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::vec4d>* UNITY_INTERFACE_API P
 	return &particleType.color;
 }
 
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleTypeSetColorVariance(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId, float h, float s, float v) {
+UNITY_INTERFACE_EXPORT pixelpart::StaticProperty<pixelpart::vec4_t>* UNITY_INTERFACE_API PixelpartParticleTypeGetColorVariance(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
-		return;
-	}
-
-	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
-	particleType.colorVariance = pixelpart::vec4d(h, s, v, 0.0f);
-}
-
-UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartParticleTypeGetColorVarianceHue(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
-		return 0.0f;
+		return nullptr;
 	}
 
 	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
 
-	return static_cast<float>(particleType.colorVariance.x);
+	return &particleType.colorVariance;
 }
 
-UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartParticleTypeGetColorVarianceSaturation(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
-		return 0.0f;
-	}
-
-	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
-
-	return static_cast<float>(particleType.colorVariance.y);
-}
-
-UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartParticleTypeGetColorVarianceValue(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
-		return 0.0f;
-	}
-
-	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
-
-	return static_cast<float>(particleType.colorVariance.z);
-}
-
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleTypeGetInitialOpacity(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
+UNITY_INTERFACE_EXPORT pixelpart::AnimatedProperty<pixelpart::float_t>* UNITY_INTERFACE_API PixelpartParticleTypeGetInitialOpacity(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
 		return nullptr;
 	}
@@ -553,7 +402,7 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	return &particleType.initialOpacity;
 }
 
-UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API PixelpartParticleTypeGetOpacity(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
+UNITY_INTERFACE_EXPORT pixelpart::AnimatedProperty<pixelpart::float_t>* UNITY_INTERFACE_API PixelpartParticleTypeGetOpacity(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
 		return nullptr;
 	}
@@ -563,40 +412,28 @@ UNITY_INTERFACE_EXPORT pixelpart::Curve<pixelpart::floatd>* UNITY_INTERFACE_API 
 	return &particleType.opacity;
 }
 
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleTypeSetOpacityVariance(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId, float variance) {
+UNITY_INTERFACE_EXPORT pixelpart::StaticProperty<pixelpart::float_t>* UNITY_INTERFACE_API PixelpartParticleTypeGetOpacityVariance(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
-		return;
-	}
-
-	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
-	particleType.opacityVariance = variance;
-}
-
-UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartParticleTypeGetOpacityVariance(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
-	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
-		return 0.0f;
+		return nullptr;
 	}
 
 	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
 
-	return static_cast<float>(particleType.opacityVariance);
+	return &particleType.opacityVariance;
 }
+
+// TODO: material instance!!!!!
+PixelpartParticleTypeGetMaterialId
+PixelpartParticleTypeGetNumMaterialParameters
+PixelpartParticleTypeGetMaterialParameterValue
 
 UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartParticleTypeGetRenderer(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
-		return static_cast<int32_t>(pixelpart::ParticleType::Renderer::sprite);
+		return static_cast<int32_t>(pixelpart::ParticleRendererType::sprite);
 	}
 
 	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
 
 	return static_cast<int32_t>(particleType.renderer);
-}
-
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleTypeSpawnParticles(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId, int32_t count) {
-	if(!nativeEffect || count <= 0) {
-		return;
-	}
-
-	nativeEffect->particleEngine.spawnParticles(particleTypeId, static_cast<uint32_t>(count));
 }
 }

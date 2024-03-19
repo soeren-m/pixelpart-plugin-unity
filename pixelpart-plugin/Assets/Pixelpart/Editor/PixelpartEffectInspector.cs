@@ -30,7 +30,7 @@ public class PixelpartEffectInspector : Editor {
 
 		EditorGUILayout.Space();
 		EditorGUILayout.LabelField("Rendering", EditorStyles.boldLabel);
-		ShowParticleShaders(serializedObject.FindProperty("ParticleShaders"), effect);
+		//ShowParticleShaders(serializedObject.FindProperty("ParticleShaders"), effect);
 		EditorGUILayout.PropertyField(serializedObject.FindProperty("FlipH"));
 		EditorGUILayout.PropertyField(serializedObject.FindProperty("FlipV"));
 

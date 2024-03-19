@@ -9,9 +9,10 @@ public enum InterpolationType : int {
 }
 
 public enum BlendModeType : int {
-	Normal = 0,
-	Additive = 1,
-	Subtractive = 2
+	Off = 0,
+	Normal = 1,
+	Additive = 2,
+	Subtractive = 3
 }
 
 public enum RotationModeType : int {
@@ -25,5 +26,11 @@ public enum AlignmentModeType : int {
 	Motion = 2,
 	Emission = 3,
 	Emitter = 4
+}
+
+public enum ParticleRendererType : int {
+	Sprite = 0,
+	Trail = 1,
+	Mesh = 2
 }
 }

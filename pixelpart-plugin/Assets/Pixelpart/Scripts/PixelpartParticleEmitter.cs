@@ -19,7 +19,17 @@ public class PixelpartParticleEmitter {
 		Uniform = 0,
 		Center = 1,
 		Hole = 2,
-		Boundary = 3
+		Boundary = 3,
+		GridRandom = 4,
+		GridOrdered = 5
+	}
+	public enum GridOrderType : int {
+		XYZ = 0,
+		XZY = 1,
+		YXZ = 2,
+		YZX = 3,
+		ZXY = 4,
+		ZYX = 5
 	}
 	public enum EmissionModeType : int {
 		Continuous = 0,
@@ -29,7 +39,9 @@ public class PixelpartParticleEmitter {
 	public enum DirectionModeType : int {
 		Fixed = 0,
 		Outwards = 1,
-		Inwards = 2
+		Inwards = 2,
+		Inherit = 3,
+		InheritInverse = 4
 	}
 
 	public uint Id {
@@ -37,7 +49,7 @@ public class PixelpartParticleEmitter {
 			return particleEmitterId;
 		}
 	}
-	private uint particleEmitterId = 0;
+	private readonly uint particleEmitterId;
 
 	public uint ParentId {
 		get {
@@ -89,12 +101,12 @@ public class PixelpartParticleEmitter {
 		}
 	}
 
-	public PixelpartCurve3 Position {
+	public PixelpartAnimatedPropertyFloat3 Position {
 		get {
 			return position;
 		}
 	}
-	private PixelpartCurve3 position;
+	private readonly PixelpartAnimatedPropertyFloat3 position;
 
 	public ShapeType Shape {
 		get {
@@ -105,26 +117,27 @@ public class PixelpartParticleEmitter {
 		}
 	}
 
-	public PixelpartCurve3 Path {
+	// TODO
+	/*public PixelpartAnimatedPropertyFloat3 Path {
 		get {
 			return path;
 		}
 	}
-	private PixelpartCurve3 path;
+	private PixelpartAnimatedPropertyFloat3 path;*/
 
-	public PixelpartCurve3 Size {
+	public PixelpartAnimatedPropertyFloat3 Size {
 		get {
 			return size;
 		}
 	}
-	private PixelpartCurve3 size;
+	private readonly PixelpartAnimatedPropertyFloat3 size;
 
-	public PixelpartCurve3 Orientation {
+	public PixelpartAnimatedPropertyFloat3 Orientation {
 		get {
 			return orientation;
 		}
 	}
-	private PixelpartCurve3 orientation;
+	private readonly PixelpartAnimatedPropertyFloat3 orientation;
 
 	public DistributionType Distribution {
 		get {
@@ -132,6 +145,27 @@ public class PixelpartParticleEmitter {
 		}
 		set {
 			Plugin.PixelpartParticleEmitterSetDistribution(nativeEffect, particleEmitterId, (int)value);
+		}
+	}
+
+	public GridOrderType GridOrder {
+		get {
+			return (GridOrderType)Plugin.PixelpartParticleEmitterGetGridOrder(nativeEffect, particleEmitterId);
+		}
+		set {
+			Plugin.PixelpartParticleEmitterSetGridOrder(nativeEffect, particleEmitterId, (int)value);
+		}
+	}
+
+	public Vector3Int GridSize {
+		get {
+			return new Vector3Int(
+				Plugin.PixelpartParticleEmitterGetGridWidth(nativeEffect, particleEmitterId),
+				Plugin.PixelpartParticleEmitterGetGridHeight(nativeEffect, particleEmitterId),
+				Plugin.PixelpartParticleEmitterGetGridDepth(nativeEffect, particleEmitterId));
+		}
+		set {
+			Plugin.PixelpartParticleEmitterSetGridSize(nativeEffect, particleEmitterId, value.x, value.y, value.z);
 		}
 	}
 
@@ -153,32 +187,32 @@ public class PixelpartParticleEmitter {
 		}
 	}
 
-	public PixelpartCurve3 Direction {
+	public PixelpartAnimatedPropertyFloat3 Direction {
 		get {
 			return direction;
 		}
 	}
-	private PixelpartCurve3 direction;
+	private readonly PixelpartAnimatedPropertyFloat3 direction;
 
-	public PixelpartCurve Spread {
+	public PixelpartAnimatedPropertyFloat Spread {
 		get {
 			return spread;
 		}
 	}
-	private PixelpartCurve spread;
+	private readonly PixelpartAnimatedPropertyFloat spread;
 
-	private IntPtr nativeEffect = IntPtr.Zero;
+	private readonly IntPtr nativeEffect;
 
 	public PixelpartParticleEmitter(IntPtr nativeEffectPtr, uint nativeId) {
 		nativeEffect = nativeEffectPtr;
 		particleEmitterId = nativeId;
 
-		position = new PixelpartCurve3(Plugin.PixelpartParticleEmitterGetPosition(nativeEffect, particleEmitterId), nativeEffect, PixelpartCurve3.ObjectType.ParticleEmitter);
-		path = new PixelpartCurve3(Plugin.PixelpartParticleEmitterGetPath(nativeEffect, particleEmitterId), nativeEffect, PixelpartCurve3.ObjectType.ParticleEmitter);
-		size = new PixelpartCurve3(Plugin.PixelpartParticleEmitterGetSize(nativeEffect, particleEmitterId), nativeEffect, PixelpartCurve3.ObjectType.ParticleEmitter);
-		orientation = new PixelpartCurve3(Plugin.PixelpartParticleEmitterGetOrientation(nativeEffect, particleEmitterId), nativeEffect, PixelpartCurve3.ObjectType.ParticleEmitter);
-		direction = new PixelpartCurve3(Plugin.PixelpartParticleEmitterGetDirection(nativeEffect, particleEmitterId), nativeEffect, PixelpartCurve3.ObjectType.ParticleEmitter);
-		spread = new PixelpartCurve(Plugin.PixelpartParticleEmitterGetSpread(nativeEffect, particleEmitterId), nativeEffect, PixelpartCurve.ObjectType.ParticleEmitter);
+		position = new PixelpartAnimatedPropertyFloat3(Plugin.PixelpartParticleEmitterGetPosition(nativeEffect, particleEmitterId), nativeEffect);
+		// TODO: path = new PixelpartAnimatedPropertyFloat3(Plugin.PixelpartParticleEmitterGetPath(nativeEffect, particleEmitterId), nativeEffect);
+		size = new PixelpartAnimatedPropertyFloat3(Plugin.PixelpartParticleEmitterGetSize(nativeEffect, particleEmitterId), nativeEffect);
+		orientation = new PixelpartAnimatedPropertyFloat3(Plugin.PixelpartParticleEmitterGetOrientation(nativeEffect, particleEmitterId), nativeEffect);
+		direction = new PixelpartAnimatedPropertyFloat3(Plugin.PixelpartParticleEmitterGetDirection(nativeEffect, particleEmitterId), nativeEffect);
+		spread = new PixelpartAnimatedPropertyFloat(Plugin.PixelpartParticleEmitterGetSpread(nativeEffect, particleEmitterId), nativeEffect);
 	}
 }
 }

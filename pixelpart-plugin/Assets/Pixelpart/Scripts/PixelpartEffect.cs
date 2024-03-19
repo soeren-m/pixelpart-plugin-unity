@@ -53,9 +53,6 @@ public class PixelpartEffect : MonoBehaviour {
 
 	private PixelpartEffectAsset cachedEffectAsset = null;
 
-	private Material[] materials = null;
-	private Mesh[] meshes = null;
-	private VertexData[] vertexData = null;
 	private uint[] sortedParticleTypeIndices = null;
 
 	private Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
@@ -90,12 +87,7 @@ public class PixelpartEffect : MonoBehaviour {
 			return;
 		}
 
-		if(Is3D) {
-			DrawEffect3D(Camera.main);
-		}
-		else {
-			DrawEffect2D(Camera.main);
-		}
+		DrawEffect(Camera.main);
 	}
 
 	public void OnDestroy() {
@@ -114,6 +106,79 @@ public class PixelpartEffect : MonoBehaviour {
 		if(nativeEffect != IntPtr.Zero) {
 			Plugin.PixelpartResetEffect(nativeEffect);
 		}
+	}
+
+	public void SetInput(string name, bool value) {
+		if(nativeEffect != IntPtr.Zero) {
+			Plugin.PixelpartSetEffectInputBool(nativeEffect, name, value);
+		}
+	}
+	public void SetInput(string name, int value) {
+		if(nativeEffect != IntPtr.Zero) {
+			Plugin.PixelpartSetEffectInputInt(nativeEffect, name, value);
+		}
+	}
+	public void SetInput(string name, float value) {
+		if(nativeEffect != IntPtr.Zero) {
+			Plugin.PixelpartSetEffectInputFloat(nativeEffect, name, value);
+		}
+	}
+	public void SetInput(string name, Vector2 value) {
+		if(nativeEffect != IntPtr.Zero) {
+			Plugin.PixelpartSetEffectInputFloat2(nativeEffect, name, value);
+		}
+	}
+	public void SetInput(string name, Vector3 value) {
+		if(nativeEffect != IntPtr.Zero) {
+			Plugin.PixelpartSetEffectInputFloat3(nativeEffect, name, value);
+		}
+	}
+	public void SetInput(string name, Vector4 value) {
+		if(nativeEffect != IntPtr.Zero) {
+			Plugin.PixelpartSetEffectInputFloat4(nativeEffect, name, value);
+		}
+	}
+	public bool GetInputBool(string name) {
+		if(nativeEffect != IntPtr.Zero) {
+			return Plugin.PixelpartGetEffectInputBool(nativeEffect, name);
+		}
+
+		return false;
+	}
+	public int GetInputInt(string name) {
+		if(nativeEffect != IntPtr.Zero) {
+			return Plugin.PixelpartGetEffectInputInt(nativeEffect, name);
+		}
+
+		return 0;
+	}
+	public float GetInputFloat(string name) {
+		if(nativeEffect != IntPtr.Zero) {
+			return Plugin.PixelpartGetEffectInputFloat2(nativeEffect, name);
+		}
+
+		return 0.0f;
+	}
+	public Vector2 GetInputFloat2(string name) {
+		if(nativeEffect != IntPtr.Zero) {
+			return Plugin.PixelpartGetEffectInputFloat2(nativeEffect, name);
+		}
+
+		return new Vector2(0.0f, 0.0f);
+	}
+	public Vector3 GetInputFloat3(string name) {
+		if(nativeEffect != IntPtr.Zero) {
+			return Plugin.PixelpartGetEffectInputFloat3(nativeEffect, name);
+		}
+
+		return new Vector3(0.0f, 0.0f, 0.0f);
+	}
+	public Vector4 GetInputFloat4(string name) {
+		if(nativeEffect != IntPtr.Zero) {
+			return Plugin.PixelpartGetEffectInputFloat4(nativeEffect, name);
+		}
+
+		return new Vector4(0.0f, 0.0f, 0.0f, 0.0f);
 	}
 
 	public PixelpartParticleEmitter FindParticleEmitter(string name) {
@@ -296,10 +361,7 @@ public class PixelpartEffect : MonoBehaviour {
 						}
 					};
 
-					meshes[particleTypeIndex] = new Mesh();
-					meshes[particleTypeIndex].MarkDynamic();
-
-					vertexData[particleTypeIndex] = new VertexData(2, 4);
+					
 				}
 			}
 			else {
@@ -308,21 +370,11 @@ public class PixelpartEffect : MonoBehaviour {
 		}
 	}
 
-	private void DrawEffect3D(Camera camera) {
-		uint numParticleTypes = Plugin.PixelpartGetEffectNumParticleTypes(nativeEffect);
-
-		for(uint particleTypeIndex = 0; particleTypeIndex < numParticleTypes; particleTypeIndex++) {
-			DrawParticles(camera,
-				particleTypeIndex,
-				Plugin.PixelpartFindParticleTypeByIndex(nativeEffect, particleTypeIndex));
-		}
-	}
-
-	private void DrawEffect2D(Camera camera) {
+	private void DrawEffect(Camera camera) {
 		uint numParticleTypes = Plugin.PixelpartGetEffectNumParticleTypes(nativeEffect);
 
 		if(numParticleTypes > 0) {
-			Plugin.PixelpartGetParticleTypesSortedByLayer(nativeEffect, sortedParticleTypeIndices);
+			Plugin.PixelpartGetParticleTypesSortedForRendering(nativeEffect, sortedParticleTypeIndices);
 		}
 
 		for(uint i = 0; i < numParticleTypes; i++) {
@@ -335,68 +387,17 @@ public class PixelpartEffect : MonoBehaviour {
 	}
 
 	private void DrawParticles(Camera camera, uint particleTypeIndex, uint particleTypeId) {
-		bool visible = Plugin.PixelpartParticleTypeIsVisible(nativeEffect, particleTypeId);
-		if(!visible) {
-			return;
-		}
+		
 
-		Material particleMaterial = materials[particleTypeIndex];
-		Mesh particleMesh = meshes[particleTypeIndex];
-		VertexData particleVertexData = vertexData[particleTypeIndex];
-
-		int numTriangles = 0;
-		int numVertices = 0;
-		bool buildResult = Plugin.PixelpartPrepareParticleMesh(nativeEffect, particleTypeIndex, out numTriangles, out numVertices);
-		if(!buildResult || numTriangles == 0 || numVertices == 0) {
-			return;
-		}
-
-		particleVertexData.Resize(numTriangles, numVertices);
-
-		Plugin.PixelpartBuildParticleMesh(nativeEffect,
-			particleTypeIndex,
-			(camera != null) ? camera.transform.position : new Vector3(0.0f, 0.0f, 0.0f),
-			(camera != null) ? camera.transform.right : new Vector3(1.0f, 0.0f, 0.0f),
-			(camera != null) ? camera.transform.up : new Vector3(0.0f, 1.0f, 0.0f),
-			new Vector3(EffectAsset.Scale * (FlipH ? -1.0f : +1.0f), EffectAsset.Scale * (FlipV ? -1.0f : +1.0f), EffectAsset.Scale),
-			particleVertexData.Triangles,
-			particleVertexData.Vertices,
-			particleVertexData.Colors,
-			particleVertexData.UV,
-			particleVertexData.UV2,
-			particleVertexData.UV3,
-			particleVertexData.UV4);
-
-		UpdateMesh(particleMesh, particleVertexData);
+		new Vector3(EffectAsset.Scale * (FlipH ? -1.0f : +1.0f), EffectAsset.Scale * (FlipV ? -1.0f : +1.0f), EffectAsset.Scale)
 
 		uint particleEmitterId = Plugin.PixelpartParticleTypeGetParentId(nativeEffect, particleTypeId);
-		float localTime = Plugin.PixelpartParticleEmitterGetLocalTime(nativeEffect, particleEmitterId);
+		
 		int blendMode = Plugin.PixelpartParticleTypeGetBlendMode(nativeEffect, particleTypeId);
 
 		UpdateMaterial(particleMaterial, localTime, blendMode);
 
-		Graphics.DrawMesh(particleMesh,
-			transform.localToWorldMatrix,
-			particleMaterial,
-			gameObject.layer,
-			null,
-			0,
-			null,
-			UnityEngine.Rendering.ShadowCastingMode.Off, false,
-			null, false);
-	}
-
-	private void UpdateMesh(Mesh mesh, VertexData vertexData) {
-		mesh.Clear();
-
-		mesh.vertices = vertexData.Vertices;
-		mesh.colors = vertexData.Colors;
-		mesh.uv = vertexData.UV;
-		mesh.SetUVs(1, vertexData.UV2.ToList());
-		mesh.SetUVs(2, vertexData.UV3.ToList());
-		mesh.SetUVs(3, vertexData.UV4.ToList());
-
-		mesh.triangles = vertexData.Triangles;
+		
 	}
 
 	private void UpdateMaterial(Material material, float objectTime, int blendMode) {

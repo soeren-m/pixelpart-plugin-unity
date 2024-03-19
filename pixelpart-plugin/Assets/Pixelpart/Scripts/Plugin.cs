@@ -22,11 +22,11 @@ internal static class Plugin {
 	[DllImport(pluginName)]
 	public static extern void PixelpartUpdateEffect(IntPtr nativeEffect, float dt);
 	[DllImport(pluginName)]
-	public static extern void PixelpartUpdateParticleSolver(IntPtr nativeEffect);
+	public static extern void PixelpartRefreshParticleSolver(IntPtr nativeEffect);
 	[DllImport(pluginName)]
-	public static extern void PixelpartUpdateForceSolver(IntPtr nativeEffect);
+	public static extern void PixelpartRefreshForceSolver(IntPtr nativeEffect);
 	[DllImport(pluginName)]
-	public static extern void PixelpartUpdateCollisionSolver(IntPtr nativeEffect);
+	public static extern void PixelpartRefreshCollisionSolver(IntPtr nativeEffect);
 	[DllImport(pluginName)]
 	public static extern void PixelpartPlayEffect(IntPtr nativeEffect, bool state);
 	[DllImport(pluginName)]
@@ -66,13 +66,21 @@ internal static class Plugin {
 	[DllImport(pluginName)]
 	public static extern uint PixelpartGetEffectNumParticles(IntPtr nativeEffect, uint particleTypeIndex);
 	[DllImport(pluginName)]
-	public static extern void PixelpartGetParticleTypesSortedByLayer(IntPtr nativeEffect, uint[] indices);
+	public static extern void PixelpartGetParticleTypesSortedForRendering(IntPtr nativeEffect, uint[] indices);
 	[DllImport(pluginName)]
 	public static extern bool PixelpartBuildParticleShader(IntPtr nativeEffect, uint particleTypeIndex, byte[] bufferCode, byte[] bufferTextureIds, out int outLengthCode, out int outLengthTextureIds, int bufferSizeCode, int bufferSizeTexturesIds);
 	[DllImport(pluginName)]
-	public static extern bool PixelpartPrepareParticleMesh(IntPtr nativeEffect, uint particleTypeIndex, out int numTriangles, out int numVertices);
+	public static extern void PixelpartPrepareParticleSpriteVertexData(IntPtr nativeEffect, uint particleTypeIndex, out int numTriangles, out int numVertices);
 	[DllImport(pluginName)]
-	public static extern bool PixelpartBuildParticleMesh(IntPtr nativeEffect, uint particleTypeIndex, Vector3 cameraPosition, Vector3 viewRight, Vector3 viewUp, Vector3 scale, int[] triangles, [In, Out] Vector3[] vertices, [In, Out] Color[] colors, [In, Out] Vector2[] uv, [In, Out] Vector4[] uv2, [In, Out] Vector4[] uv3, [In, Out] Vector4[] uv4);
+	public static extern void PixelpartPrepareParticleTrailVertexData(IntPtr nativeEffect, uint particleTypeIndex, out int numTriangles, out int numVertices);
+	[DllImport(pluginName)]
+	public static extern void PixelpartPrepareParticleMeshVertexData(IntPtr nativeEffect, uint particleTypeIndex, out int numTriangles, out int numVertices);
+	[DllImport(pluginName)]
+	public static extern bool PixelpartGetParticleSpriteVertexData(IntPtr nativeEffect, uint particleTypeIndex, Vector3 cameraPosition, Vector3 viewRight, Vector3 viewUp, Vector3 scale, int[] triangles, [In, Out] Vector3[] vertices, [In, Out] Color[] colors, [In, Out] Vector2[] uv, [In, Out] Vector4[] uv2, [In, Out] Vector4[] uv3, [In, Out] Vector4[] uv4);
+	[DllImport(pluginName)]
+	public static extern bool PixelpartGetParticleTrailVertexData(IntPtr nativeEffect, uint particleTypeIndex, Vector3 cameraPosition, Vector3 viewRight, Vector3 viewUp, Vector3 scale, int[] triangles, [In, Out] Vector3[] vertices, [In, Out] Color[] colors, [In, Out] Vector2[] uv, [In, Out] Vector4[] uv2, [In, Out] Vector4[] uv3, [In, Out] Vector4[] uv4);
+	[DllImport(pluginName)]
+	public static extern bool PixelpartGetParticleMeshVertexData(IntPtr nativeEffect, uint particleTypeIndex, Vector3 cameraPosition, Vector3 viewRight, Vector3 viewUp, Vector3 scale, int[] triangles, [In, Out] Vector3[] vertices, [In, Out] Color[] colors, [In, Out] Vector2[] uv, [In, Out] Vector4[] uv2, [In, Out] Vector4[] uv3, [In, Out] Vector4[] uv4);
 	[DllImport(pluginName)]
 	public static extern uint PixelpartGetImageResourceCount(IntPtr nativeEffect);
 	[DllImport(pluginName)]
@@ -85,7 +93,10 @@ internal static class Plugin {
 	public static extern uint PixelpartGetImageResourceDataSize(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string imageId);
 	[DllImport(pluginName)]
 	public static extern void PixelpartGetImageResourceData(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string imageId, byte[] imageData);
+	[DllImport(pluginName)]
+	public static extern void PixelpartSpawnParticles(IntPtr nativeEffect, uint particleTypeId, int count);
 
+	// ParticleEmitter
 	[DllImport(pluginName)]
 	public static extern uint PixelpartFindParticleEmitter(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string buffer);
 	[DllImport(pluginName)]
@@ -115,11 +126,12 @@ internal static class Plugin {
 	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartParticleEmitterGetPosition(IntPtr nativeEffect, uint emitterId);
 	[DllImport(pluginName)]
-	public static extern void PixelpartParticleEmitterSetShape(IntPtr nativeEffect, uint emitterId, int type);
+	public static extern void PixelpartParticleEmitterSetShape(IntPtr nativeEffect, uint emitterId, int shape);
 	[DllImport(pluginName)]
 	public static extern int PixelpartParticleEmitterGetShape(IntPtr nativeEffect, uint emitterId);
-	[DllImport(pluginName)]
-	public static extern IntPtr PixelpartParticleEmitterGetPath(IntPtr nativeEffect, uint emitterId);
+	// TODO
+	/*[DllImport(pluginName)]
+	public static extern IntPtr PixelpartParticleEmitterGetPath(IntPtr nativeEffect, uint emitterId);*/
 	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartParticleEmitterGetSize(IntPtr nativeEffect, uint emitterId);
 	[DllImport(pluginName)]
@@ -127,13 +139,25 @@ internal static class Plugin {
 	[DllImport(pluginName)]
 	public static extern void PixelpartParticleEmitterSetDistribution(IntPtr nativeEffect, uint emitterId, int mode);
 	[DllImport(pluginName)]
-	public static extern void PixelpartParticleEmitterSetEmissionMode(IntPtr nativeEffect, uint emitterId, int mode);
-	[DllImport(pluginName)]
-	public static extern void PixelpartParticleEmitterSetDirectionMode(IntPtr nativeEffect, uint emitterId, int mode);
-	[DllImport(pluginName)]
 	public static extern int PixelpartParticleEmitterGetDistribution(IntPtr nativeEffect, uint emitterId);
 	[DllImport(pluginName)]
+	public static extern void PixelpartParticleEmitterSetGridOrder(IntPtr nativeEffect, uint emitterId, int mode);
+	[DllImport(pluginName)]
+	public static extern int PixelpartParticleEmitterGetGridOrder(IntPtr nativeEffect, uint emitterId);
+	[DllImport(pluginName)]
+	public static extern void PixelpartParticleEmitterSetGridSize(IntPtr nativeEffect, uint emitterId, int width, int height, int depth);
+	[DllImport(pluginName)]
+	public static extern int PixelpartParticleEmitterGetGridWidth(IntPtr nativeEffect, uint emitterId);
+	[DllImport(pluginName)]
+	public static extern int PixelpartParticleEmitterGetGridHeight(IntPtr nativeEffect, uint emitterId);
+	[DllImport(pluginName)]
+	public static extern int PixelpartParticleEmitterGetGridDepth(IntPtr nativeEffect, uint emitterId);
+	[DllImport(pluginName)]
+	public static extern void PixelpartParticleEmitterSetEmissionMode(IntPtr nativeEffect, uint emitterId, int mode);
+	[DllImport(pluginName)]
 	public static extern int PixelpartParticleEmitterGetEmissionMode(IntPtr nativeEffect, uint emitterId);
+	[DllImport(pluginName)]
+	public static extern void PixelpartParticleEmitterSetDirectionMode(IntPtr nativeEffect, uint emitterId, int mode);
 	[DllImport(pluginName)]
 	public static extern int PixelpartParticleEmitterGetDirectionMode(IntPtr nativeEffect, uint emitterId);
 	[DllImport(pluginName)]
@@ -141,6 +165,7 @@ internal static class Plugin {
 	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartParticleEmitterGetSpread(IntPtr nativeEffect, uint emitterId);
 
+	// ParticleType
 	[DllImport(pluginName)]
 	public static extern uint PixelpartFindParticleType(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string buffer);
 	[DllImport(pluginName)]
@@ -158,35 +183,29 @@ internal static class Plugin {
 	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartParticleTypeGetLifespan(IntPtr nativeEffect, uint particleTypeId);
 	[DllImport(pluginName)]
-	public static extern void PixelpartParticleTypeSetLifespanVariance(IntPtr nativeEffect, uint particleTypeId, float variance);
-	[DllImport(pluginName)]
-	public static extern float PixelpartParticleTypeGetLifespanVariance(IntPtr nativeEffect, uint particleTypeId);
+	public static extern IntPtr PixelpartParticleTypeGetLifespanVariance(IntPtr nativeEffect, uint particleTypeId);
 	[DllImport(pluginName)]
 	public static extern void PixelpartParticleTypeSetPositionRelative(IntPtr nativeEffect, uint particleTypeId, bool relative);
 	[DllImport(pluginName)]
 	public static extern bool PixelpartParticleTypeGetPositionRelative(IntPtr nativeEffect, uint particleTypeId);
 	[DllImport(pluginName)]
-	public static extern void PixelpartParticleTypeSetMotionPathForce(IntPtr nativeEffect, uint particleTypeId, float force);
-	[DllImport(pluginName)]
-	public static extern float PixelpartParticleTypeGetMotionPathForce(IntPtr nativeEffect, uint particleTypeId);
+	public static extern IntPtr PixelpartParticleTypeGetMotionPathForce(IntPtr nativeEffect, uint particleTypeId);
 	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartParticleTypeGetInitialVelocity(IntPtr nativeEffect, uint particleTypeId);
 	[DllImport(pluginName)]
-	public static extern void PixelpartParticleTypeSetVelocityVariance(IntPtr nativeEffect, uint particleTypeId, float variance);
+	public static extern IntPtr PixelpartParticleTypeGetInheritedVelocity(IntPtr nativeEffect, uint particleTypeId);
 	[DllImport(pluginName)]
-	public static extern float PixelpartParticleTypeGetVelocityVariance(IntPtr nativeEffect, uint particleTypeId);
+	public static extern IntPtr PixelpartParticleTypeGetVelocityVariance(IntPtr nativeEffect, uint particleTypeId);
 	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartParticleTypeGetAcceleration(IntPtr nativeEffect, uint particleTypeId);
 	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartParticleTypeGetRadialAcceleration(IntPtr nativeEffect, uint particleTypeId);
 	[DllImport(pluginName)]
-	public static extern IntPtr PixelpartParticleTypeGetDamping(IntPtr nativeEffect, uint particleTypeId);
-	[DllImport(pluginName)]
 	public static extern void PixelpartParticleTypeSetRotationMode(IntPtr nativeEffect, uint particleTypeId, int mode);
 	[DllImport(pluginName)]
-	public static extern void PixelpartParticleTypeSetAlignmentMode(IntPtr nativeEffect, uint particleTypeId, int mode);
-	[DllImport(pluginName)]
 	public static extern int PixelpartParticleTypeGetRotationMode(IntPtr nativeEffect, uint particleTypeId);
+	[DllImport(pluginName)]
+	public static extern void PixelpartParticleTypeSetAlignmentMode(IntPtr nativeEffect, uint particleTypeId, int mode);
 	[DllImport(pluginName)]
 	public static extern int PixelpartParticleTypeGetAlignmentMode(IntPtr nativeEffect, uint particleTypeId);
 	[DllImport(pluginName)]
@@ -194,29 +213,13 @@ internal static class Plugin {
 	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartParticleTypeGetRotation(IntPtr nativeEffect, uint particleTypeId);
 	[DllImport(pluginName)]
-	public static extern void PixelpartParticleTypeSetRotationVariance(IntPtr nativeEffect, uint particleTypeId, float varianceRoll, float varianceYaw, float variancePitch);
+	public static extern IntPtr PixelpartParticleTypeGetRotationBySpeed(IntPtr nativeEffect, uint particleTypeId);
 	[DllImport(pluginName)]
-	public static extern float PixelpartParticleTypeGetRotationVarianceRoll(IntPtr nativeEffect, uint particleTypeId);
+	public static extern IntPtr PixelpartParticleTypeGetRotationVariance(IntPtr nativeEffect, uint particleTypeId);
 	[DllImport(pluginName)]
-	public static extern float PixelpartParticleTypeGetRotationVarianceYaw(IntPtr nativeEffect, uint particleTypeId);
+	public static extern IntPtr PixelpartParticleTypeGetAngularVelocityVariance(IntPtr nativeEffect, uint particleTypeId);
 	[DllImport(pluginName)]
-	public static extern float PixelpartParticleTypeGetRotationVariancePitch(IntPtr nativeEffect, uint particleTypeId);
-	[DllImport(pluginName)]
-	public static extern void PixelpartParticleTypeSetAngularVelocityVariance(IntPtr nativeEffect, uint particleTypeId, float varianceRoll, float varianceYaw, float variancePitch);
-	[DllImport(pluginName)]
-	public static extern float PixelpartParticleTypeGetAngularVelocityVarianceRoll(IntPtr nativeEffect, uint particleTypeId);
-	[DllImport(pluginName)]
-	public static extern float PixelpartParticleTypeGetAngularVelocityVarianceYaw(IntPtr nativeEffect, uint particleTypeId);
-	[DllImport(pluginName)]
-	public static extern float PixelpartParticleTypeGetAngularVelocityVariancePitch(IntPtr nativeEffect, uint particleTypeId);
-	[DllImport(pluginName)]
-	public static extern void PixelpartParticleTypeSetPivot(IntPtr nativeEffect, uint particleTypeId, float x, float y, float z);
-	[DllImport(pluginName)]
-	public static extern float PixelpartParticleTypeGetPivotX(IntPtr nativeEffect, uint particleTypeId);
-	[DllImport(pluginName)]
-	public static extern float PixelpartParticleTypeGetPivotY(IntPtr nativeEffect, uint particleTypeId);
-	[DllImport(pluginName)]
-	public static extern float PixelpartParticleTypeGetPivotZ(IntPtr nativeEffect, uint particleTypeId);
+	public static extern IntPtr PixelpartParticleTypeGetPivot(IntPtr nativeEffect, uint particleTypeId);
 	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartParticleTypeGetWeight(IntPtr nativeEffect, uint particleTypeId);
 	[DllImport(pluginName)]
@@ -232,40 +235,27 @@ internal static class Plugin {
 	[DllImport(pluginName)]
 	public static extern int PixelpartParticleTypeGetLayer(IntPtr nativeEffect, uint particleTypeId);
 	[DllImport(pluginName)]
-	public static extern void PixelpartParticleTypeSetBlendMode(IntPtr nativeEffect, uint particleTypeId, int mode);
-	[DllImport(pluginName)]
-	public static extern int PixelpartParticleTypeGetBlendMode(IntPtr nativeEffect, uint particleTypeId);
-	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartParticleTypeGetInitialSize(IntPtr nativeEffect, uint particleTypeId);
 	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartParticleTypeGetSize(IntPtr nativeEffect, uint particleTypeId);
 	[DllImport(pluginName)]
-	public static extern void PixelpartParticleTypeSetSizeVariance(IntPtr nativeEffect, uint particleTypeId, float variance);
+	public static extern IntPtr PixelpartParticleTypeGetSizeVariance(IntPtr nativeEffect, uint particleTypeId);
 	[DllImport(pluginName)]
-	public static extern float PixelpartParticleTypeGetSizeVariance(IntPtr nativeEffect, uint particleTypeId);
+	public static extern IntPtr PixelpartParticleTypeGetStretch(IntPtr nativeEffect, uint particleTypeId);
 	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartParticleTypeGetColor(IntPtr nativeEffect, uint particleTypeId);
 	[DllImport(pluginName)]
-	public static extern void PixelpartParticleTypeSetColorVariance(IntPtr nativeEffect, uint particleTypeId, float h, float s, float v);
-	[DllImport(pluginName)]
-	public static extern float PixelpartParticleTypeGetColorVarianceHue(IntPtr nativeEffect, uint particleTypeId);
-	[DllImport(pluginName)]
-	public static extern float PixelpartParticleTypeGetColorVarianceSaturation(IntPtr nativeEffect, uint particleTypeId);
-	[DllImport(pluginName)]
-	public static extern float PixelpartParticleTypeGetColorVarianceValue(IntPtr nativeEffect, uint particleTypeId);
+	public static extern IntPtr PixelpartParticleTypeGetColorVariance(IntPtr nativeEffect, uint particleTypeId);
 	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartParticleTypeGetInitialOpacity(IntPtr nativeEffect, uint particleTypeId);
 	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartParticleTypeGetOpacity(IntPtr nativeEffect, uint particleTypeId);
 	[DllImport(pluginName)]
-	public static extern void PixelpartParticleTypeSetOpacityVariance(IntPtr nativeEffect, uint particleTypeId, float variance);
-	[DllImport(pluginName)]
-	public static extern float PixelpartParticleTypeGetOpacityVariance(IntPtr nativeEffect, uint particleTypeId);
+	public static extern IntPtr PixelpartParticleTypeGetOpacityVariance(IntPtr nativeEffect, uint particleTypeId);
 	[DllImport(pluginName)]
 	public static extern int PixelpartParticleTypeGetRenderer(IntPtr nativeEffect, uint particleTypeId);
-	[DllImport(pluginName)]
-	public static extern void PixelpartParticleTypeSpawnParticles(IntPtr nativeEffect, uint particleTypeId, int count);
 
+	// ForceField
 	[DllImport(pluginName)]
 	public static extern uint PixelpartFindForceField(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string buffer);
 	[DllImport(pluginName)]
@@ -301,26 +291,53 @@ internal static class Plugin {
 	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartForceFieldGetOrientation(IntPtr nativeEffect, uint forceFieldId);
 	[DllImport(pluginName)]
-	public static extern IntPtr PixelpartForceFieldGetDirection(IntPtr nativeEffect, uint forceFieldId);
-	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartForceFieldGetStrength(IntPtr nativeEffect, uint forceFieldId);
 	[DllImport(pluginName)]
-	public static extern void PixelpartForceFieldSetDirectionVariance(IntPtr nativeEffect, uint forceFieldId, float value);
+	public static extern IntPtr PixelpartForceFieldGetAccelerationDirection(IntPtr nativeEffect, uint forceFieldId);
 	[DllImport(pluginName)]
-	public static extern void PixelpartForceFieldSetStrengthVariance(IntPtr nativeEffect, uint forceFieldId, float value);
+	public static extern IntPtr PixelpartForceFieldGetAccelerationDirectionVariance(IntPtr nativeEffect, uint forceFieldId);
 	[DllImport(pluginName)]
-	public static extern float PixelpartForceFieldGetDirectionVariance(IntPtr nativeEffect, uint forceFieldId);
+	public static extern IntPtr PixelpartForceFieldGetAccelerationStrengthVariance(IntPtr nativeEffect, uint forceFieldId);
 	[DllImport(pluginName)]
-	public static extern float PixelpartForceFieldGetStrengthVariance(IntPtr nativeEffect, uint forceFieldId);
+	public static extern void PixelpartForceFieldSetAccelerationGridSize(IntPtr nativeEffect, uint forceFieldId, int width, int height, int depth);
 	[DllImport(pluginName)]
-	public static extern void PixelpartForceFieldSetGridSize(IntPtr nativeEffect, uint forceFieldId, int width, int height, int depth);
+	public static extern int PixelpartForceFieldGetAccelerationGridWidth(IntPtr nativeEffect, uint forceFieldId);
 	[DllImport(pluginName)]
-	public static extern int PixelpartForceFieldGetGridWidth(IntPtr nativeEffect, uint forceFieldId);
+	public static extern int PixelpartForceFieldGetAccelerationGridHeight(IntPtr nativeEffect, uint forceFieldId);
 	[DllImport(pluginName)]
-	public static extern int PixelpartForceFieldGetGridHeight(IntPtr nativeEffect, uint forceFieldId);
+	public static extern int PixelpartForceFieldGetAccelerationGridDepth(IntPtr nativeEffect, uint forceFieldId);
 	[DllImport(pluginName)]
-	public static extern int PixelpartForceFieldGetGridDepth(IntPtr nativeEffect, uint forceFieldId);
+	public static extern void PixelpartForceFieldSetVectorFilter(IntPtr nativeEffect, uint forceFieldId, int filter);
+	[DllImport(pluginName)]
+	public static extern int PixelpartForceFieldGetVectorFilter(IntPtr nativeEffect, uint forceFieldId);
+	[DllImport(pluginName)]
+	public static extern int PixelpartForceFieldGetAccelerationGridDepth(IntPtr nativeEffect, uint forceFieldId);
+	[DllImport(pluginName)]
+	public static extern IntPtr PixelpartForceFieldGetVectorTightness(IntPtr nativeEffect, uint forceFieldId);
+	[DllImport(pluginName)]
+	public static extern IntPtr PixelpartForceFieldGetNoiseOctaves(IntPtr nativeEffect, uint forceFieldId);
+	[DllImport(pluginName)]
+	public static extern IntPtr PixelpartForceFieldGetNoiseOctaves(IntPtr nativeEffect, uint forceFieldId);
+	[DllImport(pluginName)]
+	public static extern IntPtr PixelpartForceFieldGetNoiseFrequency(IntPtr nativeEffect, uint forceFieldId);
+	[DllImport(pluginName)]
+	public static extern IntPtr PixelpartForceFieldGetNoisePersistence(IntPtr nativeEffect, uint forceFieldId);
+	[DllImport(pluginName)]
+	public static extern IntPtr PixelpartForceFieldGetNoiseLacunarity(IntPtr nativeEffect, uint forceFieldId);
+	[DllImport(pluginName)]
+	public static extern void PixelpartForceFieldSetNoiseAnimated(IntPtr nativeEffect, uint forceFieldId, bool animated);
+	[DllImport(pluginName)]
+	public static extern bool PixelpartForceFieldGetNoiseAnimated(IntPtr nativeEffect, uint forceFieldId);
+	[DllImport(pluginName)]
+	public static extern IntPtr PixelpartForceFieldGetNoiseAnimationTimeScale(IntPtr nativeEffect, uint forceFieldId);
+	[DllImport(pluginName)]
+	public static extern IntPtr PixelpartForceFieldGetNoiseAnimationTimeBase(IntPtr nativeEffect, uint forceFieldId);
+	[DllImport(pluginName)]
+	public static extern IntPtr PixelpartForceFieldGetDragVelocityInfluence(IntPtr nativeEffect, uint forceFieldId);
+	[DllImport(pluginName)]
+	public static extern IntPtr PixelpartForceFieldGetDragSizeInfluence(IntPtr nativeEffect, uint forceFieldId);
 
+	// Collider
 	[DllImport(pluginName)]
 	public static extern uint PixelpartFindCollider(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string buffer);
 	[DllImport(pluginName)]
@@ -346,9 +363,9 @@ internal static class Plugin {
 	[DllImport(pluginName)]
 	public static extern float PixelpartColliderGetLocalTime(IntPtr nativeEffect, uint colliderId);
 	[DllImport(pluginName)]
-	public static extern void PixelpartColliderAddPoint(IntPtr nativeEffect, uint colliderId, float x, float y, float z);
+	public static extern void PixelpartColliderAddPoint(IntPtr nativeEffect, uint colliderId, Vector3 point);
 	[DllImport(pluginName)]
-	public static extern void PixelpartColliderSetPoint(IntPtr nativeEffect, uint colliderId, int index, float x, float y, float z);
+	public static extern void PixelpartColliderSetPoint(IntPtr nativeEffect, uint colliderId, int index, Vector3 point);
 	[DllImport(pluginName)]
 	public static extern void PixelpartColliderRemovePoint(IntPtr nativeEffect, uint colliderId, int index);
 	[DllImport(pluginName)]
@@ -360,133 +377,251 @@ internal static class Plugin {
 	[DllImport(pluginName)]
 	public static extern int PixelpartColliderGetNumPoints(IntPtr nativeEffect, uint colliderId);
 	[DllImport(pluginName)]
+	public static extern IntPtr PixelpartColliderGetWidth(IntPtr nativeEffect, uint colliderId);
+	[DllImport(pluginName)]
+	public static extern IntPtr PixelpartColliderGetOrientation(IntPtr nativeEffect, uint colliderId);
+	// TODO: kill on contact
+	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartColliderGetBounce(IntPtr nativeEffect, uint colliderId);
 	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartColliderGetFriction(IntPtr nativeEffect, uint colliderId);
 
+	// StaticPropertyInt
 	[DllImport(pluginName)]
-	public static extern float PixelpartCurveGet(IntPtr curve, float position);
+	public static extern int PixelpartStaticPropertyIntGet(IntPtr property);
 	[DllImport(pluginName)]
-	public static extern float PixelpartCurveGetPoint(IntPtr curve, int index);
+	public static extern void PixelpartStaticPropertyIntSetValue(IntPtr property, int value);
 	[DllImport(pluginName)]
-	public static extern void PixelpartCurveSet(IntPtr curve, float value);
-	[DllImport(pluginName)]
-	public static extern void PixelpartCurveAddPoint(IntPtr curve, float position, float value);
-	[DllImport(pluginName)]
-	public static extern void PixelpartCurveSetPoint(IntPtr curve, int index, float value);
-	[DllImport(pluginName)]
-	public static extern void PixelpartCurveMovePoint(IntPtr curve, int index, float delta);
-	[DllImport(pluginName)]
-	public static extern void PixelpartCurveShiftPoint(IntPtr curve, int index, float delta);
-	[DllImport(pluginName)]
-	public static extern void PixelpartCurveRemovePoint(IntPtr curve, int index);
-	[DllImport(pluginName)]
-	public static extern void PixelpartCurveClear(IntPtr curve);
-	[DllImport(pluginName)]
-	public static extern int PixelpartCurveGetNumPoints(IntPtr curve);
-	[DllImport(pluginName)]
-	public static extern void PixelpartCurveMove(IntPtr curve, float delta);
-	[DllImport(pluginName)]
-	public static extern void PixelpartCurveShift(IntPtr curve, float delta);
-	[DllImport(pluginName)]
-	public static extern void PixelpartCurveSetInterpolation(IntPtr curve, int method);
-	[DllImport(pluginName)]
-	public static extern int PixelpartCurveGetInterpolation(IntPtr curve);
-	[DllImport(pluginName)]
-	public static extern void PixelpartCurveEnableAdaptiveCache(IntPtr curve);
-	[DllImport(pluginName)]
-	public static extern void PixelpartCurveEnableFixedCache(IntPtr curve, int size);
-	[DllImport(pluginName)]
-	public static extern int PixelpartCurveGetCacheSize(IntPtr curve);
+	public static extern int PixelpartStaticPropertyIntGetValue(IntPtr property);
 
+	// StaticPropertyFloat
 	[DllImport(pluginName)]
-	public static extern float PixelpartCurve3GetX(IntPtr curve, float position);
+	public static extern float PixelpartStaticPropertyFloatGet(IntPtr property);
 	[DllImport(pluginName)]
-	public static extern float PixelpartCurve3GetY(IntPtr curve, float position);
+	public static extern void PixelpartStaticPropertyFloatSetValue(IntPtr property, float value);
 	[DllImport(pluginName)]
-	public static extern float PixelpartCurve3GetZ(IntPtr curve, float position);
-	[DllImport(pluginName)]
-	public static extern float PixelpartCurve3GetPointX(IntPtr curve, int index);
-	[DllImport(pluginName)]
-	public static extern float PixelpartCurve3GetPointY(IntPtr curve, int index);
-	[DllImport(pluginName)]
-	public static extern float PixelpartCurve3GetPointZ(IntPtr curve, int index);
-	[DllImport(pluginName)]
-	public static extern void PixelpartCurve3Set(IntPtr curve, float x, float y, float z);
-	[DllImport(pluginName)]
-	public static extern void PixelpartCurve3AddPoint(IntPtr curve, float position, float x, float y, float z);
-	[DllImport(pluginName)]
-	public static extern void PixelpartCurve3SetPoint(IntPtr curve, int index, float x, float y, float z);
-	[DllImport(pluginName)]
-	public static extern void PixelpartCurve3MovePoint(IntPtr curve, int index, float deltaX, float deltaY, float deltaZ);
-	[DllImport(pluginName)]
-	public static extern void PixelpartCurve3ShiftPoint(IntPtr curve, int index, float delta);
-	[DllImport(pluginName)]
-	public static extern void PixelpartCurve3RemovePoint(IntPtr curve, int index);
-	[DllImport(pluginName)]
-	public static extern void PixelpartCurve3Clear(IntPtr curve);
-	[DllImport(pluginName)]
-	public static extern int PixelpartCurve3GetNumPoints(IntPtr curve);
-	[DllImport(pluginName)]
-	public static extern void PixelpartCurve3Move(IntPtr curve, float deltaX, float deltaY, float deltaZ);
-	[DllImport(pluginName)]
-	public static extern void PixelpartCurve3Shift(IntPtr curve, float delta);
-	[DllImport(pluginName)]
-	public static extern void PixelpartCurve3SetInterpolation(IntPtr curve, int method);
-	[DllImport(pluginName)]
-	public static extern int PixelpartCurve3GetInterpolation(IntPtr curve);
-	[DllImport(pluginName)]
-	public static extern void PixelpartCurve3EnableAdaptiveCache(IntPtr curve);
-	[DllImport(pluginName)]
-	public static extern void PixelpartCurve3EnableFixedCache(IntPtr curve, int size);
-	[DllImport(pluginName)]
-	public static extern int PixelpartCurve3GetCacheSize(IntPtr curve);
+	public static extern float PixelpartStaticPropertyFloatGetValue(IntPtr property);
 
+	// StaticPropertyFloat2
 	[DllImport(pluginName)]
-	public static extern float PixelpartCurve4GetX(IntPtr curve, float position);
+	public static extern float PixelpartStaticPropertyFloat2GetX(IntPtr property);
 	[DllImport(pluginName)]
-	public static extern float PixelpartCurve4GetY(IntPtr curve, float position);
+	public static extern float PixelpartStaticPropertyFloat2GetY(IntPtr property);
 	[DllImport(pluginName)]
-	public static extern float PixelpartCurve4GetZ(IntPtr curve, float position);
+	public static extern void PixelpartStaticPropertyFloat2SetValue(IntPtr property, Vector2 value);
 	[DllImport(pluginName)]
-	public static extern float PixelpartCurve4GetW(IntPtr curve, float position);
+	public static extern float PixelpartStaticPropertyFloat2GetValueX(IntPtr property);
 	[DllImport(pluginName)]
-	public static extern float PixelpartCurve4GetPointX(IntPtr curve, int index);
+	public static extern float PixelpartStaticPropertyFloat2GetValueY(IntPtr property);
+
+	// StaticPropertyFloat3
 	[DllImport(pluginName)]
-	public static extern float PixelpartCurve4GetPointY(IntPtr curve, int index);
+	public static extern float PixelpartStaticPropertyFloat3GetX(IntPtr property);
 	[DllImport(pluginName)]
-	public static extern float PixelpartCurve4GetPointZ(IntPtr curve, int index);
+	public static extern float PixelpartStaticPropertyFloat3GetY(IntPtr property);
 	[DllImport(pluginName)]
-	public static extern float PixelpartCurve4GetPointW(IntPtr curve, int index);
+	public static extern float PixelpartStaticPropertyFloat3GetZ(IntPtr property);
 	[DllImport(pluginName)]
-	public static extern void PixelpartCurve4Set(IntPtr curve, float x, float y, float z, float w);
+	public static extern void PixelpartStaticPropertyFloat3SetValue(IntPtr property, Vector3 value);
 	[DllImport(pluginName)]
-	public static extern void PixelpartCurve4AddPoint(IntPtr curve, float position, float x, float y, float z, float w);
+	public static extern float PixelpartStaticPropertyFloat3GetValueX(IntPtr property);
 	[DllImport(pluginName)]
-	public static extern void PixelpartCurve4SetPoint(IntPtr curve, int index, float x, float y, float z, float w);
+	public static extern float PixelpartStaticPropertyFloat3GetValueY(IntPtr property);
 	[DllImport(pluginName)]
-	public static extern void PixelpartCurve4MovePoint(IntPtr curve, int index, float deltaX, float deltaY, float deltaZ, float deltaW);
+	public static extern float PixelpartStaticPropertyFloat3GetValueZ(IntPtr property);
+
+	// StaticPropertyFloat4
 	[DllImport(pluginName)]
-	public static extern void PixelpartCurve4ShiftPoint(IntPtr curve, int index, float delta);
+	public static extern float PixelpartStaticPropertyFloat4GetX(IntPtr property);
 	[DllImport(pluginName)]
-	public static extern void PixelpartCurve4RemovePoint(IntPtr curve, int index);
+	public static extern float PixelpartStaticPropertyFloat4GetY(IntPtr property);
 	[DllImport(pluginName)]
-	public static extern void PixelpartCurve4Clear(IntPtr curve);
+	public static extern float PixelpartStaticPropertyFloat4GetZ(IntPtr property);
 	[DllImport(pluginName)]
-	public static extern int PixelpartCurve4GetNumPoints(IntPtr curve);
+	public static extern float PixelpartStaticPropertyFloat4GetW(IntPtr property);
 	[DllImport(pluginName)]
-	public static extern void PixelpartCurve4Move(IntPtr curve, float deltaX, float deltaY, float deltaZ, float deltaW);
+	public static extern void PixelpartStaticPropertyFloat4SetValue(IntPtr property, Vector4 value);
 	[DllImport(pluginName)]
-	public static extern void PixelpartCurve4Shift(IntPtr curve, float delta);
+	public static extern float PixelpartStaticPropertyFloat4GetValueX(IntPtr property);
 	[DllImport(pluginName)]
-	public static extern void PixelpartCurve4SetInterpolation(IntPtr curve, int method);
+	public static extern float PixelpartStaticPropertyFloat4GetValueY(IntPtr property);
 	[DllImport(pluginName)]
-	public static extern int PixelpartCurve4GetInterpolation(IntPtr curve);
+	public static extern float PixelpartStaticPropertyFloat4GetValueZ(IntPtr property);
 	[DllImport(pluginName)]
-	public static extern void PixelpartCurve4EnableAdaptiveCache(IntPtr curve);
+	public static extern float PixelpartStaticPropertyFloat4GetValueW(IntPtr property);
+
+	// AnimatedPropertyInt
 	[DllImport(pluginName)]
-	public static extern void PixelpartCurve4EnableFixedCache(IntPtr curve, int size);
+	public static extern int PixelpartAnimatedPropertyIntGet(IntPtr property, float position);
 	[DllImport(pluginName)]
-	public static extern int PixelpartCurve4GetCacheSize(IntPtr curve);
+	public static extern void PixelpartAnimatedPropertyIntAddPoint(IntPtr property, float position, int value);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyIntRemovePoint(IntPtr property, int index);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyIntSetPoint(IntPtr property, int index, int value);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyIntSetPointPosition(IntPtr property, int index, float position);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyIntClear(IntPtr property);
+	[DllImport(pluginName)]
+	public static extern bool PixelpartAnimatedPropertyIntContainsPoints(IntPtr property);
+	[DllImport(pluginName)]
+	public static extern int PixelpartAnimatedPropertyIntGetNumPoints(IntPtr property);
+	[DllImport(pluginName)]
+	public static extern int PixelpartAnimatedPropertyIntGetPoint(IntPtr property, int index);
+	[DllImport(pluginName)]
+	public static extern int PixelpartAnimatedPropertyIntGetPointIndex(IntPtr property, float position, float epsilon);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyIntSetInterpolation(IntPtr property, int method);
+	[DllImport(pluginName)]
+	public static extern int PixelpartAnimatedPropertyIntGetInterpolation(IntPtr property);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyIntEnableAdaptiveCache(IntPtr property);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyIntEnableFixedCache(IntPtr property, int size);
+
+	// AnimatedPropertyFloat
+	[DllImport(pluginName)]
+	public static extern float PixelpartAnimatedPropertyFloatGet(IntPtr property, float position);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyFloatAddPoint(IntPtr property, float position, float value);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyFloatRemovePoint(IntPtr property, int index);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyFloatSetPoint(IntPtr property, int index, float value);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyFloatSetPointPosition(IntPtr property, int index, float position);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyFloatClear(IntPtr property);
+	[DllImport(pluginName)]
+	public static extern bool PixelpartAnimatedPropertyFloatContainsPoints(IntPtr property);
+	[DllImport(pluginName)]
+	public static extern int PixelpartAnimatedPropertyFloatGetNumPoints(IntPtr property);
+	[DllImport(pluginName)]
+	public static extern float PixelpartAnimatedPropertyFloatGetPoint(IntPtr property, int index);
+	[DllImport(pluginName)]
+	public static extern int PixelpartAnimatedPropertyFloatGetPointIndex(IntPtr property, float position, float epsilon);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyFloatSetInterpolation(IntPtr property, int method);
+	[DllImport(pluginName)]
+	public static extern int PixelpartAnimatedPropertyFloatGetInterpolation(IntPtr property);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyFloatEnableAdaptiveCache(IntPtr property);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyFloatEnableFixedCache(IntPtr property, int size);
+
+	// AnimatedPropertyFloat2
+	[DllImport(pluginName)]
+	public static extern float PixelpartAnimatedPropertyFloat2GetX(IntPtr property, float position);
+	[DllImport(pluginName)]
+	public static extern float PixelpartAnimatedPropertyFloat2GetY(IntPtr property, float position);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyFloat2AddPoint(IntPtr property, float position, Vector2 value);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyFloat2RemovePoint(IntPtr property, int index);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyFloat2SetPoint(IntPtr property, int index, Vector2 value);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyFloat2SetPointPosition(IntPtr property, int index, float position);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyFloat2Clear(IntPtr property);
+	[DllImport(pluginName)]
+	public static extern bool PixelpartAnimatedPropertyFloat2ContainsPoints(IntPtr property);
+	[DllImport(pluginName)]
+	public static extern int PixelpartAnimatedPropertyFloat2GetNumPoints(IntPtr property);
+	[DllImport(pluginName)]
+	public static extern float PixelpartAnimatedPropertyFloat2GetPointX(IntPtr property, int index);
+	[DllImport(pluginName)]
+	public static extern float PixelpartAnimatedPropertyFloat2GetPointY(IntPtr property, int index);
+	[DllImport(pluginName)]
+	public static extern int PixelpartAnimatedPropertyFloat2GetPointIndex(IntPtr property, float position, float epsilon);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyFloat2SetInterpolation(IntPtr property, int method);
+	[DllImport(pluginName)]
+	public static extern int PixelpartAnimatedPropertyFloat2GetInterpolation(IntPtr property);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyFloat2EnableAdaptiveCache(IntPtr property);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyFloat2EnableFixedCache(IntPtr property, int size);
+
+	// AnimatedPropertyFloat3
+	[DllImport(pluginName)]
+	public static extern float PixelpartAnimatedPropertyFloat3GetX(IntPtr property, float position);
+	[DllImport(pluginName)]
+	public static extern float PixelpartAnimatedPropertyFloat3GetY(IntPtr property, float position);
+	[DllImport(pluginName)]
+	public static extern float PixelpartAnimatedPropertyFloat3GetZ(IntPtr property, float position);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyFloat3AddPoint(IntPtr property, float position, Vector3 value);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyFloat3RemovePoint(IntPtr property, int index);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyFloat3SetPoint(IntPtr property, int index, Vector3 value);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyFloat3SetPointPosition(IntPtr property, int index, float position);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyFloat3Clear(IntPtr property);
+	[DllImport(pluginName)]
+	public static extern bool PixelpartAnimatedPropertyFloat3ContainsPoints(IntPtr property);
+	[DllImport(pluginName)]
+	public static extern int PixelpartAnimatedPropertyFloat3GetNumPoints(IntPtr property);
+	[DllImport(pluginName)]
+	public static extern float PixelpartAnimatedPropertyFloat3GetPointX(IntPtr property, int index);
+	[DllImport(pluginName)]
+	public static extern float PixelpartAnimatedPropertyFloat3GetPointY(IntPtr property, int index);
+	[DllImport(pluginName)]
+	public static extern float PixelpartAnimatedPropertyFloat3GetPointZ(IntPtr property, int index);
+	[DllImport(pluginName)]
+	public static extern int PixelpartAnimatedPropertyFloat3GetPointIndex(IntPtr property, float position, float epsilon);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyFloat3SetInterpolation(IntPtr property, int method);
+	[DllImport(pluginName)]
+	public static extern int PixelpartAnimatedPropertyFloat3GetInterpolation(IntPtr property);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyFloat3EnableAdaptiveCache(IntPtr property);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyFloat3EnableFixedCache(IntPtr property, int size);
+
+	// AnimatedPropertyFloat4
+	[DllImport(pluginName)]
+	public static extern float PixelpartAnimatedPropertyFloat4GetX(IntPtr property, float position);
+	[DllImport(pluginName)]
+	public static extern float PixelpartAnimatedPropertyFloat4GetY(IntPtr property, float position);
+	[DllImport(pluginName)]
+	public static extern float PixelpartAnimatedPropertyFloat4GetZ(IntPtr property, float position);
+	[DllImport(pluginName)]
+	public static extern float PixelpartAnimatedPropertyFloat4GetW(IntPtr property, float position);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyFloat4AddPoint(IntPtr property, float position, Vector4 value);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyFloat4RemovePoint(IntPtr property, int index);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyFloat4SetPoint(IntPtr property, int index, Vector4 value);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyFloat4SetPointPosition(IntPtr property, int index, float position);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyFloat4Clear(IntPtr property);
+	[DllImport(pluginName)]
+	public static extern bool PixelpartAnimatedPropertyFloat4ContainsPoints(IntPtr property);
+	[DllImport(pluginName)]
+	public static extern int PixelpartAnimatedPropertyFloat4GetNumPoints(IntPtr property);
+	[DllImport(pluginName)]
+	public static extern float PixelpartAnimatedPropertyFloat4GetPointX(IntPtr property, int index);
+	[DllImport(pluginName)]
+	public static extern float PixelpartAnimatedPropertyFloat4GetPointY(IntPtr property, int index);
+	[DllImport(pluginName)]
+	public static extern float PixelpartAnimatedPropertyFloat4GetPointZ(IntPtr property, int index);
+	[DllImport(pluginName)]
+	public static extern float PixelpartAnimatedPropertyFloat4GetPointW(IntPtr property, int index);
+	[DllImport(pluginName)]
+	public static extern int PixelpartAnimatedPropertyFloat4GetPointIndex(IntPtr property, float position, float epsilon);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyFloat4SetInterpolation(IntPtr property, int method);
+	[DllImport(pluginName)]
+	public static extern int PixelpartAnimatedPropertyFloat4GetInterpolation(IntPtr property);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyFloat4EnableAdaptiveCache(IntPtr property);
+	[DllImport(pluginName)]
+	public static extern void PixelpartAnimatedPropertyFloat4EnableFixedCache(IntPtr property, int size);
 }
 }

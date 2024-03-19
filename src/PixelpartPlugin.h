@@ -1,7 +1,8 @@
 #pragma once
 
-#include "Project.h"
-#include "ParticleEngine.h"
+#include "project/Project.h"
+#include "engine/ParticleEngine.h"
+#include <random>
 
 #if defined(__CYGWIN32__)
 	#define UNITY_INTERFACE_API __stdcall
@@ -42,17 +43,17 @@ struct Color {
 struct PixelpartMeshData {
 	struct ParticleTrail {
 		uint32_t numParticles = 0u;
-		pixelpart::floatd length = 0.0;
+		pixelpart::float_t length = 0.0;
 
-		std::vector<pixelpart::vec3d> position;
-		std::vector<pixelpart::vec3d> size;
-		std::vector<pixelpart::vec4d> color;
-		std::vector<pixelpart::vec3d> velocity;
-		std::vector<pixelpart::vec3d> force;
-		std::vector<pixelpart::floatd> life;
+		std::vector<pixelpart::vec3_t> position;
+		std::vector<pixelpart::vec3_t> size;
+		std::vector<pixelpart::vec4_t> color;
+		std::vector<pixelpart::vec3_t> velocity;
+		std::vector<pixelpart::vec3_t> force;
+		std::vector<pixelpart::float_t> life;
 
-		std::vector<pixelpart::vec3d> direction;
-		std::vector<pixelpart::floatd> index;
+		std::vector<pixelpart::vec3_t> direction;
+		std::vector<pixelpart::float_t> index;
 	};
 
 	pixelpart::ParticleData sortedParticleData;
@@ -63,7 +64,6 @@ struct PixelpartMeshData {
 
 struct PixelpartNativeEffect {
 	pixelpart::Project project;
-	pixelpart::ResourceDatabase projectResources;
 
 	bool playing = true;
 	bool loop = false;
@@ -75,4 +75,6 @@ struct PixelpartNativeEffect {
 	float simulationTime = 0.0f;
 
 	std::vector<PixelpartMeshData> meshData;
+
+	std::mt19937 rng;
 };

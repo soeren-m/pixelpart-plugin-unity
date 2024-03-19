@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 using System.Runtime.InteropServices;
 using UnityEngine;
@@ -27,35 +27,33 @@ public class PixelpartParticleType {
 		}
 	}
 
-	public PixelpartCurve3 Position {
+	public PixelpartAnimatedPropertyFloat3 Position {
 		get {
 			return position;
 		}
 	}
-	private PixelpartCurve3 position;
+	private PixelpartAnimatedPropertyFloat3 position;
 
-	public PixelpartCurve NumParticles {
+	public PixelpartAnimatedPropertyFloat NumParticles {
 		get {
 			return numParticles;
 		}
 	}
-	private PixelpartCurve numParticles;
+	private PixelpartAnimatedPropertyFloat numParticles;
 
-	public PixelpartCurve Lifespan {
+	public PixelpartAnimatedPropertyFloat Lifespan {
 		get {
 			return lifespan;
 		}
 	}
-	private PixelpartCurve lifespan;
+	private PixelpartAnimatedPropertyFloat lifespan;
 
-	public float LifespanVariance {
+	public PixelpartStaticPropertyFloat LifespanVariance {
 		get {
-			return Plugin.PixelpartParticleTypeGetLifespanVariance(nativeEffect, particleTypeId);
-		}
-		set {
-			Plugin.PixelpartParticleTypeSetLifespanVariance(nativeEffect, particleTypeId, value);
+			return lifespanVariance;
 		}
 	}
+	private PixelpartStaticPropertyFloat lifespanVariance;
 
 	public bool PositionRelative {
 		get {
@@ -66,21 +64,21 @@ public class PixelpartParticleType {
 		}
 	}
 
-	public float MotionPathForce {
+	public PixelpartStaticPropertyFloat MotionPathForce {
 		get {
-			return Plugin.PixelpartParticleTypeGetMotionPathForce(nativeEffect, particleTypeId);
-		}
-		set {
-			Plugin.PixelpartParticleTypeSetMotionPathForce(nativeEffect, particleTypeId, value);
+			return motionPathForce;
 		}
 	}
+	private PixelpartStaticPropertyFloat motionPathForce;
 
-	public PixelpartCurve InitialVelocity {
+	public PixelpartAnimatedPropertyFloat InitialVelocity {
 		get {
 			return initialVelocity;
 		}
 	}
-	private PixelpartCurve initialVelocity;
+	private PixelpartAnimatedPropertyFloat initialVelocity;
+
+	// TODO
 
 	public float VelocityVariance {
 		get {
@@ -91,26 +89,19 @@ public class PixelpartParticleType {
 		}
 	}
 
-	public PixelpartCurve Acceleration {
+	public PixelpartAnimatedPropertyFloat Acceleration {
 		get {
 			return acceleration;
 		}
 	}
-	private PixelpartCurve acceleration;
+	private PixelpartAnimatedPropertyFloat acceleration;
 
-	public PixelpartCurve RadialAcceleration {
+	public PixelpartAnimatedPropertyFloat RadialAcceleration {
 		get {
 			return radialAcceleration;
 		}
 	}
-	private PixelpartCurve radialAcceleration;
-
-	public PixelpartCurve Damping {
-		get {
-			return damping;
-		}
-	}
-	private PixelpartCurve damping;
+	private PixelpartAnimatedPropertyFloat radialAcceleration;
 
 	public RotationModeType RotationMode {
 		get {
@@ -130,19 +121,19 @@ public class PixelpartParticleType {
 		}
 	}
 
-	public PixelpartCurve3 InitialRotation {
+	public PixelpartAnimatedPropertyFloat3 InitialRotation {
 		get {
 			return initialRotation;
 		}
 	}
-	private PixelpartCurve3 initialRotation;
+	private PixelpartAnimatedPropertyFloat3 initialRotation;
 
-	public PixelpartCurve3 Rotation {
+	public PixelpartAnimatedPropertyFloat3 Rotation {
 		get {
 			return rotation;
 		}
 	}
-	private PixelpartCurve3 rotation;
+	private PixelpartAnimatedPropertyFloat3 rotation;
 
 	public Vector3 RotationVariance {
 		get {
@@ -180,26 +171,26 @@ public class PixelpartParticleType {
 		}
 	}
 
-	public PixelpartCurve Weight {
+	public PixelpartAnimatedPropertyFloat Weight {
 		get {
 			return weight;
 		}
 	}
-	private PixelpartCurve weight;
+	private PixelpartAnimatedPropertyFloat weight;
 
-	public PixelpartCurve Bounce {
+	public PixelpartAnimatedPropertyFloat Bounce {
 		get {
 			return bounce;
 		}
 	}
-	private PixelpartCurve bounce;
+	private PixelpartAnimatedPropertyFloat bounce;
 
-	public PixelpartCurve Friction {
+	public PixelpartAnimatedPropertyFloat Friction {
 		get {
 			return friction;
 		}
 	}
-	private PixelpartCurve friction;
+	private PixelpartAnimatedPropertyFloat friction;
 
 	public bool Visible {
 		get {
@@ -228,19 +219,19 @@ public class PixelpartParticleType {
 		}
 	}
 
-	public PixelpartCurve InitialSize {
+	public PixelpartAnimatedPropertyFloat InitialSize {
 		get {
 			return initialSize;
 		}
 	}
-	private PixelpartCurve initialSize;
+	private PixelpartAnimatedPropertyFloat initialSize;
 
-	public PixelpartCurve3 Size {
+	public PixelpartAnimatedPropertyFloat3 Size {
 		get {
 			return size;
 		}
 	}
-	private PixelpartCurve3 size;
+	private PixelpartAnimatedPropertyFloat3 size;
 
 	public float SizeVariance {
 		get {
@@ -251,12 +242,12 @@ public class PixelpartParticleType {
 		}
 	}
 
-	public PixelpartGradient Color {
+	public PixelpartAnimatedPropertyFloat4 Color {
 		get {
 			return color;
 		}
 	}
-	private PixelpartGradient color;
+	private PixelpartAnimatedPropertyFloat4 color;
 
 	public Vector3 ColorVariance {
 		get {
@@ -270,19 +261,19 @@ public class PixelpartParticleType {
 		}
 	}
 
-	public PixelpartCurve InitialOpacity {
+	public PixelpartAnimatedPropertyFloat InitialOpacity {
 		get {
 			return initialOpacity;
 		}
 	}
-	private PixelpartCurve initialOpacity;
+	private PixelpartAnimatedPropertyFloat initialOpacity;
 
-	public PixelpartCurve Opacity {
+	public PixelpartAnimatedPropertyFloat Opacity {
 		get {
 			return opacity;
 		}
 	}
-	private PixelpartCurve opacity;
+	private PixelpartAnimatedPropertyFloat opacity;
 
 	public float OpacityVariance {
 		get {
@@ -299,23 +290,24 @@ public class PixelpartParticleType {
 		nativeEffect = nativeParticleTypePtr;
 		particleTypeId = nativeParticleTypeId;
 
-		position = new PixelpartCurve3(Plugin.PixelpartParticleTypeGetPosition(nativeEffect, particleTypeId), nativeEffect, PixelpartCurve3.ObjectType.ParticleType);
-		numParticles = new PixelpartCurve(Plugin.PixelpartParticleTypeGetNumParticles(nativeEffect, particleTypeId), nativeEffect, PixelpartCurve.ObjectType.ParticleType);
-		lifespan = new PixelpartCurve(Plugin.PixelpartParticleTypeGetLifespan(nativeEffect, particleTypeId), nativeEffect, PixelpartCurve.ObjectType.ParticleType);
-		initialVelocity = new PixelpartCurve(Plugin.PixelpartParticleTypeGetInitialVelocity(nativeEffect, particleTypeId), nativeEffect, PixelpartCurve.ObjectType.ParticleType);
-		acceleration = new PixelpartCurve(Plugin.PixelpartParticleTypeGetAcceleration(nativeEffect, particleTypeId), nativeEffect, PixelpartCurve.ObjectType.ParticleType);
-		radialAcceleration = new PixelpartCurve(Plugin.PixelpartParticleTypeGetRadialAcceleration(nativeEffect, particleTypeId), nativeEffect, PixelpartCurve.ObjectType.ParticleType);
-		damping = new PixelpartCurve(Plugin.PixelpartParticleTypeGetDamping(nativeEffect, particleTypeId), nativeEffect, PixelpartCurve.ObjectType.ParticleType);
-		initialRotation = new PixelpartCurve3(Plugin.PixelpartParticleTypeGetInitialRotation(nativeEffect, particleTypeId), nativeEffect, PixelpartCurve3.ObjectType.ParticleType);
-		rotation = new PixelpartCurve3(Plugin.PixelpartParticleTypeGetRotation(nativeEffect, particleTypeId), nativeEffect, PixelpartCurve3.ObjectType.ParticleType);
-		weight = new PixelpartCurve(Plugin.PixelpartParticleTypeGetWeight(nativeEffect, particleTypeId), nativeEffect, PixelpartCurve.ObjectType.ParticleType);
-		bounce = new PixelpartCurve(Plugin.PixelpartParticleTypeGetBounce(nativeEffect, particleTypeId), nativeEffect, PixelpartCurve.ObjectType.ParticleType);
-		friction = new PixelpartCurve(Plugin.PixelpartParticleTypeGetFriction(nativeEffect, particleTypeId), nativeEffect, PixelpartCurve.ObjectType.ParticleType);
-		initialSize = new PixelpartCurve(Plugin.PixelpartParticleTypeGetInitialSize(nativeEffect, particleTypeId), nativeEffect, PixelpartCurve.ObjectType.ParticleType);
-		size = new PixelpartCurve3(Plugin.PixelpartParticleTypeGetSize(nativeEffect, particleTypeId), nativeEffect, PixelpartCurve3.ObjectType.ParticleType);
-		color = new PixelpartGradient(Plugin.PixelpartParticleTypeGetColor(nativeEffect, particleTypeId), nativeEffect, PixelpartGradient.ObjectType.ParticleType);
-		initialOpacity = new PixelpartCurve(Plugin.PixelpartParticleTypeGetInitialOpacity(nativeEffect, particleTypeId), nativeEffect, PixelpartCurve.ObjectType.ParticleType);
-		opacity = new PixelpartCurve(Plugin.PixelpartParticleTypeGetOpacity(nativeEffect, particleTypeId), nativeEffect, PixelpartCurve.ObjectType.ParticleType);
+		position = new PixelpartAnimatedPropertyFloat3(Plugin.PixelpartParticleTypeGetPosition(nativeEffect, particleTypeId), nativeEffect);
+		numParticles = new PixelpartAnimatedPropertyFloat(Plugin.PixelpartParticleTypeGetNumParticles(nativeEffect, particleTypeId), nativeEffect);
+		lifespan = new PixelpartAnimatedPropertyFloat(Plugin.PixelpartParticleTypeGetLifespan(nativeEffect, particleTypeId), nativeEffect);
+		lifespanVariance = new PixelpartStaticPropertyFloat(Plugin.PixelpartParticleTypeGetLifespanVariance(nativeEffect, particleTypeId), nativeEffect);
+		motionPathForce = new PixelpartStaticPropertyFloat(Plugin.PixelpartParticleTypeGetMotionPathForce(nativeEffect, particleTypeId), nativeEffect);
+		initialVelocity = new PixelpartAnimatedPropertyFloat(Plugin.PixelpartParticleTypeGetInitialVelocity(nativeEffect, particleTypeId), nativeEffect);
+		acceleration = new PixelpartAnimatedPropertyFloat(Plugin.PixelpartParticleTypeGetAcceleration(nativeEffect, particleTypeId), nativeEffect);
+		radialAcceleration = new PixelpartAnimatedPropertyFloat(Plugin.PixelpartParticleTypeGetRadialAcceleration(nativeEffect, particleTypeId), nativeEffect);
+		initialRotation = new PixelpartAnimatedPropertyFloat3(Plugin.PixelpartParticleTypeGetInitialRotation(nativeEffect, particleTypeId), nativeEffect);
+		rotation = new PixelpartAnimatedPropertyFloat3(Plugin.PixelpartParticleTypeGetRotation(nativeEffect, particleTypeId), nativeEffect);
+		weight = new PixelpartAnimatedPropertyFloat(Plugin.PixelpartParticleTypeGetWeight(nativeEffect, particleTypeId), nativeEffect);
+		bounce = new PixelpartAnimatedPropertyFloat(Plugin.PixelpartParticleTypeGetBounce(nativeEffect, particleTypeId), nativeEffect);
+		friction = new PixelpartAnimatedPropertyFloat(Plugin.PixelpartParticleTypeGetFriction(nativeEffect, particleTypeId), nativeEffect);
+		initialSize = new PixelpartAnimatedPropertyFloat(Plugin.PixelpartParticleTypeGetInitialSize(nativeEffect, particleTypeId), nativeEffect);
+		size = new PixelpartAnimatedPropertyFloat3(Plugin.PixelpartParticleTypeGetSize(nativeEffect, particleTypeId), nativeEffect);
+		color = new PixelpartAnimatedPropertyFloat4(Plugin.PixelpartParticleTypeGetColor(nativeEffect, particleTypeId), nativeEffect);
+		initialOpacity = new PixelpartAnimatedPropertyFloat(Plugin.PixelpartParticleTypeGetInitialOpacity(nativeEffect, particleTypeId), nativeEffect);
+		opacity = new PixelpartAnimatedPropertyFloat(Plugin.PixelpartParticleTypeGetOpacity(nativeEffect, particleTypeId), nativeEffect);
 	}
 
 	public void SpawnParticles(int count) {

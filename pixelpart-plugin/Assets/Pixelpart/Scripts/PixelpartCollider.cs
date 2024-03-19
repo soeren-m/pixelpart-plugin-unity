@@ -10,7 +10,7 @@ public class PixelpartCollider {
 			return colliderId;
 		}
 	}
-	private uint colliderId = 0;
+	private readonly uint colliderId;
 
 	public string Name {
 		get {
@@ -62,35 +62,53 @@ public class PixelpartCollider {
 		}
 	}
 
-	public PixelpartCurve Bounce {
+	public PixelpartStaticPropertyFloat Width {
+		get {
+			return width;
+		}
+	}
+	private readonly PixelpartStaticPropertyFloat width;
+
+	public PixelpartStaticPropertyFloat Orientation {
+		get {
+			return orientation;
+		}
+	}
+	private readonly PixelpartStaticPropertyFloat orientation;
+
+	// TODO: kill on contact
+
+	public PixelpartAnimatedPropertyFloat Bounce {
 		get {
 			return bounce;
 		}
 	}
-	private PixelpartCurve bounce;
+	private readonly PixelpartAnimatedPropertyFloat bounce;
 
-	public PixelpartCurve Friction {
+	public PixelpartAnimatedPropertyFloat Friction {
 		get {
 			return friction;
 		}
 	}
-	private PixelpartCurve friction;
+	private readonly PixelpartAnimatedPropertyFloat friction;
 
-	private IntPtr nativeEffect = IntPtr.Zero;
+	private readonly IntPtr nativeEffect;
 
 	public PixelpartCollider(IntPtr nativeEffectPtr, uint nativeId) {
 		nativeEffect = nativeEffectPtr;
 		colliderId = nativeId;
 
-		bounce = new PixelpartCurve(Plugin.PixelpartColliderGetBounce(nativeEffect, colliderId), nativeEffect, PixelpartCurve.ObjectType.Collider);
-		friction = new PixelpartCurve(Plugin.PixelpartColliderGetFriction(nativeEffect, colliderId), nativeEffect, PixelpartCurve.ObjectType.Collider);
+		width = new PixelpartStaticPropertyFloat(Plugin.PixelpartColliderGetWidth(nativeEffect, colliderId), nativeEffect);
+		orientation = new PixelpartStaticPropertyFloat(Plugin.PixelpartColliderGetOrientation(nativeEffect, colliderId), nativeEffect);
+		bounce = new PixelpartAnimatedPropertyFloat(Plugin.PixelpartColliderGetBounce(nativeEffect, colliderId), nativeEffect);
+		friction = new PixelpartAnimatedPropertyFloat(Plugin.PixelpartColliderGetFriction(nativeEffect, colliderId), nativeEffect);
 	}
 
 	public void AddPoint(Vector3 point) {
-		Plugin.PixelpartColliderAddPoint(nativeEffect, colliderId, point.x, point.y, point.z);
+		Plugin.PixelpartColliderAddPoint(nativeEffect, colliderId, point);
 	}
 	public void SetPoint(int index, Vector3 point) {
-		Plugin.PixelpartColliderSetPoint(nativeEffect, colliderId, index, point.x, point.y, point.z);
+		Plugin.PixelpartColliderSetPoint(nativeEffect, colliderId, index, point);
 	}
 	public void RemovePoint(int index) {
 		Plugin.PixelpartColliderRemovePoint(nativeEffect, colliderId, index);

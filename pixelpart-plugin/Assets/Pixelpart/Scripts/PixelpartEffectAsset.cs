@@ -55,6 +55,7 @@ public class PixelpartEffectAsset : ScriptableObject {
 			uint numParticleTypes = Plugin.PixelpartGetEffectNumParticleTypes(nativeEffect);
 			asset.ParticleTypeAssets = new PixelpartParticleTypeAsset[numParticleTypes];
 
+			// TODO: loop tthrough materials
 			for(uint particleTypeIndex = 0; particleTypeIndex < numParticleTypes; particleTypeIndex++) {
 				uint particleTypeId = Plugin.PixelpartFindParticleTypeByIndex(nativeEffect, particleTypeIndex);
 				int nameSize = Plugin.PixelpartParticleTypeGetName(nativeEffect, particleTypeId, nameBuffer, nameBuffer.Length);

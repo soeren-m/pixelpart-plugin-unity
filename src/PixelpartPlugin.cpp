@@ -1,41 +1,8 @@
 #include "PixelpartPlugin.h"
 #include "PixelpartPluginUtil.h"
-#include "ParticleSolverCPU.h"
 #include "PixelpartShaderGraph.h"
-#include "SortUtil.h"
+#include <engine/ParticleSolverCPU.h>
 #include <locale>
-
-pixelpart::vec3_t rotate2d(const pixelpart::vec3_t& p, const pixelpart::vec3_t& o, pixelpart::float_t a) {
-	pixelpart::float_t s = std::sin(glm::radians(a));
-	pixelpart::float_t c = std::cos(glm::radians(a));
-
-	return pixelpart::vec3_t(
-		(p.x - o.x) * c - (p.y - o.y) * s + o.x,
-		(p.x - o.x) * s + (p.y - o.y) * c + o.y,
-		0.0);
-}
-pixelpart::mat3_t rotation3d(const pixelpart::vec3_t& angle) {
-	pixelpart::vec3_t rotation = glm::radians(angle);
-	pixelpart::float_t cy = std::cos(rotation.y);
-	pixelpart::float_t sy = std::sin(rotation.y);
-	pixelpart::float_t cp = std::cos(rotation.z);
-	pixelpart::float_t sp = std::sin(rotation.z);
-	pixelpart::float_t cr = std::cos(rotation.x);
-	pixelpart::float_t sr = std::sin(rotation.x);
-
-	return pixelpart::mat3_t(
-		pixelpart::vec3_t(cy * cr + sy * sp * sr, sr * cp, -sy * cr + cy * sp * sr),
-		pixelpart::vec3_t(-cy * sr + sy * sp * cr, cr * cp, sr * sy + cy * sp * cr),
-		pixelpart::vec3_t(sy * cp, -sp, cy * cp));
-}
-pixelpart::mat3_t lookAt(const pixelpart::vec3_t& direction) {
-	pixelpart::vec3_t up = pixelpart::vec3_t(0.0, 1.0, 0.0);
-	pixelpart::vec3_t front = glm::normalize(direction);
-	pixelpart::vec3_t right = glm::normalize(glm::cross(front, up));
-	up = glm::normalize(glm::cross(right, front));
-
-	return pixelpart::mat3_t(right, up, front);
-}
 
 extern "C" {
 static int32_t particleCapacity = 10000;
@@ -57,6 +24,8 @@ UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartGetParticleCapacity(
 UNITY_INTERFACE_EXPORT void* UNITY_INTERFACE_API PixelpartLoadEffect(const char* data, int32_t size) {
 	if(!initialized) {
 		try {
+			pixelpart::ComputeGraph::nodeFactory.registerBuiltInNodes();
+
 			nlohmann::ordered_json modelJson = nlohmann::json::parse(
 				PixelpartShaderGraph_json,
 				PixelpartShaderGraph_json + PixelpartShaderGraph_json_size);
@@ -306,6 +275,180 @@ UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartGetEffectNumParticl
 	return nativeEffect->particleEngine.getNumParticles(particleTypeIndex);
 }
 
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartSetEffectInputBool(PixelpartNativeEffect* nativeEffect, const char* name, bool value) {
+	if(!nativeEffect) {
+		return;
+	}
+
+	pixelpart::EffectInputSet::iterator inputIt = util::findEffectInput(nativeEffect->project.effect, std::string(name));
+	if(inputIt == nativeEffect->project.effect.inputs.end()) {
+		return;
+	}
+
+	inputIt->second.value = pixelpart::VariantValue::Bool(value);
+
+	pixelpart::refreshEffectProperties(nativeEffect->project.effect);
+	nativeEffect->particleEngine.refreshParticleSolver();
+}
+
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartSetEffectInputInt(PixelpartNativeEffect* nativeEffect, const char* name, int32_t value) {
+	if(!nativeEffect) {
+		return;
+	}
+
+	pixelpart::EffectInputSet::iterator inputIt = util::findEffectInput(nativeEffect->project.effect, std::string(name));
+	if(inputIt == nativeEffect->project.effect.inputs.end()) {
+		return;
+	}
+
+	inputIt->second.value = pixelpart::VariantValue::Int(util::fromUnity(value));
+
+	pixelpart::refreshEffectProperties(nativeEffect->project.effect);
+	nativeEffect->particleEngine.refreshParticleSolver();
+}
+
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartSetEffectInputFloat(PixelpartNativeEffect* nativeEffect, const char* name, float value) {
+	if(!nativeEffect) {
+		return;
+	}
+
+	pixelpart::EffectInputSet::iterator inputIt = util::findEffectInput(nativeEffect->project.effect, std::string(name));
+	if(inputIt == nativeEffect->project.effect.inputs.end()) {
+		return;
+	}
+
+	inputIt->second.value = pixelpart::VariantValue::Float(util::fromUnity(value));
+
+	pixelpart::refreshEffectProperties(nativeEffect->project.effect);
+	nativeEffect->particleEngine.refreshParticleSolver();
+}
+
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartSetEffectInputFloat2(PixelpartNativeEffect* nativeEffect, const char* name, Vector2 value) {
+	if(!nativeEffect) {
+		return;
+	}
+
+	pixelpart::EffectInputSet::iterator inputIt = util::findEffectInput(nativeEffect->project.effect, std::string(name));
+	if(inputIt == nativeEffect->project.effect.inputs.end()) {
+		return;
+	}
+
+	inputIt->second.value = pixelpart::VariantValue::Float2(util::fromUnity(value));
+
+	pixelpart::refreshEffectProperties(nativeEffect->project.effect);
+	nativeEffect->particleEngine.refreshParticleSolver();
+}
+
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartSetEffectInputFloat3(PixelpartNativeEffect* nativeEffect, const char* name, Vector3 value) {
+	if(!nativeEffect) {
+		return;
+	}
+
+	pixelpart::EffectInputSet::iterator inputIt = util::findEffectInput(nativeEffect->project.effect, std::string(name));
+	if(inputIt == nativeEffect->project.effect.inputs.end()) {
+		return;
+	}
+
+	inputIt->second.value = pixelpart::VariantValue::Float3(util::fromUnity(value));
+
+	pixelpart::refreshEffectProperties(nativeEffect->project.effect);
+	nativeEffect->particleEngine.refreshParticleSolver();
+}
+
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartSetEffectInputFloat4(PixelpartNativeEffect* nativeEffect, const char* name, Vector4 value) {
+	if(!nativeEffect) {
+		return;
+	}
+
+	pixelpart::EffectInputSet::iterator inputIt = util::findEffectInput(nativeEffect->project.effect, std::string(name));
+	if(inputIt == nativeEffect->project.effect.inputs.end()) {
+		return;
+	}
+
+	inputIt->second.value = pixelpart::VariantValue::Float4(util::fromUnity(value));
+
+	pixelpart::refreshEffectProperties(nativeEffect->project.effect);
+	nativeEffect->particleEngine.refreshParticleSolver();
+}
+
+UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartGetEffectInputBool(PixelpartNativeEffect* nativeEffect, const char* name) {
+	if(!nativeEffect) {
+		return false;
+	}
+
+	pixelpart::EffectInputSet::iterator inputIt = util::findEffectInput(nativeEffect->project.effect, std::string(name));
+	if(inputIt == nativeEffect->project.effect.inputs.end()) {
+		return false;
+	}
+
+	return inputIt->second.value.toBool();
+}
+
+UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartGetEffectInputInt(PixelpartNativeEffect* nativeEffect, const char* name) {
+	if(!nativeEffect) {
+		return 0;
+	}
+
+	pixelpart::EffectInputSet::iterator inputIt = util::findEffectInput(nativeEffect->project.effect, std::string(name));
+	if(inputIt == nativeEffect->project.effect.inputs.end()) {
+		return 0;
+	}
+
+	return util::toUnity(inputIt->second.value.toInt());
+}
+
+UNITY_INTERFACE_EXPORT float UNITY_INTERFACE_API PixelpartGetEffectInputFloat(PixelpartNativeEffect* nativeEffect, const char* name) {
+	if(!nativeEffect) {
+		return 0.0f;
+	}
+
+	pixelpart::EffectInputSet::iterator inputIt = util::findEffectInput(nativeEffect->project.effect, std::string(name));
+	if(inputIt == nativeEffect->project.effect.inputs.end()) {
+		return 0.0f;
+	}
+
+	return util::toUnity(inputIt->second.value.toFloat());
+}
+
+UNITY_INTERFACE_EXPORT Vector2 UNITY_INTERFACE_API PixelpartGetEffectInputFloat2(PixelpartNativeEffect* nativeEffect, const char* name) {
+	if(!nativeEffect) {
+		return Vector2{ 0.0f, 0.0f };
+	}
+
+	pixelpart::EffectInputSet::iterator inputIt = util::findEffectInput(nativeEffect->project.effect, std::string(name));
+	if(inputIt == nativeEffect->project.effect.inputs.end()) {
+		return Vector2{ 0.0f, 0.0f };
+	}
+
+	return util::toUnity(inputIt->second.value.toFloat2());
+}
+
+UNITY_INTERFACE_EXPORT Vector3 UNITY_INTERFACE_API PixelpartGetEffectInputFloat3(PixelpartNativeEffect* nativeEffect, const char* name) {
+	if(!nativeEffect) {
+		return Vector3{ 0.0f, 0.0f, 0.0f };
+	}
+
+	pixelpart::EffectInputSet::iterator inputIt = util::findEffectInput(nativeEffect->project.effect, std::string(name));
+	if(inputIt == nativeEffect->project.effect.inputs.end()) {
+		return Vector3{ 0.0f, 0.0f, 0.0f };
+	}
+
+	return util::toUnity(inputIt->second.value.toFloat3());
+}
+
+UNITY_INTERFACE_EXPORT Vector4 UNITY_INTERFACE_API PixelpartGetEffectInputFloat4(PixelpartNativeEffect* nativeEffect, const char* name) {
+	if(!nativeEffect) {
+		return Vector4{ 0.0f, 0.0f, 0.0f, 0.0f };
+	}
+
+	pixelpart::EffectInputSet::iterator inputIt = util::findEffectInput(nativeEffect->project.effect, std::string(name));
+	if(inputIt == nativeEffect->project.effect.inputs.end()) {
+		return Vector4{ 0.0f, 0.0f, 0.0f, 0.0f };
+	}
+
+	return util::toUnity(inputIt->second.value.toFloat4());
+}
+
 UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetParticleTypesSortedForRendering(PixelpartNativeEffect* nativeEffect, uint32_t* indices) {
 	if(!nativeEffect) {
 		return;
@@ -320,7 +463,7 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetParticleTypesSortedF
 		indices[i] = sortedIndices[i];
 	}
 }
-
+/*
 UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartBuildParticleShader(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeIndex,
 	char* bufferCode, char* bufferTextureIds,
 	int32_t* outLengthCode, int32_t* outLengthTextureIds,
@@ -365,7 +508,7 @@ UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartBuildParticleShader(Pix
 	}
 
 	return false;
-}
+}*/
 
 UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartPrepareParticleSpriteVertexData(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeIndex, int32_t* numTriangles, int32_t* numVertices) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.containsIndex(particleTypeIndex) || !numTriangles || !numVertices) {
@@ -676,7 +819,7 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetParticleSpriteVertex
 		}
 
 		for(uint32_t p = 0u; p < numParticles; p++) {
-			pixelpart::mat3_t rotationMatrix = rotation3d(particleRenderData->rotation[p]);
+			pixelpart::mat3_t rotationMatrix = util::rotation3d(particleRenderData->rotation[p]);
 			pixelpart::vec3_t pivot = particleType.pivot.get() * particleRenderData->size[p];
 			pixelpart::vec3_t worldPosition[4];
 			pixelpart::vec3_t localPosition[4] = {
@@ -694,7 +837,7 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetParticleSpriteVertex
 					break;
 				}
 				case pixelpart::AlignmentMode::motion: {
-					pixelpart::mat3_t lookAtMatrix = lookAt(particleRenderData->velocity[p] * effectScale);
+					pixelpart::mat3_t lookAtMatrix = util::lookAt(particleRenderData->velocity[p] * effectScale);
 					worldPosition[0] = particleRenderData->globalPosition[p] * effectScale + lookAtMatrix * localPosition[0];
 					worldPosition[1] = particleRenderData->globalPosition[p] * effectScale + lookAtMatrix * localPosition[1];
 					worldPosition[2] = particleRenderData->globalPosition[p] * effectScale + lookAtMatrix * localPosition[2];
@@ -702,7 +845,7 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetParticleSpriteVertex
 					break;
 				}
 				case pixelpart::AlignmentMode::emission: {
-					pixelpart::mat3_t lookAtMatrix = lookAt(particleEmitter.position.get(alpha) - particleRenderData->globalPosition[p]);
+					pixelpart::mat3_t lookAtMatrix = util::lookAt(particleEmitter.position.get(alpha) - particleRenderData->globalPosition[p]);
 					worldPosition[0] = particleRenderData->globalPosition[p] * effectScale + lookAtMatrix * localPosition[0];
 					worldPosition[1] = particleRenderData->globalPosition[p] * effectScale + lookAtMatrix * localPosition[1];
 					worldPosition[2] = particleRenderData->globalPosition[p] * effectScale + lookAtMatrix * localPosition[2];
@@ -710,7 +853,7 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetParticleSpriteVertex
 					break;
 				}
 				case pixelpart::AlignmentMode::emitter: {
-					pixelpart::mat3_t lookAtMatrix = rotation3d(particleEmitter.orientation.get(alpha));
+					pixelpart::mat3_t lookAtMatrix = util::rotation3d(particleEmitter.orientation.get(alpha));
 					worldPosition[0] = particleRenderData->globalPosition[p] * effectScale + lookAtMatrix * localPosition[0];
 					worldPosition[1] = particleRenderData->globalPosition[p] * effectScale + lookAtMatrix * localPosition[1];
 					worldPosition[2] = particleRenderData->globalPosition[p] * effectScale + lookAtMatrix * localPosition[2];
@@ -738,16 +881,17 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetParticleSpriteVertex
 
 		for(uint32_t p = 0u; p < numParticles; p++) {
 			pixelpart::vec3_t worldPosition[4];
+			pixelpart::vec3_t pivot = particleType.pivot.get() * particles.size[p];
 
 			switch(particleType.alignmentMode) {
 				case pixelpart::AlignmentMode::motion: {
 					pixelpart::float_t angle = glm::degrees(glm::orientedAngle(pixelpart::vec2_t(0.0, 1.0), (particles.velocity[p] != pixelpart::vec3_t(0.0))
 						? pixelpart::vec2_t(glm::normalize(particles.velocity[p]))
 						: pixelpart::vec2_t(0.0, 1.0)));
-					worldPosition[0] = particles.globalPosition[p] + rotate2d(pixelpart::vec3_t(-0.5, -0.5, 0.0) * particles.size[p], particleType.pivot * particles.size[p], particles.rotation[p].x + angle);
-					worldPosition[1] = particles.globalPosition[p] + rotate2d(pixelpart::vec3_t(+0.5, -0.5, 0.0) * particles.size[p], particleType.pivot * particles.size[p], particles.rotation[p].x + angle);
-					worldPosition[2] = particles.globalPosition[p] + rotate2d(pixelpart::vec3_t(+0.5, +0.5, 0.0) * particles.size[p], particleType.pivot * particles.size[p], particles.rotation[p].x + angle);
-					worldPosition[3] = particles.globalPosition[p] + rotate2d(pixelpart::vec3_t(-0.5, +0.5, 0.0) * particles.size[p], particleType.pivot * particles.size[p], particles.rotation[p].x + angle);
+					worldPosition[0] = particles.globalPosition[p] + util::rotate2d(pixelpart::vec3_t(-0.5, -0.5, 0.0) * particles.size[p], pivot, particles.rotation[p].x + angle);
+					worldPosition[1] = particles.globalPosition[p] + util::rotate2d(pixelpart::vec3_t(+0.5, -0.5, 0.0) * particles.size[p], pivot, particles.rotation[p].x + angle);
+					worldPosition[2] = particles.globalPosition[p] + util::rotate2d(pixelpart::vec3_t(+0.5, +0.5, 0.0) * particles.size[p], pivot, particles.rotation[p].x + angle);
+					worldPosition[3] = particles.globalPosition[p] + util::rotate2d(pixelpart::vec3_t(-0.5, +0.5, 0.0) * particles.size[p], pivot, particles.rotation[p].x + angle);
 					break;
 				}
 				case pixelpart::AlignmentMode::emission: {
@@ -755,27 +899,27 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetParticleSpriteVertex
 					pixelpart::float_t angle = glm::degrees(glm::orientedAngle(pixelpart::vec2_t(0.0, 1.0), (emissionDirection != pixelpart::vec3_t(0.0))
 							? pixelpart::vec2_t(glm::normalize(emissionDirection))
 							: pixelpart::vec2_t(0.0, 1.0)));
-					worldPosition[0] = particles.globalPosition[p] + rotate2d(pixelpart::vec3_t(-0.5, -0.5, 0.0) * particles.size[p], particleType.pivot * particles.size[p], particles.rotation[p].x + angle);
-					worldPosition[1] = particles.globalPosition[p] + rotate2d(pixelpart::vec3_t(+0.5, -0.5, 0.0) * particles.size[p], particleType.pivot * particles.size[p], particles.rotation[p].x + angle);
-					worldPosition[2] = particles.globalPosition[p] + rotate2d(pixelpart::vec3_t(+0.5, +0.5, 0.0) * particles.size[p], particleType.pivot * particles.size[p], particles.rotation[p].x + angle);
-					worldPosition[3] = particles.globalPosition[p] + rotate2d(pixelpart::vec3_t(-0.5, +0.5, 0.0) * particles.size[p], particleType.pivot * particles.size[p], particles.rotation[p].x + angle);
+					worldPosition[0] = particles.globalPosition[p] + util::rotate2d(pixelpart::vec3_t(-0.5, -0.5, 0.0) * particles.size[p], pivot, particles.rotation[p].x + angle);
+					worldPosition[1] = particles.globalPosition[p] + util::rotate2d(pixelpart::vec3_t(+0.5, -0.5, 0.0) * particles.size[p], pivot, particles.rotation[p].x + angle);
+					worldPosition[2] = particles.globalPosition[p] + util::rotate2d(pixelpart::vec3_t(+0.5, +0.5, 0.0) * particles.size[p], pivot, particles.rotation[p].x + angle);
+					worldPosition[3] = particles.globalPosition[p] + util::rotate2d(pixelpart::vec3_t(-0.5, +0.5, 0.0) * particles.size[p], pivot, particles.rotation[p].x + angle);
 					break;
 				}
 				case pixelpart::AlignmentMode::emitter: {
-					pixelpart::mat3_t rotationMatrix = rotation3d(particles.rotation[p]);
-					pixelpart::mat3_t lookAtMatrix = rotation3d(particleEmitter.orientation.get(alpha));
-					worldPosition[0] = particles.globalPosition[p] + lookAtMatrix * (rotationMatrix * (pixelpart::vec3_t(-0.5, -0.5, 0.0) * particles.size[p] - particleType.pivot * particles.size[p]) + particleType.pivot * particles.size[p]);
-					worldPosition[1] = particles.globalPosition[p] + lookAtMatrix * (rotationMatrix * (pixelpart::vec3_t(+0.5, -0.5, 0.0) * particles.size[p] - particleType.pivot * particles.size[p]) + particleType.pivot * particles.size[p]);
-					worldPosition[2] = particles.globalPosition[p] + lookAtMatrix * (rotationMatrix * (pixelpart::vec3_t(+0.5, +0.5, 0.0) * particles.size[p] - particleType.pivot * particles.size[p]) + particleType.pivot * particles.size[p]);
-					worldPosition[3] = particles.globalPosition[p] + lookAtMatrix * (rotationMatrix * (pixelpart::vec3_t(-0.5, +0.5, 0.0) * particles.size[p] - particleType.pivot * particles.size[p]) + particleType.pivot * particles.size[p]);
+					pixelpart::mat3_t rotationMatrix = util::rotation3d(particles.rotation[p]);
+					pixelpart::mat3_t lookAtMatrix = util::rotation3d(particleEmitter.orientation.get(alpha));
+					worldPosition[0] = particles.globalPosition[p] + lookAtMatrix * (rotationMatrix * (pixelpart::vec3_t(-0.5, -0.5, 0.0) * particles.size[p] - pivot) + pivot);
+					worldPosition[1] = particles.globalPosition[p] + lookAtMatrix * (rotationMatrix * (pixelpart::vec3_t(+0.5, -0.5, 0.0) * particles.size[p] - pivot) + pivot);
+					worldPosition[2] = particles.globalPosition[p] + lookAtMatrix * (rotationMatrix * (pixelpart::vec3_t(+0.5, +0.5, 0.0) * particles.size[p] - pivot) + pivot);
+					worldPosition[3] = particles.globalPosition[p] + lookAtMatrix * (rotationMatrix * (pixelpart::vec3_t(-0.5, +0.5, 0.0) * particles.size[p] - pivot) + pivot);
 					break;
 				}
 				default: {
-					pixelpart::mat3_t rotationMatrix = rotation3d(particles.rotation[p]);
-					worldPosition[0] = particles.globalPosition[p] + (rotationMatrix * (pixelpart::vec3_t(-0.5, -0.5, 0.0) * particles.size[p] - particleType.pivot * particles.size[p]) + particleType.pivot * particles.size[p]);
-					worldPosition[1] = particles.globalPosition[p] + (rotationMatrix * (pixelpart::vec3_t(+0.5, -0.5, 0.0) * particles.size[p] - particleType.pivot * particles.size[p]) + particleType.pivot * particles.size[p]);
-					worldPosition[2] = particles.globalPosition[p] + (rotationMatrix * (pixelpart::vec3_t(+0.5, +0.5, 0.0) * particles.size[p] - particleType.pivot * particles.size[p]) + particleType.pivot * particles.size[p]);
-					worldPosition[3] = particles.globalPosition[p] + (rotationMatrix * (pixelpart::vec3_t(-0.5, +0.5, 0.0) * particles.size[p] - particleType.pivot * particles.size[p]) + particleType.pivot * particles.size[p]);
+					pixelpart::mat3_t rotationMatrix = util::rotation3d(particles.rotation[p]);
+					worldPosition[0] = particles.globalPosition[p] + (rotationMatrix * (pixelpart::vec3_t(-0.5, -0.5, 0.0) * particles.size[p] - pivot) + pivot);
+					worldPosition[1] = particles.globalPosition[p] + (rotationMatrix * (pixelpart::vec3_t(+0.5, -0.5, 0.0) * particles.size[p] - pivot) + pivot);
+					worldPosition[2] = particles.globalPosition[p] + (rotationMatrix * (pixelpart::vec3_t(+0.5, +0.5, 0.0) * particles.size[p] - pivot) + pivot);
+					worldPosition[3] = particles.globalPosition[p] + (rotationMatrix * (pixelpart::vec3_t(-0.5, +0.5, 0.0) * particles.size[p] - pivot) + pivot);
 					break;
 				}
 			}
@@ -979,75 +1123,6 @@ UNITY_INTERFACE_EXPORT bool UNITY_INTERFACE_API PixelpartGetParticleTrailVertexD
 }
 
 // TODO: mesh
-
-UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartGetImageResourceCount(PixelpartNativeEffect* nativeEffect) {
-	if(!nativeEffect) {
-		return 0;
-	}
-
-	return static_cast<uint32_t>(nativeEffect->project.effect.resources.images.size());
-}
-
-UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartGetImageResourceId(PixelpartNativeEffect* nativeEffect, uint32_t index, char* imageIdBuffer, int32_t bufferLength) {
-	if(!nativeEffect || !imageIdBuffer) {
-		return 0;
-	}
-
-	int32_t length = 0;
-	uint32_t i = 0u;
-	for(const auto& entry : nativeEffect->project.effect.resources.images) {
-		if(index == i) {
-			length = static_cast<int32_t>(entry.first.size());
-			std::memcpy(imageIdBuffer, entry.first.c_str(), static_cast<std::size_t>(length));
-
-			break;
-		}
-
-		i++;
-	}
-
-	return length;
-}
-
-UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartGetImageResourceWidth(PixelpartNativeEffect* nativeEffect, const char* imageId) {
-	if(!nativeEffect || !imageId) {
-		return 0;
-	}
-
-	const pixelpart::ImageResource& image = nativeEffect->project.effect.resources.images.at(std::string(imageId));
-
-	return static_cast<int32_t>(image.width);
-}
-
-UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartGetImageResourceHeight(PixelpartNativeEffect* nativeEffect, const char* imageId) {
-	if(!nativeEffect || !imageId) {
-		return 0;
-	}
-
-	const pixelpart::ImageResource& image = nativeEffect->project.effect.resources.images.at(std::string(imageId));
-
-	return static_cast<int32_t>(image.height);
-}
-
-UNITY_INTERFACE_EXPORT uint32_t UNITY_INTERFACE_API PixelpartGetImageResourceDataSize(PixelpartNativeEffect* nativeEffect, const char* imageId) {
-	if(!nativeEffect || !imageId) {
-		return 0;
-	}
-
-	const pixelpart::ImageResource& image = nativeEffect->project.effect.resources.images.at(std::string(imageId));
-
-	return static_cast<uint32_t>(image.data.size());
-}
-
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetImageResourceData(PixelpartNativeEffect* nativeEffect, const char* imageId, unsigned char* imageData) {
-	if(!nativeEffect || !imageId) {
-		return;
-	}
-
-	const pixelpart::ImageResource& image = nativeEffect->project.effect.resources.images.at(std::string(imageId));
-
-	std::memcpy(imageData, image.data.data(), image.data.size());
-}
 
 UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartSpawnParticles(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId, int32_t count) {
 	if(!nativeEffect || count <= 0) {

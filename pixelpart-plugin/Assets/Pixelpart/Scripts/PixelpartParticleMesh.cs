@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 
 namespace Pixelpart {
@@ -19,12 +20,16 @@ public class PixelpartParticleMesh {
 	private readonly uint particleTypeIndex;
 	private readonly uint particleTypeId;
 
-	public PixelpartParticleMesh(IntPtr effectPtr, uint ptypeIndex, uint ptypeId) {
+	public PixelpartParticleMesh(IntPtr effectPtr, uint ptypeIndex) {
 		nativeEffect = effectPtr;
 		particleTypeIndex = ptypeIndex;
-		particleTypeId = ptypeId;
+		particleTypeId = Plugin.PixelpartFindParticleTypeByIndex(nativeEffect, (uint)particleTypeIndex);
 
 		// TODO: create material from builtin/custom shader
+
+		Shader shader = Shader.Find("Pixelpart/PixelpartSpriteUnlit");
+
+		material = new Material(shader);
 
 		mesh = new Mesh();
 		mesh.MarkDynamic();
@@ -38,34 +43,29 @@ public class PixelpartParticleMesh {
 		uv4 = new Vector4[2];
 	}
 
-	public void Draw(Camera camera, Vector3 scale) {
+	public void Draw(Camera camera, Transform transform, Vector3 scale, int layer) {
 		bool visible = Plugin.PixelpartParticleTypeIsVisible(nativeEffect, particleTypeId);
 		if(!visible || camera == null) {
 			return;
 		}
 
-		ApplyMaterialParamters();
+		ApplyMaterialParameters();
 
 		ParticleRendererType renderer = (ParticleRendererType)Plugin.PixelpartParticleTypeGetRenderer(nativeEffect, particleTypeId);
 
 		switch(renderer) {
-			case ParticleRendererType.Sprite: {
-				DrawSprites(camera, scale);
-
+			case ParticleRendererType.Sprite:
+				DrawSprites(camera, transform, scale, layer);
 				break;
-			}
-
-			case ParticleRendererType.Trail: {
+			case ParticleRendererType.Trail:
+				DrawTrails(camera, transform, scale, layer);
 				break;
-			}
-
-			case ParticleRendererType.Mesh: {
+			case ParticleRendererType.Mesh:
 				break;
-			}
 		}
 	}
 
-	private void DrawSprites(Camera camera, Vector3 scale) {
+	private void DrawSprites(Camera camera, Transform transform, Vector3 scale, int layer) {
 		int numTriangles = 0;
 		int numVertices = 0;
 		Plugin.PixelpartPrepareParticleSpriteVertexData(nativeEffect, particleTypeIndex, out numTriangles, out numVertices);
@@ -100,14 +100,14 @@ public class PixelpartParticleMesh {
 		mesh.SetUVs(3, uv4.ToList());
 		mesh.triangles = triangles;
 
-		Graphics.DrawMesh(particleMesh,
+		Graphics.DrawMesh(mesh,
 			transform.localToWorldMatrix,
 			material,
-			gameObject.layer,
+			layer,
 			null, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, null, false);
 	}
 
-	private void DrawTrails(Camera camera, Vector3 scale) {
+	private void DrawTrails(Camera camera, Transform transform, Vector3 scale, int layer) {
 		int numTriangles = 0;
 		int numVertices = 0;
 		Plugin.PixelpartPrepareParticleTrailVertexData(nativeEffect, particleTypeIndex, out numTriangles, out numVertices);
@@ -142,14 +142,15 @@ public class PixelpartParticleMesh {
 		mesh.SetUVs(3, uv4.ToList());
 		mesh.triangles = triangles;
 
-		Graphics.DrawMesh(particleMesh,
+		Graphics.DrawMesh(mesh,
 			transform.localToWorldMatrix,
 			material,
-			gameObject.layer,
+			layer,
 			null, 0, null, UnityEngine.Rendering.ShadowCastingMode.Off, false, null, false);
 	}
 
-	private void ApplyMaterialParamters() {
+	private void ApplyMaterialParameters() {
+		uint particleEmitterId = Plugin.PixelpartParticleTypeGetParentId(nativeEffect, particleTypeId);
 		float effectTime = Plugin.PixelpartGetEffectTime(nativeEffect);
 		float objectTime = Plugin.PixelpartParticleEmitterGetLocalTime(nativeEffect, particleEmitterId);
 

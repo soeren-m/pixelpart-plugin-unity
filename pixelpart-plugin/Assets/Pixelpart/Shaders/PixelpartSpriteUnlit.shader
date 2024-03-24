@@ -73,7 +73,10 @@ Shader "Pixelpart/PixelpartSpriteUnlit"
 
 			fixed4 frag(v2f IN) : SV_Target
 			{
+				fixed4 out_Color = tex2D(_MainTexture, IN.uv); // TODO
+				out_Color.rgb *= out_Color.a;
 
+				return out_Color;
 			}
 			ENDCG
 		}

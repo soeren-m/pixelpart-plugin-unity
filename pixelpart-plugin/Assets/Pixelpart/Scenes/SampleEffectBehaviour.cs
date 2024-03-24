@@ -23,7 +23,7 @@ public class SampleEffectBehaviour : MonoBehaviour {
 			return;
 		}
 
-		// Set particle property
+		/*// Set particle property
 		particleType.VelocityVariance = 0.2f;
 
 		// Define animated property
@@ -35,6 +35,6 @@ public class SampleEffectBehaviour : MonoBehaviour {
 		particleEmitter.Spread.Set(360.0f);
 
 		// Spawn some extra particles
-		particleType.SpawnParticles(200);
+		particleType.SpawnParticles(200);*/
 	}
 }

@@ -21,7 +21,7 @@ public class PixelpartEffect : MonoBehaviour {
 	[Range(1.0f, 100.0f)]
 	public float FrameRate = 60.0f;
 
-	public List<Shader> ParticleShaders = new List<Shader>();
+	//public List<Shader> ParticleShaders = new List<Shader>();
 	public bool FlipH = false;
 	public bool FlipV = false;
 
@@ -53,9 +53,11 @@ public class PixelpartEffect : MonoBehaviour {
 
 	private PixelpartEffectAsset cachedEffectAsset = null;
 
-	private uint[] sortedParticleTypeIndices = null;
+	private PixelpartGraphicsResourceStore graphicsResources = new PixelpartGraphicsResourceStore();
 
-	private Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
+	private PixelpartParticleMesh[] particleMeshes;
+
+	private uint[] sortedParticleTypeIndices = null;
 
 	public PixelpartEffect() {
 
@@ -108,6 +110,15 @@ public class PixelpartEffect : MonoBehaviour {
 		}
 	}
 
+	public void SpawnParticles(string particleTypeName, int count) {
+		if(nativeEffect != IntPtr.Zero) {
+			uint particleTypeId = Plugin.PixelpartFindParticleType(nativeEffect, particleTypeName);
+			if(particleTypeId != NullId) {
+				Plugin.PixelpartSpawnParticles(nativeEffect, particleTypeId, count);
+			}
+		}
+	}
+
 	public void SetInput(string name, bool value) {
 		if(nativeEffect != IntPtr.Zero) {
 			Plugin.PixelpartSetEffectInputBool(nativeEffect, name, value);
@@ -154,7 +165,7 @@ public class PixelpartEffect : MonoBehaviour {
 	}
 	public float GetInputFloat(string name) {
 		if(nativeEffect != IntPtr.Zero) {
-			return Plugin.PixelpartGetEffectInputFloat2(nativeEffect, name);
+			return Plugin.PixelpartGetEffectInputFloat(nativeEffect, name);
 		}
 
 		return 0.0f;
@@ -304,47 +315,26 @@ public class PixelpartEffect : MonoBehaviour {
 			nativeEffect = EffectAsset.LoadEffect();
 
 			if(nativeEffect != IntPtr.Zero) {
+				graphicsResources.Load(nativeEffect);
+
 				int numParticleTypes = (int)Plugin.PixelpartGetEffectNumParticleTypes(nativeEffect);
 
-				if(EffectAsset.ParticleTypeAssets == null ||
+				/*if(EffectAsset.ParticleTypeAssets == null ||
 				EffectAsset.ParticleTypeAssets.Length < numParticleTypes ||
 				EffectAsset.ParticleTypeAssets.Any(x => x == null || x.TextureIds == null)) {
 					Debug.LogError("Error loading effect asset", this);
 
 					nativeEffect = IntPtr.Zero;
 					return;
-				}
+				}*/
 
-				materials = new Material[numParticleTypes];
-				meshes = new Mesh[numParticleTypes];
-				vertexData = new VertexData[numParticleTypes];
+				particleMeshes = new PixelpartParticleMesh[numParticleTypes];
 				sortedParticleTypeIndices = new uint[numParticleTypes];
-				textures.Clear();
-
-				uint numImageResources = Plugin.PixelpartGetImageResourceCount(nativeEffect);
-
-				for(uint i = 0; i < numImageResources; i++) {
-					byte[] imageIdBuffer = new byte[2048];
-					int imageIdLength = Plugin.PixelpartGetImageResourceId(nativeEffect, i, imageIdBuffer, imageIdBuffer.Length);
-					string imageId = Encoding.UTF8.GetString(imageIdBuffer, 0, imageIdLength);
-
-					int textureWidth = Plugin.PixelpartGetImageResourceWidth(nativeEffect, imageId);
-					int textureHeight = Plugin.PixelpartGetImageResourceHeight(nativeEffect, imageId);
-					uint textureDataSize = Plugin.PixelpartGetImageResourceDataSize(nativeEffect, imageId);
-					byte[] textureData = new byte[textureDataSize];
-					Plugin.PixelpartGetImageResourceData(nativeEffect, imageId, textureData);
-
-					Texture2D texture = new Texture2D(textureWidth, textureHeight, TextureFormat.RGBA32, false);
-					texture.filterMode = FilterMode.Bilinear;
-					texture.wrapMode = TextureWrapMode.Repeat;
-					texture.LoadRawTextureData(textureData);
-					texture.Apply();
-
-					textures[imageId] = texture;
-				}
 
 				for(int particleTypeIndex = 0; particleTypeIndex < numParticleTypes; particleTypeIndex++) {
-					PixelpartParticleTypeAsset particleAsset = EffectAsset.ParticleTypeAssets[particleTypeIndex];
+					particleMeshes[particleTypeIndex] = new PixelpartParticleMesh(nativeEffect, (uint)particleTypeIndex);
+
+					/*PixelpartParticleTypeAsset particleAsset = EffectAsset.ParticleTypeAssets[particleTypeIndex];
 
 					materials[particleTypeIndex] = new Material(particleTypeIndex < ParticleShaders.Count
 						? ParticleShaders[particleTypeIndex]
@@ -359,13 +349,13 @@ public class PixelpartEffect : MonoBehaviour {
 						else {
 							Debug.LogWarning("Particle texture \"" + textureId + "\" not found", this);
 						}
-					};
-
-					
+					};*/
 				}
 			}
 			else {
 				Debug.LogError("Error loading effect asset", this);
+
+				graphicsResources.Clear();
 			}
 		}
 	}
@@ -387,17 +377,16 @@ public class PixelpartEffect : MonoBehaviour {
 	}
 
 	private void DrawParticles(Camera camera, uint particleTypeIndex, uint particleTypeId) {
-		
+		Vector3 scale = new Vector3(
+			EffectAsset.Scale * (FlipH ? -1.0f : +1.0f),
+			EffectAsset.Scale * (FlipV ? -1.0f : +1.0f),
+			EffectAsset.Scale);
 
-		new Vector3(EffectAsset.Scale * (FlipH ? -1.0f : +1.0f), EffectAsset.Scale * (FlipV ? -1.0f : +1.0f), EffectAsset.Scale)
+		particleMeshes[particleTypeIndex].Draw(camera, transform, scale, gameObject.layer);
 
-		uint particleEmitterId = Plugin.PixelpartParticleTypeGetParentId(nativeEffect, particleTypeId);
-		
+		/*uint particleEmitterId = Plugin.PixelpartParticleTypeGetParentId(nativeEffect, particleTypeId);
 		int blendMode = Plugin.PixelpartParticleTypeGetBlendMode(nativeEffect, particleTypeId);
-
-		UpdateMaterial(particleMaterial, localTime, blendMode);
-
-		
+		UpdateMaterial(particleMaterial, localTime, blendMode);*/
 	}
 
 	private void UpdateMaterial(Material material, float objectTime, int blendMode) {
@@ -426,7 +415,7 @@ public class PixelpartEffect : MonoBehaviour {
 	}
 
 #if UNITY_EDITOR
-	public List<string> ParticleTypeNames = new List<string>();
+	//public List<string> ParticleTypeNames = new List<string>();
 
 	private PixelpartEffectAsset editorCachedEffectAsset = null;
 
@@ -436,7 +425,7 @@ public class PixelpartEffect : MonoBehaviour {
 		}
 
 		editorCachedEffectAsset = EffectAsset;
-		ParticleShaders.Clear();
+		/*ParticleShaders.Clear();
 		ParticleTypeNames.Clear();
 
 		if(EffectAsset != null) {
@@ -459,7 +448,7 @@ public class PixelpartEffect : MonoBehaviour {
 				ParticleTypeNames.Add(particleAsset.Name);
 				ParticleShaders.Add(shader);
 			}
-		}
+		}*/
 	}
 
 	public void OnDrawGizmos() {

@@ -4,8 +4,9 @@ using UnityEngine;
 
 namespace Pixelpart {
 public class PixelpartStaticPropertyFloat4 {
-	private IntPtr nativeProperty = IntPtr.Zero;
-	private IntPtr nativeEffect = IntPtr.Zero;
+	private readonly IntPtr nativeProperty;
+
+	private readonly IntPtr nativeEffect;
 
 	public PixelpartStaticPropertyFloat4(IntPtr nativePropertyPtr, IntPtr nativeEffectPtr) {
 		nativeProperty = nativePropertyPtr;
@@ -37,7 +38,7 @@ public class PixelpartStaticPropertyFloat4 {
 			return;
 		}
 
-		Plugin.PixelpartRefreshSolver(nativeEffect);
+		Plugin.PixelpartRefreshParticleSolver(nativeEffect);
 	}
 }
 }

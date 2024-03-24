@@ -14,7 +14,7 @@ public class PixelpartEffectAsset : ScriptableObject {
 	public byte[] Data = null;
 	public float Scale = 1.0f;
 
-	public PixelpartParticleTypeAsset[] ParticleTypeAssets = null;
+	//public PixelpartParticleTypeAsset[] ParticleTypeAssets = null;
 
 	public IntPtr LoadEffect() {
 		return Plugin.PixelpartLoadEffect(Data, Data.Length);
@@ -48,14 +48,13 @@ public class PixelpartEffectAsset : ScriptableObject {
 		IntPtr nativeEffect = asset.LoadEffect();
 
 		if(nativeEffect != IntPtr.Zero) {
-			byte[] nameBuffer = new byte[2048];
+			/*byte[] nameBuffer = new byte[2048];
 			byte[] shaderCodeBuffer = new byte[16384];
 			byte[] shaderTextureIdBuffer = new byte[2048];
 
 			uint numParticleTypes = Plugin.PixelpartGetEffectNumParticleTypes(nativeEffect);
 			asset.ParticleTypeAssets = new PixelpartParticleTypeAsset[numParticleTypes];
 
-			// TODO: loop tthrough materials
 			for(uint particleTypeIndex = 0; particleTypeIndex < numParticleTypes; particleTypeIndex++) {
 				uint particleTypeId = Plugin.PixelpartFindParticleTypeByIndex(nativeEffect, particleTypeIndex);
 				int nameSize = Plugin.PixelpartParticleTypeGetName(nativeEffect, particleTypeId, nameBuffer, nameBuffer.Length);
@@ -94,7 +93,7 @@ public class PixelpartEffectAsset : ScriptableObject {
 					shaderTextureIds);
 			}
 
-			Plugin.PixelpartDeleteEffect(nativeEffect);
+			Plugin.PixelpartDeleteEffect(nativeEffect);*/
 		}
 		else {
 			asset.Data = null;

@@ -6,10 +6,10 @@ namespace Pixelpart {
 public class PixelpartAnimatedPropertyFloat4 {
 	public InterpolationType Interpolation {
 		get {
-			return (InterpolationType)Plugin.PixelpartAnimatedPropertyFloat4GetInterpolation(nativeCurve);
+			return (InterpolationType)Plugin.PixelpartAnimatedPropertyFloat4GetInterpolation(nativeProperty);
 		}
 		set {
-			Plugin.PixelpartAnimatedPropertyFloat4SetInterpolation(nativeCurve, (int)value);
+			Plugin.PixelpartAnimatedPropertyFloat4SetInterpolation(nativeProperty, (int)value);
 			RefreshSolver();
 		}
 	}
@@ -22,61 +22,62 @@ public class PixelpartAnimatedPropertyFloat4 {
 
 	public int NumPoints {
 		get {
-			return Plugin.PixelpartAnimatedPropertyFloat4GetNumPoints(nativeCurve);
+			return Plugin.PixelpartAnimatedPropertyFloat4GetNumPoints(nativeProperty);
 		}
 	}
 
-	private IntPtr nativeCurve = IntPtr.Zero;
-	private IntPtr nativeEffect = IntPtr.Zero;
+	private readonly IntPtr nativeProperty;
 
-	public PixelpartAnimatedPropertyFloat4(IntPtr nativeCurvePtr, IntPtr nativeEffectPtr) {
-		nativeCurve = nativeCurvePtr;
+	private readonly IntPtr nativeEffect;
+
+	public PixelpartAnimatedPropertyFloat4(IntPtr nativePropertyPtr, IntPtr nativeEffectPtr) {
+		nativeProperty = nativePropertyPtr;
 		nativeEffect = nativeEffectPtr;
 	}
 
 	public Vector4 Get(float position) {
 		return new Vector4(
-			Plugin.PixelpartAnimatedPropertyFloat4GetX(nativeCurve, position),
-			Plugin.PixelpartAnimatedPropertyFloat4GetY(nativeCurve, position),
-			Plugin.PixelpartAnimatedPropertyFloat4GetZ(nativeCurve, position),
-			Plugin.PixelpartAnimatedPropertyFloat4GetW(nativeCurve, position));
+			Plugin.PixelpartAnimatedPropertyFloat4GetX(nativeProperty, position),
+			Plugin.PixelpartAnimatedPropertyFloat4GetY(nativeProperty, position),
+			Plugin.PixelpartAnimatedPropertyFloat4GetZ(nativeProperty, position),
+			Plugin.PixelpartAnimatedPropertyFloat4GetW(nativeProperty, position));
 	}
 
 	public void AddPoint(float position, Vector4 value) {
-		Plugin.PixelpartAnimatedPropertyFloat4AddPoint(nativeCurve, position, value);
+		Plugin.PixelpartAnimatedPropertyFloat4AddPoint(nativeProperty, position, value);
 		RefreshSolver();
 	}
 	public void RemovePoint(int index) {
-		Plugin.PixelpartAnimatedPropertyFloat4RemovePoint(nativeCurve, index);
+		Plugin.PixelpartAnimatedPropertyFloat4RemovePoint(nativeProperty, index);
 		RefreshSolver();
 	}
 	public void SetPoint(int index, Vector4 value) {
-		Plugin.PixelpartAnimatedPropertyFloat4SetPoint(nativeCurve, index, value);
+		Plugin.PixelpartAnimatedPropertyFloat4SetPoint(nativeProperty, index, value);
 		RefreshSolver();
 	}
 	public void SetPointPosition(int index, float position) {
-		Plugin.PixelpartAnimatedPropertyFloat4SetPointPosition(nativeCurve, index, position);
+		Plugin.PixelpartAnimatedPropertyFloat4SetPointPosition(nativeProperty, index, position);
 		RefreshSolver();
 	}
 	public void Clear() {
-		Plugin.PixelpartAnimatedPropertyFloat4Clear(nativeCurve);
+		Plugin.PixelpartAnimatedPropertyFloat4Clear(nativeProperty);
 		RefreshSolver();
 	}
 
 	public Vector4 GetPoint(int index) {
 		return new Vector4(
-			Plugin.PixelpartAnimatedPropertyFloat4GetPointX(nativeCurve, index),
-			Plugin.PixelpartAnimatedPropertyFloat4GetPointY(nativeCurve, index),
-			Plugin.PixelpartAnimatedPropertyFloat4GetPointZ(nativeCurve, index),
-			Plugin.PixelpartAnimatedPropertyFloat4GetPointW(nativeCurve, index));
+			Plugin.PixelpartAnimatedPropertyFloat4GetPointX(nativeProperty, index),
+			Plugin.PixelpartAnimatedPropertyFloat4GetPointY(nativeProperty, index),
+			Plugin.PixelpartAnimatedPropertyFloat4GetPointZ(nativeProperty, index),
+			Plugin.PixelpartAnimatedPropertyFloat4GetPointW(nativeProperty, index));
 	}
 
 	public void EnableAdaptiveCache() {
-		Plugin.PixelpartAnimatedPropertyFloat4EnableAdaptiveCache(nativeCurve);
+		Plugin.PixelpartAnimatedPropertyFloat4EnableAdaptiveCache(nativeProperty);
 		RefreshSolver();
 	}
 	public void EnableFixedCache(int size) {
-		Plugin.PixelpartAnimatedPropertyFloat4EnableFixedCache(nativeCurve, size);
+		Plugin.PixelpartAnimatedPropertyFloat4EnableFixedCache(nativeProperty, size);
 		RefreshSolver();
 	}
 
@@ -85,7 +86,7 @@ public class PixelpartAnimatedPropertyFloat4 {
 			return;
 		}
 
-		Plugin.PixelpartRefreshSolver(nativeEffect);
+		Plugin.PixelpartRefreshParticleSolver(nativeEffect);
 	}
 }
 }

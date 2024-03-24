@@ -66,9 +66,33 @@ internal static class Plugin {
 	[DllImport(pluginName)]
 	public static extern uint PixelpartGetEffectNumParticles(IntPtr nativeEffect, uint particleTypeIndex);
 	[DllImport(pluginName)]
-	public static extern void PixelpartGetParticleTypesSortedForRendering(IntPtr nativeEffect, uint[] indices);
+	public static extern void PixelpartSetEffectInputBool(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string name, bool value);
 	[DllImport(pluginName)]
-	public static extern bool PixelpartBuildParticleShader(IntPtr nativeEffect, uint particleTypeIndex, byte[] bufferCode, byte[] bufferTextureIds, out int outLengthCode, out int outLengthTextureIds, int bufferSizeCode, int bufferSizeTexturesIds);
+	public static extern void PixelpartSetEffectInputInt(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string name, int value);
+	[DllImport(pluginName)]
+	public static extern void PixelpartSetEffectInputFloat(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string name, float value);
+	[DllImport(pluginName)]
+	public static extern void PixelpartSetEffectInputFloat2(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string name, Vector2 value);
+	[DllImport(pluginName)]
+	public static extern void PixelpartSetEffectInputFloat3(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string name, Vector3 value);
+	[DllImport(pluginName)]
+	public static extern void PixelpartSetEffectInputFloat4(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string name, Vector4 value);
+	[DllImport(pluginName)]
+	public static extern bool PixelpartGetEffectInputBool(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string name);
+	[DllImport(pluginName)]
+	public static extern int PixelpartGetEffectInputInt(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string name);
+	[DllImport(pluginName)]
+	public static extern float PixelpartGetEffectInputFloat(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string name);
+	[DllImport(pluginName)]
+	public static extern Vector2 PixelpartGetEffectInputFloat2(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string name);
+	[DllImport(pluginName)]
+	public static extern Vector3 PixelpartGetEffectInputFloat3(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string name);
+	[DllImport(pluginName)]
+	public static extern Vector4 PixelpartGetEffectInputFloat4(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string name);
+	[DllImport(pluginName)]
+	public static extern void PixelpartGetParticleTypesSortedForRendering(IntPtr nativeEffect, uint[] indices);
+	//[DllImport(pluginName)]
+	//public static extern bool PixelpartBuildParticleShader(IntPtr nativeEffect, uint particleTypeIndex, byte[] bufferCode, byte[] bufferTextureIds, out int outLengthCode, out int outLengthTextureIds, int bufferSizeCode, int bufferSizeTexturesIds);
 	[DllImport(pluginName)]
 	public static extern void PixelpartPrepareParticleSpriteVertexData(IntPtr nativeEffect, uint particleTypeIndex, out int numTriangles, out int numVertices);
 	[DllImport(pluginName)]
@@ -82,19 +106,31 @@ internal static class Plugin {
 	[DllImport(pluginName)]
 	public static extern bool PixelpartGetParticleMeshVertexData(IntPtr nativeEffect, uint particleTypeIndex, Vector3 cameraPosition, Vector3 viewRight, Vector3 viewUp, Vector3 scale, int[] triangles, [In, Out] Vector3[] vertices, [In, Out] Color[] colors, [In, Out] Vector2[] uv, [In, Out] Vector4[] uv2, [In, Out] Vector4[] uv3, [In, Out] Vector4[] uv4);
 	[DllImport(pluginName)]
+	public static extern void PixelpartSpawnParticles(IntPtr nativeEffect, uint particleTypeId, int count);
+
+	// Resources
+	[DllImport(pluginName)]
 	public static extern uint PixelpartGetImageResourceCount(IntPtr nativeEffect);
 	[DllImport(pluginName)]
-	public static extern int PixelpartGetImageResourceId(IntPtr nativeEffect, uint index, byte[] imageIdBuffer, int bufferLength);
+	public static extern int PixelpartGetImageResourceId(IntPtr nativeEffect, uint index, byte[] resourceIdBuffer, int bufferLength);
 	[DllImport(pluginName)]
-	public static extern int PixelpartGetImageResourceWidth(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string imageId);
+	public static extern int PixelpartGetImageResourceWidth(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string resourceId);
 	[DllImport(pluginName)]
-	public static extern int PixelpartGetImageResourceHeight(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string imageId);
+	public static extern int PixelpartGetImageResourceHeight(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string resourceId);
 	[DllImport(pluginName)]
-	public static extern uint PixelpartGetImageResourceDataSize(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string imageId);
+	public static extern uint PixelpartGetImageResourceDataSize(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string resourceId);
 	[DllImport(pluginName)]
-	public static extern void PixelpartGetImageResourceData(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string imageId, byte[] imageData);
+	public static extern void PixelpartGetImageResourceData(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string resourceId, byte[] imageData);
 	[DllImport(pluginName)]
-	public static extern void PixelpartSpawnParticles(IntPtr nativeEffect, uint particleTypeId, int count);
+	public static extern uint PixelpartGetMeshResourceCount(IntPtr nativeEffect);
+	[DllImport(pluginName)]
+	public static extern int PixelpartGetMeshResourceId(IntPtr nativeEffect, uint index, byte[] resourceIdBuffer, int bufferLength);
+	[DllImport(pluginName)]
+	public static extern int PixelpartGetMeshResourceIndexCount(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string resourceId);
+	[DllImport(pluginName)]
+	public static extern int PixelpartGetMeshResourceVertexCount(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string resourceId);
+	[DllImport(pluginName)]
+	public static extern void PixelpartGetMeshResourceVertexData(IntPtr nativeEffect, [MarshalAs(UnmanagedType.LPStr)] string resourceId, int[] triangles, [In, Out] Vector3[] vertices, [In, Out] Vector3[] normals, [In, Out] Vector2[] uv);
 
 	// ParticleEmitter
 	[DllImport(pluginName)]
@@ -311,11 +347,7 @@ internal static class Plugin {
 	[DllImport(pluginName)]
 	public static extern int PixelpartForceFieldGetVectorFilter(IntPtr nativeEffect, uint forceFieldId);
 	[DllImport(pluginName)]
-	public static extern int PixelpartForceFieldGetAccelerationGridDepth(IntPtr nativeEffect, uint forceFieldId);
-	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartForceFieldGetVectorTightness(IntPtr nativeEffect, uint forceFieldId);
-	[DllImport(pluginName)]
-	public static extern IntPtr PixelpartForceFieldGetNoiseOctaves(IntPtr nativeEffect, uint forceFieldId);
 	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartForceFieldGetNoiseOctaves(IntPtr nativeEffect, uint forceFieldId);
 	[DllImport(pluginName)]
@@ -385,6 +417,14 @@ internal static class Plugin {
 	public static extern IntPtr PixelpartColliderGetBounce(IntPtr nativeEffect, uint colliderId);
 	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartColliderGetFriction(IntPtr nativeEffect, uint colliderId);
+
+	// StaticPropertyBool
+	[DllImport(pluginName)]
+	public static extern bool PixelpartStaticPropertyBoolGet(IntPtr property);
+	[DllImport(pluginName)]
+	public static extern void PixelpartStaticPropertyBoolSetValue(IntPtr property, bool value);
+	[DllImport(pluginName)]
+	public static extern bool PixelpartStaticPropertyBoolGetValue(IntPtr property);
 
 	// StaticPropertyInt
 	[DllImport(pluginName)]

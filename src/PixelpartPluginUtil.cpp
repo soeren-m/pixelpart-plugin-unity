@@ -63,4 +63,42 @@ pixelpart::vec4_t fromUnity(const Vector4& v) {
 pixelpart::vec4_t fromUnity(const Color& v) {
 	return pixelpart::vec4_t(v.r, v.g, v.b, v.a);
 }
+
+pixelpart::EffectInputSet::iterator findEffectInput(pixelpart::Effect& effect, const std::string& name) {
+	return std::find_if(effect.inputs.begin(), effect.inputs.end(), [&name](const std::pair<pixelpart::id_t, pixelpart::EffectInput>& entry) {
+		return entry.second.name == name;
+	});
+}
+
+pixelpart::vec3_t rotate2d(const pixelpart::vec3_t& p, const pixelpart::vec3_t& o, pixelpart::float_t a) {
+	pixelpart::float_t s = std::sin(glm::radians(a));
+	pixelpart::float_t c = std::cos(glm::radians(a));
+
+	return pixelpart::vec3_t(
+		(p.x - o.x) * c - (p.y - o.y) * s + o.x,
+		(p.x - o.x) * s + (p.y - o.y) * c + o.y,
+		0.0);
+}
+pixelpart::mat3_t rotation3d(const pixelpart::vec3_t& angle) {
+	pixelpart::vec3_t rotation = glm::radians(angle);
+	pixelpart::float_t cy = std::cos(rotation.y);
+	pixelpart::float_t sy = std::sin(rotation.y);
+	pixelpart::float_t cp = std::cos(rotation.z);
+	pixelpart::float_t sp = std::sin(rotation.z);
+	pixelpart::float_t cr = std::cos(rotation.x);
+	pixelpart::float_t sr = std::sin(rotation.x);
+
+	return pixelpart::mat3_t(
+		pixelpart::vec3_t(cy * cr + sy * sp * sr, sr * cp, -sy * cr + cy * sp * sr),
+		pixelpart::vec3_t(-cy * sr + sy * sp * cr, cr * cp, sr * sy + cy * sp * cr),
+		pixelpart::vec3_t(sy * cp, -sp, cy * cp));
+}
+pixelpart::mat3_t lookAt(const pixelpart::vec3_t& direction) {
+	pixelpart::vec3_t up = pixelpart::vec3_t(0.0, 1.0, 0.0);
+	pixelpart::vec3_t front = glm::normalize(direction);
+	pixelpart::vec3_t right = glm::normalize(glm::cross(front, up));
+	up = glm::normalize(glm::cross(right, front));
+
+	return pixelpart::mat3_t(right, up, front);
+}
 }

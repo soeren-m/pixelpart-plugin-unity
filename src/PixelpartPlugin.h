@@ -1,7 +1,7 @@
 #pragma once
 
-#include "project/Project.h"
-#include "engine/ParticleEngine.h"
+#include <project/Project.h>
+#include <engine/ParticleEngine.h>
 #include <random>
 
 #if defined(__CYGWIN32__)

@@ -314,6 +314,12 @@ sources = []
 
 add_sources(sources, "src", ".cpp")
 add_sources(sources, "pixelpart-runtime/", ".cpp")
+add_sources(sources, "pixelpart-runtime/common", ".cpp")
+add_sources(sources, "pixelpart-runtime/effect", ".cpp")
+add_sources(sources, "pixelpart-runtime/engine", ".cpp")
+add_sources(sources, "pixelpart-runtime/project", ".cpp")
+add_sources(sources, "pixelpart-runtime/property", ".cpp")
+add_sources(sources, "pixelpart-runtime/shader", ".cpp")
 add_sources(sources, "pixelpart-runtime/zlib", ".c")
 
 env.Append(CPPPATH=[

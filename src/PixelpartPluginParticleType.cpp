@@ -423,9 +423,48 @@ UNITY_INTERFACE_EXPORT pixelpart::StaticProperty<pixelpart::float_t>* UNITY_INTE
 }
 
 // TODO: material instance!!!!!
-PixelpartParticleTypeGetMaterialId
-PixelpartParticleTypeGetNumMaterialParameters
-PixelpartParticleTypeGetMaterialParameterValue
+/*
+PixelpartParticleTypeGetMaterialParameterValue*/
+
+UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartParticleTypeGetMaterialId(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId, char* buffer, int32_t length) {
+	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId) || length < 2) {
+		return 0;
+	}
+
+	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
+	if(particleType.materialInstance.materialId.empty()) {
+		return 0;
+	}
+
+	std::size_t size = std::min(particleType.materialInstance.materialId.size(), static_cast<std::size_t>(length) - 1u);
+	std::strncpy(buffer, particleType.materialInstance.materialId.c_str(), size);
+	buffer[size] = '\0';
+
+	return static_cast<int32_t>(size);
+}
+
+UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartParticleTypeGetNumMaterialParameters(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
+	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
+		return 0;
+	}
+
+	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
+
+	return static_cast<int32_t>(particleType.materialInstance.materialParameters.size());
+}
+
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleTypeGetMaterialParameterIds(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId, uint32_t* parameterIds) {
+	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {
+		return;
+	}
+
+	pixelpart::ParticleType& particleType = nativeEffect->project.effect.particleTypes.get(particleTypeId);
+
+	std::size_t parameterIndex = 0u;
+	for(const auto& parameterEntry : particleType.materialInstance.materialParameters) {
+		parameterIds[parameterIndex++] = static_cast<uint32_t>(parameterEntry.first);
+	}
+}
 
 UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartParticleTypeGetRenderer(PixelpartNativeEffect* nativeEffect, uint32_t particleTypeId) {
 	if(!nativeEffect || !nativeEffect->project.effect.particleTypes.contains(particleTypeId)) {

@@ -26,8 +26,9 @@ public class PixelpartAnimatedPropertyFloat {
 		}
 	}
 
-	private IntPtr nativeProperty = IntPtr.Zero;
-	private IntPtr nativeEffect = IntPtr.Zero;
+	private readonly IntPtr nativeProperty;
+
+	private readonly IntPtr nativeEffect;
 
 	public PixelpartAnimatedPropertyFloat(IntPtr nativePropertyPtr, IntPtr nativeEffectPtr) {
 		nativeProperty = nativePropertyPtr;
@@ -77,7 +78,7 @@ public class PixelpartAnimatedPropertyFloat {
 			return;
 		}
 
-		Plugin.PixelpartRefreshSolver(nativeEffect);
+		Plugin.PixelpartRefreshParticleSolver(nativeEffect);
 	}
 }
 }

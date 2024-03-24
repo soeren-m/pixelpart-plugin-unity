@@ -37,7 +37,7 @@ public class PixelpartEffectInspector : Editor {
 		serializedObject.ApplyModifiedProperties();
 	}
 
-	private void ShowParticleShaders(SerializedProperty property, PixelpartEffect effect) {
+	/*private void ShowParticleShaders(SerializedProperty property, PixelpartEffect effect) {
 		showParticleShaders = EditorGUILayout.Foldout(showParticleShaders, property.displayName);
 
 		if(showParticleShaders) {
@@ -52,7 +52,7 @@ public class PixelpartEffectInspector : Editor {
 			EditorGUI.indentLevel--;
 			GUI.enabled = true;
 		}
-	}
+	}*/
 }
 }
 #endif

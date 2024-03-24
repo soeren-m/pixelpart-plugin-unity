@@ -141,18 +141,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae89953306b284bcc811ae1d93a76850, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EffectAsset: {fileID: 11400000, guid: 72361d143c3b348aababb9730bdb3815, type: 2}
+  EffectAsset: {fileID: 11400000, guid: a08e4cbfc090547988b01c60abf24d88, type: 2}
   Playing: 1
   Loop: 0
   LoopTime: 1
   Speed: 1
   FrameRate: 60
-  ParticleShaders:
-  - {fileID: 4800000, guid: fd53fab1b876942d49419909c6b2797e, type: 3}
   FlipH: 0
   FlipV: 0
-  ParticleTypeNames:
-  - Particle
 --- !u!4 &120736011
 Transform:
   m_ObjectHideFlags: 0

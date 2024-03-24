@@ -32,28 +32,28 @@ public class PixelpartParticleType {
 			return position;
 		}
 	}
-	private PixelpartAnimatedPropertyFloat3 position;
+	private readonly PixelpartAnimatedPropertyFloat3 position;
 
 	public PixelpartAnimatedPropertyFloat NumParticles {
 		get {
 			return numParticles;
 		}
 	}
-	private PixelpartAnimatedPropertyFloat numParticles;
+	private readonly PixelpartAnimatedPropertyFloat numParticles;
 
 	public PixelpartAnimatedPropertyFloat Lifespan {
 		get {
 			return lifespan;
 		}
 	}
-	private PixelpartAnimatedPropertyFloat lifespan;
+	private readonly PixelpartAnimatedPropertyFloat lifespan;
 
 	public PixelpartStaticPropertyFloat LifespanVariance {
 		get {
 			return lifespanVariance;
 		}
 	}
-	private PixelpartStaticPropertyFloat lifespanVariance;
+	private readonly PixelpartStaticPropertyFloat lifespanVariance;
 
 	public bool PositionRelative {
 		get {
@@ -69,7 +69,7 @@ public class PixelpartParticleType {
 			return motionPathForce;
 		}
 	}
-	private PixelpartStaticPropertyFloat motionPathForce;
+	private readonly PixelpartStaticPropertyFloat motionPathForce;
 
 	public PixelpartAnimatedPropertyFloat InitialVelocity {
 		get {
@@ -78,30 +78,33 @@ public class PixelpartParticleType {
 	}
 	private PixelpartAnimatedPropertyFloat initialVelocity;
 
-	// TODO
-
-	public float VelocityVariance {
+	public PixelpartAnimatedPropertyFloat InheritedVelocity {
 		get {
-			return Plugin.PixelpartParticleTypeGetVelocityVariance(nativeEffect, particleTypeId);
-		}
-		set {
-			Plugin.PixelpartParticleTypeSetVelocityVariance(nativeEffect, particleTypeId, value);
+			return inheritedVelocity;
 		}
 	}
+	private readonly PixelpartAnimatedPropertyFloat inheritedVelocity;
+
+	public PixelpartStaticPropertyFloat VelocityVariance {
+		get {
+			return velocityVariance;
+		}
+	}
+	private readonly PixelpartStaticPropertyFloat velocityVariance;
 
 	public PixelpartAnimatedPropertyFloat Acceleration {
 		get {
 			return acceleration;
 		}
 	}
-	private PixelpartAnimatedPropertyFloat acceleration;
+	private readonly PixelpartAnimatedPropertyFloat acceleration;
 
 	public PixelpartAnimatedPropertyFloat RadialAcceleration {
 		get {
 			return radialAcceleration;
 		}
 	}
-	private PixelpartAnimatedPropertyFloat radialAcceleration;
+	private readonly PixelpartAnimatedPropertyFloat radialAcceleration;
 
 	public RotationModeType RotationMode {
 		get {
@@ -126,71 +129,63 @@ public class PixelpartParticleType {
 			return initialRotation;
 		}
 	}
-	private PixelpartAnimatedPropertyFloat3 initialRotation;
+	private readonly PixelpartAnimatedPropertyFloat3 initialRotation;
 
 	public PixelpartAnimatedPropertyFloat3 Rotation {
 		get {
 			return rotation;
 		}
 	}
-	private PixelpartAnimatedPropertyFloat3 rotation;
+	private readonly PixelpartAnimatedPropertyFloat3 rotation;
 
-	public Vector3 RotationVariance {
+	public PixelpartAnimatedPropertyFloat3 RotationBySpeed {
 		get {
-			return new Vector3(
-				Plugin.PixelpartParticleTypeGetRotationVarianceRoll(nativeEffect, particleTypeId),
-				Plugin.PixelpartParticleTypeGetRotationVarianceYaw(nativeEffect, particleTypeId),
-				Plugin.PixelpartParticleTypeGetRotationVariancePitch(nativeEffect, particleTypeId));
-		}
-		set {
-			Plugin.PixelpartParticleTypeSetRotationVariance(nativeEffect, particleTypeId, value.x, value.y, value.z);
+			return rotationBySpeed;
 		}
 	}
+	private readonly PixelpartAnimatedPropertyFloat3 rotationBySpeed;
 
-	public Vector3 AngularVelocityVariance {
+	public PixelpartStaticPropertyFloat3 RotationVariance {
 		get {
-			return new Vector3(
-				Plugin.PixelpartParticleTypeGetAngularVelocityVarianceRoll(nativeEffect, particleTypeId),
-				Plugin.PixelpartParticleTypeGetAngularVelocityVarianceYaw(nativeEffect, particleTypeId),
-				Plugin.PixelpartParticleTypeGetAngularVelocityVariancePitch(nativeEffect, particleTypeId));
-		}
-		set {
-			Plugin.PixelpartParticleTypeSetAngularVelocityVariance(nativeEffect, particleTypeId, value.x, value.y, value.z);
+			return rotationVariance;
 		}
 	}
+	private readonly PixelpartStaticPropertyFloat3 rotationVariance;
 
-	public Vector3 Pivot {
+	public PixelpartStaticPropertyFloat3 AngularVelocityVariance {
 		get {
-			return new Vector3(
-				Plugin.PixelpartParticleTypeGetPivotX(nativeEffect, particleTypeId),
-				Plugin.PixelpartParticleTypeGetPivotY(nativeEffect, particleTypeId),
-				Plugin.PixelpartParticleTypeGetPivotZ(nativeEffect, particleTypeId));
-		}
-		set {
-			Plugin.PixelpartParticleTypeSetPivot(nativeEffect, particleTypeId, value.x, value.y, value.z);
+			return angularVelocityVariance;
 		}
 	}
+	private readonly PixelpartStaticPropertyFloat3 angularVelocityVariance;
+
+	public PixelpartStaticPropertyFloat3 Pivot {
+		get {
+			return pivot;
+		}
+	}
+	private readonly PixelpartStaticPropertyFloat3 pivot;
 
 	public PixelpartAnimatedPropertyFloat Weight {
 		get {
 			return weight;
 		}
 	}
-	private PixelpartAnimatedPropertyFloat weight;
+	private readonly PixelpartAnimatedPropertyFloat weight;
 
 	public PixelpartAnimatedPropertyFloat Bounce {
 		get {
 			return bounce;
 		}
 	}
-	private PixelpartAnimatedPropertyFloat bounce;
+	private readonly PixelpartAnimatedPropertyFloat bounce;
 
 	public PixelpartAnimatedPropertyFloat Friction {
 		get {
 			return friction;
 		}
 	}
-	private PixelpartAnimatedPropertyFloat friction;
+	private readonly PixelpartAnimatedPropertyFloat friction;
 
 	public bool Visible {
 		get {
@@ -210,81 +205,70 @@ public class PixelpartParticleType {
 		}
 	}
 
-	public BlendModeType BlendMode {
-		get {
-			return (BlendModeType)Plugin.PixelpartParticleTypeGetBlendMode(nativeEffect, particleTypeId);
-		}
-		set {
-			Plugin.PixelpartParticleTypeSetBlendMode(nativeEffect, particleTypeId, (int)value);
-		}
-	}
-
 	public PixelpartAnimatedPropertyFloat InitialSize {
 		get {
 			return initialSize;
 		}
 	}
-	private PixelpartAnimatedPropertyFloat initialSize;
+	private readonly PixelpartAnimatedPropertyFloat initialSize;
 
 	public PixelpartAnimatedPropertyFloat3 Size {
 		get {
 			return size;
 		}
 	}
-	private PixelpartAnimatedPropertyFloat3 size;
+	private readonly PixelpartAnimatedPropertyFloat3 size;
 
-	public float SizeVariance {
+	public PixelpartStaticPropertyFloat SizeVariance {
 		get {
-			return Plugin.PixelpartParticleTypeGetSizeVariance(nativeEffect, particleTypeId);
-		}
-		set {
-			Plugin.PixelpartParticleTypeSetSizeVariance(nativeEffect, particleTypeId, value);
+			return sizeVariance;
 		}
 	}
+	private readonly PixelpartStaticPropertyFloat sizeVariance;
+
+	public PixelpartAnimatedPropertyFloat3 Stretch {
+		get {
+			return stretch;
+		}
+	}
+	private readonly PixelpartAnimatedPropertyFloat3 stretch;
 
 	public PixelpartAnimatedPropertyFloat4 Color {
 		get {
 			return color;
 		}
 	}
-	private PixelpartAnimatedPropertyFloat4 color;
+	private readonly PixelpartAnimatedPropertyFloat4 color;
 
-	public Vector3 ColorVariance {
+	public PixelpartStaticPropertyFloat4 ColorVariance {
 		get {
-			return new Vector3(
-				Plugin.PixelpartParticleTypeGetColorVarianceHue(nativeEffect, particleTypeId),
-				Plugin.PixelpartParticleTypeGetColorVarianceSaturation(nativeEffect, particleTypeId),
-				Plugin.PixelpartParticleTypeGetColorVarianceValue(nativeEffect, particleTypeId));
-		}
-		set {
-			Plugin.PixelpartParticleTypeSetColorVariance(nativeEffect, particleTypeId, value.x, value.y, value.z);
+			return colorVariance;
 		}
 	}
+	private readonly PixelpartStaticPropertyFloat4 colorVariance;
 
 	public PixelpartAnimatedPropertyFloat InitialOpacity {
 		get {
 			return initialOpacity;
 		}
 	}
-	private PixelpartAnimatedPropertyFloat initialOpacity;
+	private readonly PixelpartAnimatedPropertyFloat initialOpacity;
 
 	public PixelpartAnimatedPropertyFloat Opacity {
 		get {
 			return opacity;
 		}
 	}
-	private PixelpartAnimatedPropertyFloat opacity;
+	private readonly PixelpartAnimatedPropertyFloat opacity;
 
-	public float OpacityVariance {
+	public PixelpartStaticPropertyFloat OpacityVariance {
 		get {
-			return Plugin.PixelpartParticleTypeGetOpacityVariance(nativeEffect, particleTypeId);
-		}
-		set {
-			Plugin.PixelpartParticleTypeSetOpacityVariance(nativeEffect, particleTypeId, value);
+			return opacityVariance;
 		}
 	}
+	private readonly PixelpartStaticPropertyFloat opacityVariance;
 
-	private IntPtr nativeEffect = IntPtr.Zero;
+	private readonly IntPtr nativeEffect = IntPtr.Zero;
 
 	public PixelpartParticleType(IntPtr nativeParticleTypePtr, uint nativeParticleTypeId) {
 		nativeEffect = nativeParticleTypePtr;
@@ -296,22 +280,28 @@ public class PixelpartParticleType {
 		lifespanVariance = new PixelpartStaticPropertyFloat(Plugin.PixelpartParticleTypeGetLifespanVariance(nativeEffect, particleTypeId), nativeEffect);
 		motionPathForce = new PixelpartStaticPropertyFloat(Plugin.PixelpartParticleTypeGetMotionPathForce(nativeEffect, particleTypeId), nativeEffect);
 		initialVelocity = new PixelpartAnimatedPropertyFloat(Plugin.PixelpartParticleTypeGetInitialVelocity(nativeEffect, particleTypeId), nativeEffect);
+		inheritedVelocity = new PixelpartAnimatedPropertyFloat(Plugin.PixelpartParticleTypeGetInheritedVelocity(nativeEffect, particleTypeId), nativeEffect);
+		velocityVariance = new PixelpartStaticPropertyFloat(Plugin.PixelpartParticleTypeGetVelocityVariance(nativeEffect, particleTypeId), nativeEffect);
 		acceleration = new PixelpartAnimatedPropertyFloat(Plugin.PixelpartParticleTypeGetAcceleration(nativeEffect, particleTypeId), nativeEffect);
 		radialAcceleration = new PixelpartAnimatedPropertyFloat(Plugin.PixelpartParticleTypeGetRadialAcceleration(nativeEffect, particleTypeId), nativeEffect);
 		initialRotation = new PixelpartAnimatedPropertyFloat3(Plugin.PixelpartParticleTypeGetInitialRotation(nativeEffect, particleTypeId), nativeEffect);
 		rotation = new PixelpartAnimatedPropertyFloat3(Plugin.PixelpartParticleTypeGetRotation(nativeEffect, particleTypeId), nativeEffect);
+		rotationBySpeed = new PixelpartAnimatedPropertyFloat3(Plugin.PixelpartParticleTypeGetRotationBySpeed(nativeEffect, particleTypeId), nativeEffect);
+		rotationVariance = new PixelpartStaticPropertyFloat3(Plugin.PixelpartParticleTypeGetRotationVariance(nativeEffect, particleTypeId), nativeEffect);
+		angularVelocityVariance = new PixelpartStaticPropertyFloat3(Plugin.PixelpartParticleTypeGetAngularVelocityVariance(nativeEffect, particleTypeId), nativeEffect);
+		pivot = new PixelpartStaticPropertyFloat3(Plugin.PixelpartParticleTypeGetPivot(nativeEffect, particleTypeId), nativeEffect);
 		weight = new PixelpartAnimatedPropertyFloat(Plugin.PixelpartParticleTypeGetWeight(nativeEffect, particleTypeId), nativeEffect);
 		bounce = new PixelpartAnimatedPropertyFloat(Plugin.PixelpartParticleTypeGetBounce(nativeEffect, particleTypeId), nativeEffect);
 		friction = new PixelpartAnimatedPropertyFloat(Plugin.PixelpartParticleTypeGetFriction(nativeEffect, particleTypeId), nativeEffect);
 		initialSize = new PixelpartAnimatedPropertyFloat(Plugin.PixelpartParticleTypeGetInitialSize(nativeEffect, particleTypeId), nativeEffect);
 		size = new PixelpartAnimatedPropertyFloat3(Plugin.PixelpartParticleTypeGetSize(nativeEffect, particleTypeId), nativeEffect);
+		sizeVariance = new PixelpartStaticPropertyFloat(Plugin.PixelpartParticleTypeGetSizeVariance(nativeEffect, particleTypeId), nativeEffect);
+		stretch = new PixelpartAnimatedPropertyFloat3(Plugin.PixelpartParticleTypeGetStretch(nativeEffect, particleTypeId), nativeEffect);
 		color = new PixelpartAnimatedPropertyFloat4(Plugin.PixelpartParticleTypeGetColor(nativeEffect, particleTypeId), nativeEffect);
+		colorVariance = new PixelpartStaticPropertyFloat4(Plugin.PixelpartParticleTypeGetColorVariance(nativeEffect, particleTypeId), nativeEffect);
 		initialOpacity = new PixelpartAnimatedPropertyFloat(Plugin.PixelpartParticleTypeGetInitialOpacity(nativeEffect, particleTypeId), nativeEffect);
 		opacity = new PixelpartAnimatedPropertyFloat(Plugin.PixelpartParticleTypeGetOpacity(nativeEffect, particleTypeId), nativeEffect);
-	}
-
-	public void SpawnParticles(int count) {
-		Plugin.PixelpartParticleTypeSpawnParticles(nativeEffect, particleTypeId, count);
+		opacityVariance = new PixelpartStaticPropertyFloat(Plugin.PixelpartParticleTypeGetOpacityVariance(nativeEffect, particleTypeId), nativeEffect);
 	}
 }
 }

@@ -1,0 +1,4111 @@
+{
+    "nodes": [
+        {
+            "name": "shader_node_output",
+            "category": "shader_category_main",
+            "code": "half4 out_Color = {in0};\nfloat3 out_Emission = {in1};\nfloat out_Roughness = {in2};\nfloat out_Metallic = {in3};",
+            "inputs": [
+                "shader_slot_color",
+                "shader_slot_emission",
+                "shader_slot_roughness",
+                "shader_slot_metallic"
+            ],
+            "outputs": [],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float4",
+                        "float3",
+                        "float",
+                        "float"
+                    ],
+                    "output_types": []
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": "float4",
+                    "value": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 0.0,
+                        "w": 1.0
+                    }
+                },
+                {
+                    "type": "float3",
+                    "value": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 0.0
+                    }
+                },
+                {
+                    "type": "float",
+                    "value": 0.5
+                },
+                {
+                    "type": "float",
+                    "value": 0.0
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_bool",
+            "category": "shader_category_constants",
+            "code": "{outdef0} = {param0};",
+            "inputs": [],
+            "outputs": [
+                "shader_slot_value"
+            ],
+            "signatures": [
+                {
+                    "input_types": [],
+                    "output_types": [
+                        "bool"
+                    ]
+                }
+            ],
+            "default_inputs": [],
+            "parameters": [
+                {
+                    "name": "shader_param_value",
+                    "default_value": {
+                        "type": "bool",
+                        "value": 0
+                    },
+                    "min_value": {
+                        "type": "bool",
+                        "value": 0
+                    },
+                    "max_value": {
+                        "type": "bool",
+                        "value": 1
+                    },
+                    "value_names": []
+                }
+            ]
+        },
+        {
+            "name": "shader_node_integer",
+            "category": "shader_category_constants",
+            "code": "{outdef0} = {param0};",
+            "inputs": [],
+            "outputs": [
+                "shader_slot_value"
+            ],
+            "signatures": [
+                {
+                    "input_types": [],
+                    "output_types": [
+                        "int"
+                    ]
+                }
+            ],
+            "default_inputs": [],
+            "parameters": [
+                {
+                    "name": "shader_param_integer",
+                    "default_value": {
+                        "type": "int",
+                        "value": 0
+                    },
+                    "min_value": {
+                        "type": "int",
+                        "value": -1000000000
+                    },
+                    "max_value": {
+                        "type": "int",
+                        "value": 1000000000
+                    },
+                    "value_names": []
+                }
+            ]
+        },
+        {
+            "name": "shader_node_number",
+            "category": "shader_category_constants",
+            "code": "{outdef0} = {param0};",
+            "inputs": [],
+            "outputs": [
+                "shader_slot_value"
+            ],
+            "signatures": [
+                {
+                    "input_types": [],
+                    "output_types": [
+                        "float"
+                    ]
+                }
+            ],
+            "default_inputs": [],
+            "parameters": [
+                {
+                    "name": "shader_param_number",
+                    "default_value": {
+                        "type": "float",
+                        "value": 0.0
+                    },
+                    "min_value": {
+                        "type": "float",
+                        "value": -1000000000.0
+                    },
+                    "max_value": {
+                        "type": "float",
+                        "value": 1000000000.0
+                    },
+                    "value_names": []
+                }
+            ]
+        },
+        {
+            "name": "shader_node_vector2",
+            "category": "shader_category_constants",
+            "code": "{outdef0} = {param0};",
+            "inputs": [],
+            "outputs": [
+                "shader_slot_value"
+            ],
+            "signatures": [
+                {
+                    "input_types": [],
+                    "output_types": [
+                        "float2"
+                    ]
+                }
+            ],
+            "default_inputs": [],
+            "parameters": [
+                {
+                    "name": "shader_param_vector",
+                    "default_value": {
+                        "type": "float2",
+                        "value": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "min_value": {
+                        "type": "float2",
+                        "value": {
+                            "x": -1000000000.0,
+                            "y": -1000000000.0
+                        }
+                    },
+                    "max_value": {
+                        "type": "float2",
+                        "value": {
+                            "x": 1000000000.0,
+                            "y": 1000000000.0
+                        }
+                    },
+                    "value_names": []
+                }
+            ]
+        },
+        {
+            "name": "shader_node_vector3",
+            "category": "shader_category_constants",
+            "code": "{outdef0} = {param0};",
+            "inputs": [],
+            "outputs": [
+                "shader_slot_value"
+            ],
+            "signatures": [
+                {
+                    "input_types": [],
+                    "output_types": [
+                        "float3"
+                    ]
+                }
+            ],
+            "default_inputs": [],
+            "parameters": [
+                {
+                    "name": "shader_param_vector",
+                    "default_value": {
+                        "type": "float3",
+                        "value": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        }
+                    },
+                    "min_value": {
+                        "type": "float3",
+                        "value": {
+                            "x": -1000000000.0,
+                            "y": -1000000000.0,
+                            "z": -1000000000.0
+                        }
+                    },
+                    "max_value": {
+                        "type": "float3",
+                        "value": {
+                            "x": 1000000000.0,
+                            "y": 1000000000.0,
+                            "z": 1000000000.0
+                        }
+                    },
+                    "value_names": []
+                }
+            ]
+        },
+        {
+            "name": "shader_node_vector4",
+            "category": "shader_category_constants",
+            "code": "{outdef0} = {param0};",
+            "inputs": [],
+            "outputs": [
+                "shader_slot_value"
+            ],
+            "signatures": [
+                {
+                    "input_types": [],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [],
+            "parameters": [
+                {
+                    "name": "shader_param_vector",
+                    "default_value": {
+                        "type": "float4",
+                        "value": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0,
+                            "w": 0.0
+                        }
+                    },
+                    "min_value": {
+                        "type": "float4",
+                        "value": {
+                            "x": -1000000000.0,
+                            "y": -1000000000.0,
+                            "z": -1000000000.0,
+                            "w": -1000000000.0
+                        }
+                    },
+                    "max_value": {
+                        "type": "float4",
+                        "value": {
+                            "x": 1000000000.0,
+                            "y": 1000000000.0,
+                            "z": 1000000000.0,
+                            "w": 1000000000.0
+                        }
+                    },
+                    "value_names": []
+                }
+            ]
+        },
+        {
+            "name": "shader_node_color",
+            "category": "shader_category_constants",
+            "code": "{outdef0} = {param0};",
+            "inputs": [],
+            "outputs": [
+                "shader_slot_value"
+            ],
+            "signatures": [
+                {
+                    "input_types": [],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [],
+            "parameters": [
+                {
+                    "name": "shader_param_color",
+                    "default_value": {
+                        "type": "color",
+                        "value": {
+                            "x": 1.0,
+                            "y": 1.0,
+                            "z": 1.0,
+                            "w": 1.0
+                        }
+                    },
+                    "min_value": {
+                        "type": "color",
+                        "value": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0,
+                            "w": 0.0
+                        }
+                    },
+                    "max_value": {
+                        "type": "color",
+                        "value": {
+                            "x": 1.0,
+                            "y": 1.0,
+                            "z": 1.0,
+                            "w": 1.0
+                        }
+                    },
+                    "value_names": []
+                }
+            ]
+        },
+        {
+            "name": "shader_node_vertex_worldposition",
+            "category": "shader_category_inputs",
+            "code": "{outdef0} = in_WorldPosition;",
+            "inputs": [],
+            "outputs": [
+                "shader_slot_position"
+            ],
+            "signatures": [
+                {
+                    "input_types": [],
+                    "output_types": [
+                        "float3"
+                    ]
+                }
+            ],
+            "default_inputs": [],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_vertex_viewposition",
+            "category": "shader_category_inputs",
+            "code": "{outdef0} = in_ViewPosition;",
+            "inputs": [],
+            "outputs": [
+                "shader_slot_position"
+            ],
+            "signatures": [
+                {
+                    "input_types": [],
+                    "output_types": [
+                        "float3"
+                    ]
+                }
+            ],
+            "default_inputs": [],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_vertex_worldnormal",
+            "category": "shader_category_inputs",
+            "code": "{outdef0} = in_WorldNormal;",
+            "inputs": [],
+            "outputs": [
+                "shader_slot_normal"
+            ],
+            "signatures": [
+                {
+                    "input_types": [],
+                    "output_types": [
+                        "float3"
+                    ]
+                }
+            ],
+            "default_inputs": [],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_vertex_viewnormal",
+            "category": "shader_category_inputs",
+            "code": "{outdef0} = in_ViewNormal;",
+            "inputs": [],
+            "outputs": [
+                "shader_slot_normal"
+            ],
+            "signatures": [
+                {
+                    "input_types": [],
+                    "output_types": [
+                        "float3"
+                    ]
+                }
+            ],
+            "default_inputs": [],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_vertex_texturecoord",
+            "category": "shader_category_inputs",
+            "code": "{outdef0} = in_TextureCoord;",
+            "inputs": [],
+            "outputs": [
+                "shader_slot_uv"
+            ],
+            "signatures": [
+                {
+                    "input_types": [],
+                    "output_types": [
+                        "float2"
+                    ]
+                }
+            ],
+            "default_inputs": [],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_vertex_color",
+            "category": "shader_category_inputs",
+            "code": "{outdef0} = in_Color;",
+            "inputs": [],
+            "outputs": [
+                "shader_slot_color"
+            ],
+            "signatures": [
+                {
+                    "input_types": [],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_vertex_velocity",
+            "category": "shader_category_inputs",
+            "code": "{outdef0} = in_Velocity;",
+            "inputs": [],
+            "outputs": [
+                "shader_slot_velocity"
+            ],
+            "signatures": [
+                {
+                    "input_types": [],
+                    "output_types": [
+                        "float3"
+                    ]
+                }
+            ],
+            "default_inputs": [],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_vertex_life",
+            "category": "shader_category_inputs",
+            "code": "{outdef0} = in_Life;",
+            "inputs": [],
+            "outputs": [
+                "shader_slot_life"
+            ],
+            "signatures": [
+                {
+                    "input_types": [],
+                    "output_types": [
+                        "float"
+                    ]
+                }
+            ],
+            "default_inputs": [],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_vertex_objectid",
+            "category": "shader_category_inputs",
+            "code": "{outdef0} = in_ObjectId;",
+            "inputs": [],
+            "outputs": [
+                "shader_slot_id"
+            ],
+            "signatures": [
+                {
+                    "input_types": [],
+                    "output_types": [
+                        "int"
+                    ]
+                }
+            ],
+            "default_inputs": [],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_effect_time",
+            "category": "shader_category_inputs",
+            "code": "{outdef0} = _EffectTime;",
+            "inputs": [],
+            "outputs": [
+                "shader_slot_time"
+            ],
+            "signatures": [
+                {
+                    "input_types": [],
+                    "output_types": [
+                        "float"
+                    ]
+                }
+            ],
+            "default_inputs": [],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_object_time",
+            "category": "shader_category_inputs",
+            "code": "{outdef0} = _ObjectTime;",
+            "inputs": [],
+            "outputs": [
+                "shader_slot_time"
+            ],
+            "signatures": [
+                {
+                    "input_types": [],
+                    "output_types": [
+                        "float"
+                    ]
+                }
+            ],
+            "default_inputs": [],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_add",
+            "category": "shader_category_math",
+            "code": "{outdef0} = {in0} + {in1};",
+            "inputs": [
+                "shader_slot_a",
+                "shader_slot_b"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "int",
+                        "int"
+                    ],
+                    "output_types": [
+                        "int"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float",
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float2",
+                        "float2"
+                    ],
+                    "output_types": [
+                        "float2"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float3",
+                        "float3"
+                    ],
+                    "output_types": [
+                        "float3"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float4",
+                        "float4"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": "float",
+                    "value": 0.0
+                },
+                {
+                    "type": "float",
+                    "value": 0.0
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_subtract",
+            "category": "shader_category_math",
+            "code": "{outdef0} = {in0} - {in1};",
+            "inputs": [
+                "shader_slot_a",
+                "shader_slot_b"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "int",
+                        "int"
+                    ],
+                    "output_types": [
+                        "int"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float",
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float2",
+                        "float2"
+                    ],
+                    "output_types": [
+                        "float2"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float3",
+                        "float3"
+                    ],
+                    "output_types": [
+                        "float3"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float4",
+                        "float4"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": "float",
+                    "value": 0.0
+                },
+                {
+                    "type": "float",
+                    "value": 0.0
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_multiply",
+            "category": "shader_category_math",
+            "code": "{outdef0} = {in0} * {in1};",
+            "inputs": [
+                "shader_slot_a",
+                "shader_slot_b"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "int",
+                        "int"
+                    ],
+                    "output_types": [
+                        "int"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float",
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float2",
+                        "float2"
+                    ],
+                    "output_types": [
+                        "float2"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float3",
+                        "float3"
+                    ],
+                    "output_types": [
+                        "float3"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float4",
+                        "float4"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": "float",
+                    "value": 1.0
+                },
+                {
+                    "type": "float",
+                    "value": 1.0
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_divide",
+            "category": "shader_category_math",
+            "code": "{outdef0} = {in0} / {in1};",
+            "inputs": [
+                "shader_slot_a",
+                "shader_slot_b"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "int",
+                        "int"
+                    ],
+                    "output_types": [
+                        "int"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float",
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float2",
+                        "float2"
+                    ],
+                    "output_types": [
+                        "float2"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float3",
+                        "float3"
+                    ],
+                    "output_types": [
+                        "float3"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float4",
+                        "float4"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": "float",
+                    "value": 1.0
+                },
+                {
+                    "type": "float",
+                    "value": 1.0
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_mod",
+            "category": "shader_category_math",
+            "code": "{outdef0} = {in0} - {in1} * floor({in0} / {in1});",
+            "inputs": [
+                "shader_slot_a",
+                "shader_slot_b"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float",
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float2",
+                        "float2"
+                    ],
+                    "output_types": [
+                        "float2"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float3",
+                        "float3"
+                    ],
+                    "output_types": [
+                        "float3"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float4",
+                        "float4"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": "float",
+                    "value": 1.0
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_pow",
+            "category": "shader_category_math",
+            "code": "{outdef0} = pow({in0}, {in1});",
+            "inputs": [
+                "shader_slot_a",
+                "shader_slot_b"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "int",
+                        "int"
+                    ],
+                    "output_types": [
+                        "int"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float",
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float2",
+                        "float2"
+                    ],
+                    "output_types": [
+                        "float2"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float3",
+                        "float3"
+                    ],
+                    "output_types": [
+                        "float3"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float4",
+                        "float4"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": "float",
+                    "value": 1.0
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_exp",
+            "category": "shader_category_math",
+            "code": "{outdef0} = exp({in0});",
+            "inputs": [
+                "shader_slot_value"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float2"
+                    ],
+                    "output_types": [
+                        "float2"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float3"
+                    ],
+                    "output_types": [
+                        "float3"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float4"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_log",
+            "category": "shader_category_math",
+            "code": "{outdef0} = log({in0});",
+            "inputs": [
+                "shader_slot_value"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float2"
+                    ],
+                    "output_types": [
+                        "float2"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float3"
+                    ],
+                    "output_types": [
+                        "float3"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float4"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_sign",
+            "category": "shader_category_math",
+            "code": "{outdef0} = float(sign({in0}));",
+            "inputs": [
+                "shader_slot_value"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "int"
+                    ],
+                    "output_types": [
+                        "int"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float2"
+                    ],
+                    "output_types": [
+                        "float2"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float3"
+                    ],
+                    "output_types": [
+                        "float3"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float4"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_abs",
+            "category": "shader_category_math",
+            "code": "{outdef0} = abs({in0});",
+            "inputs": [
+                "shader_slot_value"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "int"
+                    ],
+                    "output_types": [
+                        "int"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float2"
+                    ],
+                    "output_types": [
+                        "float2"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float3"
+                    ],
+                    "output_types": [
+                        "float3"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float4"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_min",
+            "category": "shader_category_math",
+            "code": "{outdef0} = min({in0}, {in1});",
+            "inputs": [
+                "shader_slot_a",
+                "shader_slot_b"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "int",
+                        "int"
+                    ],
+                    "output_types": [
+                        "int"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float",
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float2",
+                        "float2"
+                    ],
+                    "output_types": [
+                        "float2"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float3",
+                        "float3"
+                    ],
+                    "output_types": [
+                        "float3"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float4",
+                        "float4"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_max",
+            "category": "shader_category_math",
+            "code": "{outdef0} = max({in0}, {in1});",
+            "inputs": [
+                "shader_slot_a",
+                "shader_slot_b"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "int",
+                        "int"
+                    ],
+                    "output_types": [
+                        "int"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float",
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float2",
+                        "float2"
+                    ],
+                    "output_types": [
+                        "float2"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float3",
+                        "float3"
+                    ],
+                    "output_types": [
+                        "float3"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float4",
+                        "float4"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_clamp",
+            "category": "shader_category_math",
+            "code": "{outdef0} = clamp({in0}, {in1}, {in2});",
+            "inputs": [
+                "shader_slot_value",
+                "shader_slot_min",
+                "shader_slot_max"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "int",
+                        "int",
+                        "int"
+                    ],
+                    "output_types": [
+                        "int"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float",
+                        "float",
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float2",
+                        "float2",
+                        "float2"
+                    ],
+                    "output_types": [
+                        "float2"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float3",
+                        "float3",
+                        "float3"
+                    ],
+                    "output_types": [
+                        "float3"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float4",
+                        "float4",
+                        "float4"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": "float",
+                    "value": 0.0
+                },
+                {
+                    "type": "float",
+                    "value": 1.0
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_lerp",
+            "category": "shader_category_math",
+            "code": "{outdef0} = lerp({in0}, {in1}, {in2});",
+            "inputs": [
+                "shader_slot_a",
+                "shader_slot_b",
+                "shader_slot_factor"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float",
+                        "float",
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float2",
+                        "float2",
+                        "float"
+                    ],
+                    "output_types": [
+                        "float2"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float3",
+                        "float3",
+                        "float"
+                    ],
+                    "output_types": [
+                        "float3"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float4",
+                        "float4",
+                        "float"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": "float",
+                    "value": 0.5
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_floor",
+            "category": "shader_category_math",
+            "code": "{outdef0} = floor({in0});",
+            "inputs": [
+                "shader_slot_value"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float2"
+                    ],
+                    "output_types": [
+                        "float2"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float3"
+                    ],
+                    "output_types": [
+                        "float3"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float4"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_ceil",
+            "category": "shader_category_math",
+            "code": "{outdef0} = ceil({in0});",
+            "inputs": [
+                "shader_slot_value"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float2"
+                    ],
+                    "output_types": [
+                        "float2"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float3"
+                    ],
+                    "output_types": [
+                        "float3"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float4"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_round",
+            "category": "shader_category_math",
+            "code": "{outdef0} = round({in0});",
+            "inputs": [
+                "shader_slot_value"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float2"
+                    ],
+                    "output_types": [
+                        "float2"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float3"
+                    ],
+                    "output_types": [
+                        "float3"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float4"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_sqrt",
+            "category": "shader_category_math",
+            "code": "{outdef0} = sqrt({in0});",
+            "inputs": [
+                "shader_slot_value"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float2"
+                    ],
+                    "output_types": [
+                        "float2"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float3"
+                    ],
+                    "output_types": [
+                        "float3"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float4"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_sin",
+            "category": "shader_category_math",
+            "code": "{outdef0} = sin({in0});",
+            "inputs": [
+                "shader_slot_value"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float2"
+                    ],
+                    "output_types": [
+                        "float2"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float3"
+                    ],
+                    "output_types": [
+                        "float3"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float4"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_cos",
+            "category": "shader_category_math",
+            "code": "{outdef0} = cos({in0});",
+            "inputs": [
+                "shader_slot_value"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float2"
+                    ],
+                    "output_types": [
+                        "float2"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float3"
+                    ],
+                    "output_types": [
+                        "float3"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float4"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_asin",
+            "category": "shader_category_math",
+            "code": "{outdef0} = asin({in0});",
+            "inputs": [
+                "shader_slot_value"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float2"
+                    ],
+                    "output_types": [
+                        "float2"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float3"
+                    ],
+                    "output_types": [
+                        "float3"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float4"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_acos",
+            "category": "shader_category_math",
+            "code": "{outdef0} = acos({in0});",
+            "inputs": [
+                "shader_slot_value"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float2"
+                    ],
+                    "output_types": [
+                        "float2"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float3"
+                    ],
+                    "output_types": [
+                        "float3"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float4"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_dot",
+            "category": "shader_category_math",
+            "code": "{outdef0} = dot({in0}, {in1});",
+            "inputs": [
+                "shader_slot_a",
+                "shader_slot_b"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float2",
+                        "float2"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float3",
+                        "float3"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float4",
+                        "float4"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_cross",
+            "category": "shader_category_math",
+            "code": "{outdef0} = cross({in0}, {in1});",
+            "inputs": [
+                "shader_slot_a",
+                "shader_slot_b"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float3",
+                        "float3"
+                    ],
+                    "output_types": [
+                        "float3"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_normalize",
+            "category": "shader_category_math",
+            "code": "{outdef0} = normalize({in0});",
+            "inputs": [
+                "shader_slot_vector"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float2"
+                    ],
+                    "output_types": [
+                        "float2"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float3"
+                    ],
+                    "output_types": [
+                        "float3"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float4"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_veclength",
+            "category": "shader_category_math",
+            "code": "{outdef0} = length({in0});",
+            "inputs": [
+                "shader_slot_vector"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float2"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float3"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float4"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_step",
+            "category": "shader_category_math",
+            "code": "{outdef0} = step({in1}, {in0});",
+            "inputs": [
+                "shader_slot_value",
+                "shader_slot_edge"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float",
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float2",
+                        "float2"
+                    ],
+                    "output_types": [
+                        "float2"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float3",
+                        "float3"
+                    ],
+                    "output_types": [
+                        "float3"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float4",
+                        "float4"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": "float",
+                    "value": 0.0
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_smoothstep",
+            "category": "shader_category_math",
+            "code": "{outdef0} = smoothstep({in1}, {in2}, {in0});",
+            "inputs": [
+                "shader_slot_value",
+                "shader_slot_edge1",
+                "shader_slot_edge2"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float",
+                        "float",
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float2",
+                        "float2",
+                        "float2"
+                    ],
+                    "output_types": [
+                        "float2"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float3",
+                        "float3",
+                        "float3"
+                    ],
+                    "output_types": [
+                        "float3"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float4",
+                        "float4",
+                        "float4"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": "float",
+                    "value": 0.0
+                },
+                {
+                    "type": "float",
+                    "value": 1.0
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_threshold",
+            "category": "shader_category_math",
+            "code": "{outdef0} = {in0};\nif({in0} <= {param0}) { {out0} = {param1}; }",
+            "inputs": [
+                "shader_slot_value"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": [
+                {
+                    "name": "shader_param_threshold",
+                    "default_value": {
+                        "type": "float",
+                        "value": 0.0
+                    },
+                    "min_value": {
+                        "type": "float",
+                        "value": -1000000000.0
+                    },
+                    "max_value": {
+                        "type": "float",
+                        "value": 1000000000.0
+                    },
+                    "value_names": []
+                },
+                {
+                    "name": "shader_param_output",
+                    "default_value": {
+                        "type": "float",
+                        "value": 0.0
+                    },
+                    "min_value": {
+                        "type": "float",
+                        "value": -1000000000.0
+                    },
+                    "max_value": {
+                        "type": "float",
+                        "value": 1000000000.0
+                    },
+                    "value_names": []
+                }
+            ]
+        },
+        {
+            "name": "shader_node_equal",
+            "category": "shader_category_comparison",
+            "code": "{outdef0} = {in0} == {in1};",
+            "inputs": [
+                "shader_slot_a",
+                "shader_slot_b"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "int",
+                        "int"
+                    ],
+                    "output_types": [
+                        "bool"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float",
+                        "float"
+                    ],
+                    "output_types": [
+                        "bool"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_notequal",
+            "category": "shader_category_comparison",
+            "code": "{outdef0} = {in0} != {in1};",
+            "inputs": [
+                "shader_slot_a",
+                "shader_slot_b"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "int",
+                        "int"
+                    ],
+                    "output_types": [
+                        "bool"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float",
+                        "float"
+                    ],
+                    "output_types": [
+                        "bool"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_approxequal",
+            "category": "shader_category_comparison",
+            "code": "{outdef0} = float(abs({in0} - {in1})) <= {param0};",
+            "inputs": [
+                "shader_slot_a",
+                "shader_slot_b"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "int",
+                        "int"
+                    ],
+                    "output_types": [
+                        "bool"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float",
+                        "float"
+                    ],
+                    "output_types": [
+                        "bool"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": [
+                {
+                    "name": "shader_param_epsilon",
+                    "default_value": {
+                        "type": "float",
+                        "value": 0.001
+                    },
+                    "min_value": {
+                        "type": "float",
+                        "value": 0.0
+                    },
+                    "max_value": {
+                        "type": "float",
+                        "value": 1000000000.0
+                    },
+                    "value_names": []
+                }
+            ]
+        },
+        {
+            "name": "shader_node_less",
+            "category": "shader_category_comparison",
+            "code": "{outdef0} = {in0} < {in1};",
+            "inputs": [
+                "shader_slot_a",
+                "shader_slot_b"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "int",
+                        "int"
+                    ],
+                    "output_types": [
+                        "bool"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float",
+                        "float"
+                    ],
+                    "output_types": [
+                        "bool"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_lessorequal",
+            "category": "shader_category_comparison",
+            "code": "{outdef0} = {in0} <= {in1};",
+            "inputs": [
+                "shader_slot_a",
+                "shader_slot_b"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "int",
+                        "int"
+                    ],
+                    "output_types": [
+                        "bool"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float",
+                        "float"
+                    ],
+                    "output_types": [
+                        "bool"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_greater",
+            "category": "shader_category_comparison",
+            "code": "{outdef0} = {in0} > {in1};",
+            "inputs": [
+                "shader_slot_a",
+                "shader_slot_b"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "int",
+                        "int"
+                    ],
+                    "output_types": [
+                        "bool"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float",
+                        "float"
+                    ],
+                    "output_types": [
+                        "bool"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_greaterorequal",
+            "category": "shader_category_comparison",
+            "code": "{outdef0} = {in0} >= {in1};",
+            "inputs": [
+                "shader_slot_a",
+                "shader_slot_b"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "int",
+                        "int"
+                    ],
+                    "output_types": [
+                        "bool"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "float",
+                        "float"
+                    ],
+                    "output_types": [
+                        "bool"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_negate",
+            "category": "shader_category_logic",
+            "code": "{outdef0} = !{in0};",
+            "inputs": [
+                "shader_slot_value"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "bool"
+                    ],
+                    "output_types": [
+                        "bool"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_and",
+            "category": "shader_category_logic",
+            "code": "{outdef0} = {in0} && {in1};",
+            "inputs": [
+                "shader_slot_a",
+                "shader_slot_b"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "bool",
+                        "bool"
+                    ],
+                    "output_types": [
+                        "bool"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_or",
+            "category": "shader_category_logic",
+            "code": "{outdef0} = {in0} || {in1};",
+            "inputs": [
+                "shader_slot_a",
+                "shader_slot_b"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "bool",
+                        "bool"
+                    ],
+                    "output_types": [
+                        "bool"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_xor",
+            "category": "shader_category_logic",
+            "code": "{outdef0} = {in0} != {in1};",
+            "inputs": [
+                "shader_slot_a",
+                "shader_slot_b"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "bool",
+                        "bool"
+                    ],
+                    "output_types": [
+                        "bool"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_branch",
+            "category": "shader_category_logic",
+            "code": "{outdef0} = {in0} ? {in1} : {in2};",
+            "inputs": [
+                "shader_slot_predicate",
+                "shader_slot_true",
+                "shader_slot_false"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "bool",
+                        "int",
+                        "int"
+                    ],
+                    "output_types": [
+                        "int"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "bool",
+                        "float",
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "bool",
+                        "float2",
+                        "float2"
+                    ],
+                    "output_types": [
+                        "float2"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "bool",
+                        "float3",
+                        "float3"
+                    ],
+                    "output_types": [
+                        "float3"
+                    ]
+                },
+                {
+                    "input_types": [
+                        "bool",
+                        "float4",
+                        "float4"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": "bool",
+                    "value": true
+                },
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_blend",
+            "category": "shader_category_colors",
+            "code": "{outdef0} = Pixelpart_Blend({in0}, {in1}, {param0});",
+            "inputs": [
+                "shader_slot_a",
+                "shader_slot_b"
+            ],
+            "outputs": [
+                "shader_slot_color"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float4",
+                        "float4"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": [
+                {
+                    "name": "shader_param_mode",
+                    "default_value": {
+                        "type": "enum",
+                        "value": 0
+                    },
+                    "min_value": {
+                        "type": "enum",
+                        "value": 0
+                    },
+                    "max_value": {
+                        "type": "enum",
+                        "value": 8
+                    },
+                    "value_names": [
+                        "blend_multiply",
+                        "blend_add",
+                        "blend_subtract",
+                        "blend_difference",
+                        "blend_screen",
+                        "blend_overlay",
+                        "blend_lighten",
+                        "blend_darken",
+                        "blend_coloronly"
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "shader_node_colorramp",
+            "category": "shader_category_colors",
+            "code": "{outdef0} = float4(1.0, 1.0, 1.0, 1.0);\n{\nconst float3 values[100] = { {param0} };\n{out0} = float4(values[clamp(int({in0} * float(100 - 1)), 0, 100 - 1)], 1.0);\n}",
+            "inputs": [
+                "shader_slot_value"
+            ],
+            "outputs": [
+                "shader_slot_color"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": "float",
+                    "value": 0.0
+                }
+            ],
+            "parameters": [
+                {
+                    "name": "shader_param_gradient",
+                    "default_value": {
+                        "type": "gradient",
+                        "value": {
+                            "interpolation": "linear",
+                            "points": [
+                                [
+                                    0.0,
+                                    {
+                                        "x": 0.0,
+                                        "y": 0.0,
+                                        "z": 0.0
+                                    }
+                                ],
+                                [
+                                    1.0,
+                                    {
+                                        "x": 1.0,
+                                        "y": 1.0,
+                                        "z": 1.0
+                                    }
+                                ]
+                            ]
+                        }
+                    },
+                    "min_value": {
+                        "type": "gradient",
+                        "value": {
+                            "interpolation": "linear",
+                            "points": [
+                                [
+                                    0.0,
+                                    {
+                                        "x": 0.0,
+                                        "y": 0.0,
+                                        "z": 0.0
+                                    }
+                                ],
+                                [
+                                    1.0,
+                                    {
+                                        "x": 1.0,
+                                        "y": 1.0,
+                                        "z": 1.0
+                                    }
+                                ]
+                            ]
+                        }
+                    },
+                    "max_value": {
+                        "type": "gradient",
+                        "value": {
+                            "interpolation": "linear",
+                            "points": [
+                                [
+                                    0.0,
+                                    {
+                                        "x": 0.0,
+                                        "y": 0.0,
+                                        "z": 0.0
+                                    }
+                                ],
+                                [
+                                    1.0,
+                                    {
+                                        "x": 1.0,
+                                        "y": 1.0,
+                                        "z": 1.0
+                                    }
+                                ]
+                            ]
+                        }
+                    },
+                    "value_names": []
+                }
+            ]
+        },
+        {
+            "name": "shader_node_brightness",
+            "category": "shader_category_colors",
+            "code": "{outdef0} = float4({in0}.rgb + float3({in1}, {in1}, {in1}), {in0}.a);",
+            "inputs": [
+                "shader_slot_color",
+                "shader_slot_brightness"
+            ],
+            "outputs": [
+                "shader_slot_color"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float4",
+                        "float"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": "float",
+                    "value": 0.0
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_exposure",
+            "category": "shader_category_colors",
+            "code": "{outdef0} = float4({in0}.rgb * float3(1.0 + {in1}, 1.0 + {in1}, 1.0 + {in1}), {in0}.a);",
+            "inputs": [
+                "shader_slot_color",
+                "shader_slot_exposure"
+            ],
+            "outputs": [
+                "shader_slot_color"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float4",
+                        "float"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": "float",
+                    "value": 0.0
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_contrast",
+            "category": "shader_category_colors",
+            "code": "{outdef0} = float4(float3(0.5, 0.5, 0.5) + ({in0}.rgb - float3(0.5, 0.5, 0.5)) * (1.0 + {in1}), {in0}.a);",
+            "inputs": [
+                "shader_slot_color",
+                "shader_slot_contrast"
+            ],
+            "outputs": [
+                "shader_slot_color"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float4",
+                        "float"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": "float",
+                    "value": 0.0
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_saturation",
+            "category": "shader_category_colors",
+            "code": "{outdef0} = float4(0.0, 0.0, 0.0, 0.0);\n{\nfloat b = dot({in0}.rgb, float3(0.2126, 0.7152, 0.0722));\n{out0} = float4(lerp(float3(b, b, b), {in0}.rgb, 1.0 + {in1}), {in0}.a);\n}"
+            ,
+            "inputs": [
+                "shader_slot_color",
+                "shader_slot_saturation"
+            ],
+            "outputs": [
+                "shader_slot_color"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float4",
+                        "float"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": "float",
+                    "value": 0.0
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_posterize",
+            "category": "shader_category_colors",
+            "code": "{outdef0} = round({in0} * float({in1})) / float({in1});",
+            "inputs": [
+                "shader_slot_color",
+                "shader_slot_number"
+            ],
+            "outputs": [
+                "shader_slot_color"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float4",
+                        "int"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": "int",
+                    "value": 256
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_texture_image",
+            "category": "shader_category_textures",
+            "code": "{outdef0} = SAMPLE_TEXTURE2D({param0}, sampler{param0}, {in0});",
+            "inputs": [
+                "shader_slot_uv"
+            ],
+            "outputs": [
+                "shader_slot_color"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float2"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": [
+                {
+                    "name": "shader_param_image",
+                    "default_value": {
+                        "type": "resource_image",
+                        "value": ""
+                    },
+                    "min_value": {
+                        "type": "resource_image",
+                        "value": ""
+                    },
+                    "max_value": {
+                        "type": "resource_image",
+                        "value": ""
+                    },
+                    "value_names": []
+                }
+            ]
+        },
+        {
+            "name": "shader_node_texture_spritesheet",
+            "category": "shader_category_textures",
+            "code": "{outdef0} = float4(1.0, 1.0, 1.0, 1.0);\nif({param3} == 0) {{out0} = SAMPLE_TEXTURE2D({param0}, sampler{param0}, float2(float(({in1} % ({param1} * {param2})) % {param1}) / float({param1}), float(({in1} % ({param1} * {param2})) / {param1}) / float({param2})) + float2(1.0 / float({param1}), 1.0 / float({param2})) * {in0});}\nelse if({param3} == 1) {{out0} = SAMPLE_TEXTURE2D({param0}, sampler{param0}, float2(1.0 - float(({in1} % ({param1} * {param2})) % {param1}) / float({param1}) - 1.0 / float({param1}), float(({in1} % ({param1} * {param2})) / {param1}) / float({param2})) + float2(1.0 / float({param1}), 1.0 / float({param2})) * {in0});}\nelse if({param3} == 2) {{out0} = SAMPLE_TEXTURE2D({param0}, sampler{param0}, float2(float(({in1} % ({param1} * {param2})) % {param1}) / float({param1}), 1.0 - float(({in1} % ({param1} * {param2})) / {param1}) / float({param2}) - 1.0 / float({param2})) + float2(1.0 / float({param1}), 1.0 / float({param2})) * {in0});}\nelse if({param3} == 3) {{out0} = SAMPLE_TEXTURE2D({param0}, sampler{param0}, float2(1.0 - float(({in1} % ({param1} * {param2})) % {param1}) / float({param1}) - 1.0 / float({param1}), 1.0 - float(({in1} % ({param1} * {param2})) / {param1}) / float({param2}) - 1.0 / float({param2})) + float2(1.0 / float({param1}), 1.0 / float({param2})) * {in0});\n}",
+            "inputs": [
+                "shader_slot_uv",
+                "shader_slot_frame"
+            ],
+            "outputs": [
+                "shader_slot_color"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float2",
+                        "int"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": "int",
+                    "value": 0
+                }
+            ],
+            "parameters": [
+                {
+                    "name": "shader_param_image",
+                    "default_value": {
+                        "type": "resource_image",
+                        "value": ""
+                    },
+                    "min_value": {
+                        "type": "resource_image",
+                        "value": ""
+                    },
+                    "max_value": {
+                        "type": "resource_image",
+                        "value": ""
+                    },
+                    "value_names": []
+                },
+                {
+                    "name": "shader_param_rownum",
+                    "default_value": {
+                        "type": "int",
+                        "value": 1
+                    },
+                    "min_value": {
+                        "type": "int",
+                        "value": 1
+                    },
+                    "max_value": {
+                        "type": "int",
+                        "value": 1024
+                    },
+                    "value_names": []
+                },
+                {
+                    "name": "shader_param_columnnum",
+                    "default_value": {
+                        "type": "int",
+                        "value": 1
+                    },
+                    "min_value": {
+                        "type": "int",
+                        "value": 1
+                    },
+                    "max_value": {
+                        "type": "int",
+                        "value": 1024
+                    },
+                    "value_names": []
+                },
+                {
+                    "name": "shader_param_texorigin",
+                    "default_value": {
+                        "type": "enum",
+                        "value": 2
+                    },
+                    "min_value": {
+                        "type": "enum",
+                        "value": 0
+                    },
+                    "max_value": {
+                        "type": "enum",
+                        "value": 3
+                    },
+                    "value_names": [
+                        "origin_bl",
+                        "origin_br",
+                        "origin_tl",
+                        "origin_tr"
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "shader_node_spritesheet",
+            "category": "shader_category_textures",
+            "code": "{outdef0} = {in0};\nif({param0} == 0) {{out0} = float2(float(({in1} % ({in2} * {in3})) % {in2}) / float({in2}), float(({in1} % ({in2} * {in3})) / {in2}) / float({in3})) + float2(1.0 / float({in2}), 1.0 / float({in3})) * {in0};}\nelse if({param0} == 1) {{out0} = float2(1.0 - float(({in1} % ({in2} * {in3})) % {in2}) / float({in2}) - 1.0 / float({in2}), float(({in1} % ({in2} * {in3})) / {in2}) / float({in3})) + float2(1.0 / float({in2}), 1.0 / float({in3})) * {in0};}\nelse if({param0} == 2) {{out0} = float2(float(({in1} % ({in2} * {in3})) % {in2}) / float({in2}), 1.0 - float(({in1} % ({in2} * {in3})) / {in2}) / float({in3}) - 1.0 / float({in3})) + float2(1.0 / float({in2}), 1.0 / float({in3})) * {in0};}\nelse if({param0} == 3) {{out0} = float2(1.0 - float(({in1} % ({in2} * {in3})) % {in2}) / float({in2}) - 1.0 / float({in2}), 1.0 - float(({in1} % ({in2} * {in3})) / {in2}) / float({in3}) - 1.0 / float({in3})) + float2(1.0 / float({in2}), 1.0 / float({in3})) * {in0};\n}",
+            "inputs": [
+                "shader_slot_uv",
+                "shader_slot_frame",
+                "shader_slot_rownum",
+                "shader_slot_columnnum"
+            ],
+            "outputs": [
+                "shader_slot_uv"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float2",
+                        "int",
+                        "int",
+                        "int"
+                    ],
+                    "output_types": [
+                        "float2"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": "int",
+                    "value": 0
+                },
+                {
+                    "type": "int",
+                    "value": 1
+                },
+                {
+                    "type": "int",
+                    "value": 1
+                }
+            ],
+            "parameters": [
+                {
+                    "name": "shader_param_texorigin",
+                    "default_value": {
+                        "type": "enum",
+                        "value": 2
+                    },
+                    "min_value": {
+                        "type": "enum",
+                        "value": 0
+                    },
+                    "max_value": {
+                        "type": "enum",
+                        "value": 3
+                    },
+                    "value_names": [
+                        "origin_bl",
+                        "origin_br",
+                        "origin_tl",
+                        "origin_tr"
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "shader_node_tilingoffset",
+            "category": "shader_category_textures",
+            "code": "{outdef0} = {in0} * {in1} + {in2};",
+            "inputs": [
+                "shader_slot_uv",
+                "shader_slot_tiling",
+                "shader_slot_offset"
+            ],
+            "outputs": [
+                "shader_slot_uv"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float2",
+                        "float2",
+                        "float2"
+                    ],
+                    "output_types": [
+                        "float2"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": "float2",
+                    "value": {
+                        "x": 1.0,
+                        "y": 1.0
+                    }
+                },
+                {
+                    "type": "float2",
+                    "value": {
+                        "x": 0.0,
+                        "y": 0.0
+                    }
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_twirl",
+            "category": "shader_category_textures",
+            "code": "{outdef0} = {in0} - float2(0.5, 0.5);\n{out0} = float2(cos(atan2({out0}.y, {out0}.x) + length({out0}) * {in1}), sin(atan2({out0}.y, {out0}.x) + length({out0}) * {in1})) * length({out0}) + float2(0.5, 0.5);",
+            "inputs": [
+                "shader_slot_uv",
+                "shader_slot_amount"
+            ],
+            "outputs": [
+                "shader_slot_uv"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float2",
+                        "float"
+                    ],
+                    "output_types": [
+                        "float2"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": "float",
+                    "value": 0.0
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_circlemask",
+            "category": "shader_category_procedural",
+            "code": "{outdef0} = clamp(1.0 - smoothstep({in1}, {in1} + {in2}, length({in0} - float2(0.5, 0.5))), 0.0, 1.0);",
+            "inputs": [
+                "shader_slot_uv",
+                "shader_slot_radius",
+                "shader_slot_smoothness"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float2",
+                        "float",
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": "float",
+                    "value": 0.1
+                },
+                {
+                    "type": "float",
+                    "value": 0.1
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_noise1d",
+            "category": "shader_category_procedural",
+            "code": "{outdef0} = 0.0;\n{\nfloat amplitude = {in1};\nfloat frequency = {in2};\nfor(int i = 0; i < {param0}; i++) {\n{out0} += amplitude * Pixelpart_Noise1d({in0} * frequency);\namplitude *= {in3};\nfrequency *= {in4};\n}\n}",
+            "inputs": [
+                "shader_slot_position",
+                "shader_slot_amplitude",
+                "shader_slot_frequency",
+                "shader_slot_persistence",
+                "shader_slot_lacunarity"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float",
+                        "float",
+                        "float",
+                        "float",
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": "float",
+                    "value": 1.0
+                },
+                {
+                    "type": "float",
+                    "value": 1.0
+                },
+                {
+                    "type": "float",
+                    "value": 0.5
+                },
+                {
+                    "type": "float",
+                    "value": 2.0
+                }
+            ],
+            "parameters": [
+                {
+                    "name": "shader_param_octaves",
+                    "default_value": {
+                        "type": "int",
+                        "value": 1
+                    },
+                    "min_value": {
+                        "type": "int",
+                        "value": 1
+                    },
+                    "max_value": {
+                        "type": "int",
+                        "value": 128
+                    },
+                    "value_names": []
+                }
+            ]
+        },
+        {
+            "name": "shader_node_noise2d",
+            "category": "shader_category_procedural",
+            "code": "{outdef0} = 0.0;\n{\nfloat amplitude = {in1};\nfloat frequency = {in2};\nfor(int i = 0; i < {param0}; i++) {\n{out0} += amplitude * Pixelpart_Noise2d(float2({in0}.x * frequency, {in0}.y * frequency));\namplitude *= {in3};\nfrequency *= {in4};\n}\n}",
+            "inputs": [
+                "shader_slot_position",
+                "shader_slot_amplitude",
+                "shader_slot_frequency",
+                "shader_slot_persistence",
+                "shader_slot_lacunarity"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float2",
+                        "float",
+                        "float",
+                        "float",
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                },
+                {
+                    "type": "float",
+                    "value": 1.0
+                },
+                {
+                    "type": "float",
+                    "value": 1.0
+                },
+                {
+                    "type": "float",
+                    "value": 0.5
+                },
+                {
+                    "type": "float",
+                    "value": 0.5
+                }
+            ],
+            "parameters": [
+                {
+                    "name": "shader_param_octaves",
+                    "default_value": {
+                        "type": "int",
+                        "value": 1
+                    },
+                    "min_value": {
+                        "type": "int",
+                        "value": 1
+                    },
+                    "max_value": {
+                        "type": "int",
+                        "value": 128
+                    },
+                    "value_names": []
+                }
+            ]
+        },
+        {
+            "name": "shader_node_frameanimation",
+            "category": "shader_category_util",
+            "code": "{outdef0} = {in3};\n{out0} += {in4} ? int(({in0} / {in1} * float({in2})) % float({in2})) : clamp(int({in0} / {in1} * float({in2})), 0, {in2} - 1);",
+            "inputs": [
+                "shader_slot_time",
+                "shader_slot_duration",
+                "shader_slot_frames",
+                "shader_slot_startframe",
+                "shader_slot_loop"
+            ],
+            "outputs": [
+                "shader_slot_frame"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float",
+                        "float",
+                        "int",
+                        "int",
+                        "bool"
+                    ],
+                    "output_types": [
+                        "int"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": "float",
+                    "value": 0.0
+                },
+                {
+                    "type": "float",
+                    "value": 1.0
+                },
+                {
+                    "type": "int",
+                    "value": 1
+                },
+                {
+                    "type": "int",
+                    "value": 0
+                },
+                {
+                    "type": "bool",
+                    "value": false
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_softparticlefade",
+            "category": "shader_category_util",
+            "code": " {outdef0} = Pixelpart_SoftParticleFade(_CameraDepthTexture, sampler_CameraDepthTexture, in_ProjectedPosition, {in0});",
+            "inputs": [
+                "shader_slot_transition"
+            ],
+            "outputs": [
+                "shader_slot_factor"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": "float",
+                    "value": 0.0
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_distancefade",
+            "category": "shader_category_util",
+            "code": "{outdef0} = Pixelpart_DistanceFade(in_ProjectedPosition.z, {in0});",
+            "inputs": [
+                "shader_slot_transition"
+            ],
+            "outputs": [
+                "shader_slot_factor"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": "float",
+                    "value": 0.0
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_curve",
+            "category": "shader_category_util",
+            "code": "{outdef0} = 0.0;\n{\nconst float values[100] = { {param0} };\n{out0} = values[clamp(int({in0} * float(100 - 1)), 0, 100 - 1)];\n}",
+            "inputs": [
+                "shader_slot_value"
+            ],
+            "outputs": [
+                "shader_slot_result"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float"
+                    ],
+                    "output_types": [
+                        "float"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": "float",
+                    "value": 0.0
+                }
+            ],
+            "parameters": [
+                {
+                    "name": "shader_param_curve",
+                    "default_value": {
+                        "type": "curve",
+                        "value": {
+                            "interpolation": "linear",
+                            "points": [
+                                [
+                                    0.0,
+                                    0.0
+                                ],
+                                [
+                                    1.0,
+                                    1.0
+                                ]
+                            ]
+                        }
+                    },
+                    "min_value": {
+                        "type": "curve",
+                        "value": {
+                            "interpolation": "linear",
+                            "points": [
+                                [
+                                    0.0,
+                                    0.0
+                                ],
+                                [
+                                    1.0,
+                                    1.0
+                                ]
+                            ]
+                        }
+                    },
+                    "max_value": {
+                        "type": "curve",
+                        "value": {
+                            "interpolation": "linear",
+                            "points": [
+                                [
+                                    0.0,
+                                    0.0
+                                ],
+                                [
+                                    1.0,
+                                    1.0
+                                ]
+                            ]
+                        }
+                    },
+                    "value_names": []
+                }
+            ]
+        },
+        {
+            "name": "shader_node_split2",
+            "category": "shader_category_util",
+            "code": "{outdef0} = {in0}.x;\n{outdef1} = {in0}.y;",
+            "inputs": [
+                "shader_slot_vector"
+            ],
+            "outputs": [
+                "shader_slot_x",
+                "shader_slot_y"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float2"
+                    ],
+                    "output_types": [
+                        "float",
+                        "float"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_split3",
+            "category": "shader_category_util",
+            "code": "{outdef0} = {in0}.x;\n{outdef1} = {in0}.y;\n{outdef2} = {in0}.z;",
+            "inputs": [
+                "shader_slot_vector"
+            ],
+            "outputs": [
+                "shader_slot_x",
+                "shader_slot_y",
+                "shader_slot_z"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float3"
+                    ],
+                    "output_types": [
+                        "float",
+                        "float",
+                        "float"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_split4",
+            "category": "shader_category_util",
+            "code": "{outdef0} = {in0}.x;\n{outdef1} = {in0}.y;\n{outdef2} = {in0}.z;\n{outdef3} = {in0}.w;",
+            "inputs": [
+                "shader_slot_vector"
+            ],
+            "outputs": [
+                "shader_slot_x",
+                "shader_slot_y",
+                "shader_slot_z",
+                "shader_slot_w"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float4"
+                    ],
+                    "output_types": [
+                        "float",
+                        "float",
+                        "float",
+                        "float"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": null,
+                    "value": null
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_merge2",
+            "category": "shader_category_util",
+            "code": "{outdef0} = float2({in0}, {in1});",
+            "inputs": [
+                "shader_slot_x",
+                "shader_slot_y"
+            ],
+            "outputs": [
+                "shader_slot_vector"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float",
+                        "float"
+                    ],
+                    "output_types": [
+                        "float2"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": "float",
+                    "value": 0.0
+                },
+                {
+                    "type": "float",
+                    "value": 0.0
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_merge3",
+            "category": "shader_category_util",
+            "code": "{outdef0} = float3({in0}, {in1}, {in2});",
+            "inputs": [
+                "shader_slot_x",
+                "shader_slot_y",
+                "shader_slot_z"
+            ],
+            "outputs": [
+                "shader_slot_vector"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float",
+                        "float",
+                        "float"
+                    ],
+                    "output_types": [
+                        "float3"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": "float",
+                    "value": 0.0
+                },
+                {
+                    "type": "float",
+                    "value": 0.0
+                },
+                {
+                    "type": "float",
+                    "value": 0.0
+                }
+            ],
+            "parameters": []
+        },
+        {
+            "name": "shader_node_merge4",
+            "category": "shader_category_util",
+            "code": "{outdef0} = float4({in0}, {in1}, {in2}, {in3});",
+            "inputs": [
+                "shader_slot_x",
+                "shader_slot_y",
+                "shader_slot_z",
+                "shader_slot_w"
+            ],
+            "outputs": [
+                "shader_slot_vector"
+            ],
+            "signatures": [
+                {
+                    "input_types": [
+                        "float",
+                        "float",
+                        "float",
+                        "float"
+                    ],
+                    "output_types": [
+                        "float4"
+                    ]
+                }
+            ],
+            "default_inputs": [
+                {
+                    "type": "float",
+                    "value": 0.0
+                },
+                {
+                    "type": "float",
+                    "value": 0.0
+                },
+                {
+                    "type": "float",
+                    "value": 0.0
+                },
+                {
+                    "type": "float",
+                    "value": 0.0
+                }
+            ],
+            "parameters": []
+        }
+    ],
+    "variable_prefix": "v_",
+    "type_names": [
+        "bool",
+        "int",
+        "float",
+        "float2",
+        "float3",
+        "float4"
+    ],
+    "type_constructors": [
+        "{0}",
+        "{0}",
+        "{0}",
+        "float2({0}, {1})",
+        "float3({0}, {1}, {2})",
+        "float4({0}, {1}, {2}, {3})"
+    ],
+    "type_casts": [
+        [
+            "{0}",
+            "bool({0})",
+            "bool({0})",
+            "bool({0}.x)",
+            "bool({0}.x)",
+            "bool({0}.x)"
+        ],
+        [
+            "int({0})",
+            "{0}",
+            "int({0})",
+            "int({0}.x)",
+            "int({0}.x)",
+            "int({0}.x)"
+        ],
+        [
+            "float({0})",
+            "float({0})",
+            "{0}",
+            "{0}.x",
+            "{0}.x",
+            "{0}.x"
+        ],
+        [
+            "float2({0}, {0})",
+            "float2({0}, {0})",
+            "float2({0}, {0})",
+            "{0}",
+            "{0}.xy",
+            "{0}.xy"
+        ],
+        [
+            "float3({0}, {0}, {0})",
+            "float3({0}, {0}, {0})",
+            "float3({0}, {0}, {0})",
+            "float3({0}.x, {0}.y, 0.0)",
+            "{0}",
+            "{0}.xyz"
+        ],
+        [
+            "float4({0}, {0}, {0}, {0})",
+            "float4({0}, {0}, {0}, {0})",
+            "float4({0}, {0}, {0}, {0})",
+            "float4({0}.x, {0}.y, 0.0, 0.0)",
+            "float4({0}.x, {0}.y, {0}.z, 0.0)",
+            "{0}"
+        ]
+    ],
+    "parameter_prefix": "_",
+    "parameter_definition": "{type} {name};",
+    "parameter_type_names": [
+        "int",
+        "float",
+        "float2",
+        "float3",
+        "float4",
+        "bool",
+        "int",
+        "half4",
+        "",
+        "",
+        ""
+    ],
+    "texture_samplers": [
+        "_Texture0",
+        "_Texture1",
+        "_Texture2",
+        "_Texture3",
+        "_Texture4",
+        "_Texture5",
+        "_Texture6",
+        "_Texture7"
+    ]
+}

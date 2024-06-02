@@ -314,6 +314,12 @@ sources = []
 
 add_sources(sources, "src", ".cpp")
 add_sources(sources, "pixelpart-runtime/", ".cpp")
+add_sources(sources, "pixelpart-runtime/common", ".cpp")
+add_sources(sources, "pixelpart-runtime/computegraph", ".cpp")
+add_sources(sources, "pixelpart-runtime/effect", ".cpp")
+add_sources(sources, "pixelpart-runtime/engine", ".cpp")
+add_sources(sources, "pixelpart-runtime/project", ".cpp")
+add_sources(sources, "pixelpart-runtime/shadergraph", ".cpp")
 add_sources(sources, "pixelpart-runtime/zlib", ".c")
 
 env.Append(CPPPATH=[
@@ -321,11 +327,13 @@ env.Append(CPPPATH=[
     "pixelpart-runtime/"
 ])
 
+base_path = "pixelpart/Runtime/Plugins/"
+
 if env["platform"] == "macos":
-    library = env.LoadableModule("pixelpart-plugin/Assets/Pixelpart/Plugins/" + target_path, source=sources)
+    library = env.LoadableModule(base_path + target_path, source=sources)
 elif env["platform"] == "ios":
-    library = env.StaticLibrary("pixelpart-plugin/Assets/Pixelpart/Plugins/" + target_path, source=sources)
+    library = env.StaticLibrary(base_path + target_path, source=sources)
 else:
-    library = env.SharedLibrary("pixelpart-plugin/Assets/Pixelpart/Plugins/" + target_path, source=sources)
+    library = env.SharedLibrary(base_path + target_path, source=sources)
 
 Default(library)

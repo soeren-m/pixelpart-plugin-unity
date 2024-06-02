@@ -1,0 +1,13 @@
+{
+    "name": "net.pixelpart.hdrp",
+    "version": "1.7.0",
+    "description": "HDRP materials for the Pixelpart runtime plugin.",
+    "displayName": "Pixelpart HDRP",
+    "unity": "2019.1",
+    "author": {
+        "name": "Sören Möllers"
+    },
+    "dependencies": {
+        "net.pixelpart": "1.7.0"
+    }
+}

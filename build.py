@@ -22,7 +22,7 @@ elif "platform=android" in sys.argv:
 
 elif "platform=ios" in sys.argv:
     subprocess.run("scons platform=ios ios_arch=arm64 target=release", shell = True)
-    subprocess.run("lipo -create pixelpart-plugin/Assets/Pixelpart/Plugins/iOS/libpixelpart.arm64.a -output pixelpart-plugin/Assets/Pixelpart/Plugins/iOS/libpixelpart.a", shell = True)
+    subprocess.run("lipo -create pixelpart/Runtime/Plugins/iOS/libpixelpart.arm64.a -output pixelpart/Runtime/Plugins/iOS/libpixelpart.a", shell = True)
 
 elif "platform=web" in sys.argv:
     def filter_files(dir, files):
@@ -57,5 +57,5 @@ elif "platform=web" in sys.argv:
                 "win32" in f)
             ]
 
-    shutil.copytree("src", "pixelpart-plugin/Assets/Pixelpart/Plugins/WebGL", ignore=filter_files, dirs_exist_ok=True)
-    shutil.copytree("pixelpart-runtime", "pixelpart-plugin/Assets/Pixelpart/Plugins/WebGL", ignore=filter_files, dirs_exist_ok=True)
+    shutil.copytree("src", "pixelpart/Runtime/Plugins/WebGL", ignore=filter_files, dirs_exist_ok=True)
+    shutil.copytree("pixelpart-runtime", "pixelpart/Runtime/Plugins/WebGL", ignore=filter_files, dirs_exist_ok=True)

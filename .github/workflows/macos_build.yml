@@ -24,4 +24,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: pixelpart-macos
-          path: ./pixelpart-plugin/Assets/Pixelpart/Plugins/macOS
+          path: ./pixelpart/Runtime/Plugins/macOS

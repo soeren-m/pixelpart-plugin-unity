@@ -24,4 +24,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: pixelpart-web
-          path: ./pixelpart-plugin/Assets/Pixelpart/Plugins/WebGL
+          path: ./pixelpart/Runtime/Plugins/WebGL

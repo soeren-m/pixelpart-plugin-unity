@@ -40,9 +40,6 @@ jobs:
           python-version: 3.x
           architecture: x64
 
-      - name: Setup PyYAML
-        run: python -m pip install PyYAML
-
       - name: Download Windows artifacts
         uses: actions/download-artifact@v1
         with:
@@ -65,26 +62,24 @@ jobs:
 
       - name: Copy binaries
         run: |
-          cp pixelpart-windows/x86/pixelpart.dll ./pixelpart-plugin/Assets/Pixelpart/Plugins/x86/
-          cp pixelpart-windows/x86_64/pixelpart.dll ./pixelpart-plugin/Assets/Pixelpart/Plugins/x86_64/
-          cp pixelpart-linux/x86/libpixelpart.so ./pixelpart-plugin/Assets/Pixelpart/Plugins/x86/
-          cp pixelpart-linux/x86_64/libpixelpart.so ./pixelpart-plugin/Assets/Pixelpart/Plugins/x86_64/
-          cp pixelpart-macos/pixelpart.bundle ./pixelpart-plugin/Assets/Pixelpart/Plugins/macOS/
-          cp -r pixelpart-web/* ./pixelpart-plugin/Assets/Pixelpart/Plugins/WebGL/
+          cp pixelpart-windows/x86/pixelpart.dll ./pixelpart/Runtime/Plugins/x86/
+          cp pixelpart-windows/x86_64/pixelpart.dll ./pixelpart/Runtime/Plugins/x86_64/
+          cp pixelpart-linux/x86/libpixelpart.so ./pixelpart/Runtime/Plugins/x86/
+          cp pixelpart-linux/x86_64/libpixelpart.so ./pixelpart/Runtime/Plugins/x86_64/
+          cp pixelpart-macos/pixelpart.bundle ./pixelpart/Runtime/Plugins/macOS/
+          cp -r pixelpart-web/* ./pixelpart/Runtime/Plugins/WebGL/
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v1
-        with:
-          name: pixelpart-plugin-unity-assets
-          path: ./pixelpart-plugin/Assets
-
-      - name: Create Unity package
+      - name: Create Unity packages
         run: |
-          cd pixelpart-plugin
-          python ../package.py -o ../pixelpart-plugin-unity.unitypackage Assets/Pixelpart Assets/Gizmos
+          python package.py -o net.pixelpart.tgz -t pixelpart
+          python package.py -o net.pixelpart.urp.tgz -t pixelpart.urp
+          python package.py -o net.pixelpart.hdrp.tgz -t pixelpart.hdrp
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: pixelpart-plugin-unity
-          path: pixelpart-plugin-unity.unitypackage
+          path: |
+            net.pixelpart.tgz
+            net.pixelpart.urp.tgz
+            net.pixelpart.hdrp.tgz

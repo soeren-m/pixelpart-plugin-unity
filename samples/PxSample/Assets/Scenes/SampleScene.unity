@@ -162,6 +162,9 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 5f93a7652604cf440b4e373ccb1b9048, type: 2}
   FlipH: 0
   FlipV: 0
+  effectInputNames: []
+  effectInputValues: []
+  prevEffectAsset: {fileID: 11400000, guid: e4b29a63f4a7b484caa4c8ffa98e284a, type: 2}
 --- !u!4 &266700973
 Transform:
   m_ObjectHideFlags: 0

@@ -59,7 +59,7 @@ internal static class Plugin {
 	[DllImport(pluginName)]
 	public static extern int PixelpartGetNumEffectInputs(IntPtr internalEffect);
 	[DllImport(pluginName)]
-	public static extern int PixelpartGetEffectInputs(IntPtr internalEffect, uint[] ids, byte[] names, int bufferSizeNames);
+	public static extern int PixelpartGetEffectInputs(IntPtr internalEffect, uint[] ids, int[] types, byte[] names, int bufferSizeNames);
 	[DllImport(pluginName)]
 	public static extern void PixelpartSetEffectInputBool(IntPtr internalEffect, uint inputId, bool value);
 	[DllImport(pluginName)]

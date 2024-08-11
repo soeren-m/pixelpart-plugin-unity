@@ -61,13 +61,19 @@ public class PixelpartEffect : MonoBehaviour {
 		}
 	}
 
+	[SerializeField]
+	private List<string> effectInputNames = new List<string>();
+
+	[SerializeField]
+	private List<PixelpartVariantValue> effectInputValues = new List<PixelpartVariantValue>();
+
 	private IntPtr internalEffect = IntPtr.Zero;
 
 	private PixelpartEffectAsset cachedEffectAsset = null;
 
-	private Dictionary<string, uint> effectInputs = new Dictionary<string, uint>();
-
 	private PixelpartGraphicsResourceProvider graphicsResourceProvider = new PixelpartGraphicsResourceProvider();
+
+	private Dictionary<string, uint> effectInputIdMap = new Dictionary<string, uint>();
 
 	private PixelpartParticleRenderer[] particleRenderers;
 
@@ -146,12 +152,13 @@ public class PixelpartEffect : MonoBehaviour {
 		}
 
 		uint inputId = 0;
-		if(!effectInputs.TryGetValue(name, out inputId)) {
+		if(!effectInputIdMap.TryGetValue(name, out inputId)) {
 			Debug.LogWarning("[Pixelpart] Unknown effect input '" + name + "'", this);
 			return;
 		}
 
 		Plugin.PixelpartSetEffectInputBool(internalEffect, inputId, value);
+		SetInputPropertyValue(name, new PixelpartVariantValue(value));
 	}
 	public void SetInputInt(string name, int value) {
 		if(internalEffect == IntPtr.Zero) {
@@ -160,12 +167,13 @@ public class PixelpartEffect : MonoBehaviour {
 		}
 
 		uint inputId = 0;
-		if(!effectInputs.TryGetValue(name, out inputId)) {
+		if(!effectInputIdMap.TryGetValue(name, out inputId)) {
 			Debug.LogWarning("[Pixelpart] Unknown effect input '" + name + "'", this);
 			return;
 		}
 
 		Plugin.PixelpartSetEffectInputInt(internalEffect, inputId, value);
+		SetInputPropertyValue(name, new PixelpartVariantValue(value));
 	}
 	public void SetInputFloat(string name, float value) {
 		if(internalEffect == IntPtr.Zero) {
@@ -174,12 +182,13 @@ public class PixelpartEffect : MonoBehaviour {
 		}
 
 		uint inputId = 0;
-		if(!effectInputs.TryGetValue(name, out inputId)) {
+		if(!effectInputIdMap.TryGetValue(name, out inputId)) {
 			Debug.LogWarning("[Pixelpart] Unknown effect input '" + name + "'", this);
 			return;
 		}
 
 		Plugin.PixelpartSetEffectInputFloat(internalEffect, inputId, value);
+		SetInputPropertyValue(name, new PixelpartVariantValue(value));
 	}
 	public void SetInputFloat2(string name, Vector2 value) {
 		if(internalEffect == IntPtr.Zero) {
@@ -188,12 +197,13 @@ public class PixelpartEffect : MonoBehaviour {
 		}
 
 		uint inputId = 0;
-		if(!effectInputs.TryGetValue(name, out inputId)) {
+		if(!effectInputIdMap.TryGetValue(name, out inputId)) {
 			Debug.LogWarning("[Pixelpart] Unknown effect input '" + name + "'", this);
 			return;
 		}
 
 		Plugin.PixelpartSetEffectInputFloat2(internalEffect, inputId, value);
+		SetInputPropertyValue(name, new PixelpartVariantValue(value));
 	}
 	public void SetInputFloat3(string name, Vector3 value) {
 		if(internalEffect == IntPtr.Zero) {
@@ -202,12 +212,13 @@ public class PixelpartEffect : MonoBehaviour {
 		}
 
 		uint inputId = 0;
-		if(!effectInputs.TryGetValue(name, out inputId)) {
+		if(!effectInputIdMap.TryGetValue(name, out inputId)) {
 			Debug.LogWarning("[Pixelpart] Unknown effect input '" + name + "'", this);
 			return;
 		}
 
 		Plugin.PixelpartSetEffectInputFloat3(internalEffect, inputId, value);
+		SetInputPropertyValue(name, new PixelpartVariantValue(value));
 	}
 	public void SetInputFloat4(string name, Vector4 value) {
 		if(internalEffect == IntPtr.Zero) {
@@ -216,12 +227,13 @@ public class PixelpartEffect : MonoBehaviour {
 		}
 
 		uint inputId = 0;
-		if(!effectInputs.TryGetValue(name, out inputId)) {
+		if(!effectInputIdMap.TryGetValue(name, out inputId)) {
 			Debug.LogWarning("[Pixelpart] Unknown effect input '" + name + "'", this);
 			return;
 		}
 
 		Plugin.PixelpartSetEffectInputFloat4(internalEffect, inputId, value);
+		SetInputPropertyValue(name, new PixelpartVariantValue(value));
 	}
 	public bool GetInputBool(string name) {
 		if(internalEffect == IntPtr.Zero) {
@@ -230,7 +242,7 @@ public class PixelpartEffect : MonoBehaviour {
 		}
 
 		uint inputId = 0;
-		if(!effectInputs.TryGetValue(name, out inputId)) {
+		if(!effectInputIdMap.TryGetValue(name, out inputId)) {
 			Debug.LogWarning("[Pixelpart] Unknown effect input '" + name + "'", this);
 			return false;
 		}
@@ -244,7 +256,7 @@ public class PixelpartEffect : MonoBehaviour {
 		}
 
 		uint inputId = 0;
-		if(!effectInputs.TryGetValue(name, out inputId)) {
+		if(!effectInputIdMap.TryGetValue(name, out inputId)) {
 			Debug.LogWarning("[Pixelpart] Unknown effect input '" + name + "'", this);
 			return 0;
 		}
@@ -258,7 +270,7 @@ public class PixelpartEffect : MonoBehaviour {
 		}
 
 		uint inputId = 0;
-		if(!effectInputs.TryGetValue(name, out inputId)) {
+		if(!effectInputIdMap.TryGetValue(name, out inputId)) {
 			Debug.LogWarning("[Pixelpart] Unknown effect input '" + name + "'", this);
 			return 0.0f;
 		}
@@ -272,7 +284,7 @@ public class PixelpartEffect : MonoBehaviour {
 		}
 
 		uint inputId = 0;
-		if(!effectInputs.TryGetValue(name, out inputId)) {
+		if(!effectInputIdMap.TryGetValue(name, out inputId)) {
 			Debug.LogWarning("[Pixelpart] Unknown effect input '" + name + "'", this);
 			return new Vector2(0.0f, 0.0f);
 		}
@@ -286,7 +298,7 @@ public class PixelpartEffect : MonoBehaviour {
 		}
 
 		uint inputId = 0;
-		if(!effectInputs.TryGetValue(name, out inputId)) {
+		if(!effectInputIdMap.TryGetValue(name, out inputId)) {
 			Debug.LogWarning("[Pixelpart] Unknown effect input '" + name + "'", this);
 			return new Vector3(0.0f, 0.0f, 0.0f);
 		}
@@ -300,12 +312,18 @@ public class PixelpartEffect : MonoBehaviour {
 		}
 
 		uint inputId = 0;
-		if(!effectInputs.TryGetValue(name, out inputId)) {
+		if(!effectInputIdMap.TryGetValue(name, out inputId)) {
 			Debug.LogWarning("[Pixelpart] Unknown effect input '" + name + "'", this);
 			return new Vector4(0.0f, 0.0f, 0.0f, 0.0f);
 		}
 
 		return Plugin.PixelpartGetEffectInputFloat4(internalEffect, inputId);
+	}
+
+	public void ApplyInputProperties() {
+		for(int inputIndex = 0; inputIndex < effectInputNames.Count && inputIndex < effectInputValues.Count; inputIndex++) {
+			ApplyInputProperty(inputIndex);
+		}
 	}
 
 	public PixelpartParticleEmitter FindParticleEmitter(string name) {
@@ -485,16 +503,19 @@ public class PixelpartEffect : MonoBehaviour {
 			}
 
 			int numEffectInputs = Plugin.PixelpartGetNumEffectInputs(internalEffect);
-			uint[] effectInputIds = new uint[numEffectInputs];
+			uint[] effectInputIdArray = new uint[numEffectInputs];
+			int[] effectInputTypeArray = new int[numEffectInputs];
 
 			byte[] effectInputNamesBuffer = new byte[16384];
-			int effectInputNamesLength = Plugin.PixelpartGetEffectInputs(internalEffect, effectInputIds, effectInputNamesBuffer, effectInputNamesBuffer.Length);
-			string[] effectInputNames = System.Text.Encoding.UTF8.GetString(effectInputNamesBuffer, 0, effectInputNamesLength).
-				Split(new[] {' '}, 64, StringSplitOptions.RemoveEmptyEntries);
+			int effectInputNamesLength = Plugin.PixelpartGetEffectInputs(internalEffect, effectInputIdArray, effectInputTypeArray, effectInputNamesBuffer, effectInputNamesBuffer.Length);
+			string[] effectInputNamesArray = System.Text.Encoding.UTF8.GetString(effectInputNamesBuffer, 0, effectInputNamesLength).
+				Split(new[] {'|'}, 64, StringSplitOptions.RemoveEmptyEntries);
 
 			for(int inputIndex = 0; inputIndex < numEffectInputs; inputIndex++) {
-				effectInputs[effectInputNames[inputIndex]] = effectInputIds[inputIndex];
+				effectInputIdMap[effectInputNamesArray[inputIndex]] = effectInputIdArray[inputIndex];
 			}
+
+			ApplyInputProperties();
 
 			graphicsResourceProvider.Load(internalEffect);
 
@@ -566,7 +587,7 @@ public class PixelpartEffect : MonoBehaviour {
 		Plugin.PixelpartDeleteEffect(internalEffect);
 		internalEffect = IntPtr.Zero;
 
-		effectInputs.Clear();
+		effectInputIdMap.Clear();
 		graphicsResourceProvider.Clear();
 	}
 
@@ -593,15 +614,61 @@ public class PixelpartEffect : MonoBehaviour {
 		particleRenderers[particleTypeIndex].Draw(camera, transform, scale, gameObject.layer);
 	}
 
-#if UNITY_EDITOR
-	private PixelpartEffectAsset editorCachedEffectAsset = null;
-
-	public void OnValidate() {
-		if(EffectAsset == editorCachedEffectAsset) {
+	private void SetInputPropertyValue(string name, PixelpartVariantValue value) {
+		int inputIndex = effectInputNames.IndexOf(name);
+		if(inputIndex < 0) {
 			return;
 		}
 
-		editorCachedEffectAsset = EffectAsset;
+		effectInputValues[inputIndex] = value;
+	}
+
+	private void ApplyInputProperty(int index) {
+		uint inputId = NullId;
+		if(!effectInputIdMap.TryGetValue(effectInputNames[index], out inputId)) {
+			return;
+		}
+
+		PixelpartVariantValue value = effectInputValues[index];
+
+		switch(value.type) {
+			case PixelpartVariantValue.VariantType.Bool:
+				Plugin.PixelpartSetEffectInputBool(internalEffect, inputId, value.x > 0.5f);
+				break;
+			case PixelpartVariantValue.VariantType.Int:
+				Plugin.PixelpartSetEffectInputInt(internalEffect, inputId, (int)value.x);
+				break;
+			case PixelpartVariantValue.VariantType.Float:
+				Plugin.PixelpartSetEffectInputFloat(internalEffect, inputId, value.x);
+				break;
+			case PixelpartVariantValue.VariantType.Float2:
+				Plugin.PixelpartSetEffectInputFloat2(internalEffect, inputId, new Vector2(value.x, value.y));
+				break;
+			case PixelpartVariantValue.VariantType.Float3:
+				Plugin.PixelpartSetEffectInputFloat3(internalEffect, inputId, new Vector3(value.x, value.y, value.z));
+				break;
+			case PixelpartVariantValue.VariantType.Float4:
+				Plugin.PixelpartSetEffectInputFloat4(internalEffect, inputId, new Vector4(value.x, value.y, value.z, value.w));
+				break;
+			default:
+				break;
+		}
+	}
+
+#if UNITY_EDITOR
+	[SerializeField]
+	[HideInInspector]
+	private PixelpartEffectAsset prevEffectAsset = null;
+
+	public void OnValidate() {
+		if(EffectAsset == prevEffectAsset) {
+			return;
+		}
+
+		prevEffectAsset = EffectAsset;
+
+		effectInputNames.Clear();
+		effectInputValues.Clear();
 		ParticleTypeNames.Clear();
 		ParticleMaterials.Clear();
 
@@ -612,6 +679,22 @@ public class PixelpartEffect : MonoBehaviour {
 		IntPtr internalEffectPtr = EffectAsset.LoadEffect();
 		if(internalEffectPtr == IntPtr.Zero) {
 			return;
+		}
+
+		int numEffectInputs = Plugin.PixelpartGetNumEffectInputs(internalEffectPtr);
+		uint[] effectInputIdArray = new uint[numEffectInputs];
+		int[] effectInputTypeArray = new int[numEffectInputs];
+
+		byte[] effectInputNamesBuffer = new byte[16384];
+		int effectInputNamesLength = Plugin.PixelpartGetEffectInputs(internalEffectPtr, effectInputIdArray, effectInputTypeArray, effectInputNamesBuffer, effectInputNamesBuffer.Length);
+		string[] effectInputNamesArray = System.Text.Encoding.UTF8.GetString(effectInputNamesBuffer, 0, effectInputNamesLength).
+			Split(new[] {'|'}, 64, StringSplitOptions.RemoveEmptyEntries);
+
+		for(int inputIndex = 0; inputIndex < numEffectInputs; inputIndex++) {
+			effectInputNames.Add(effectInputNamesArray[inputIndex]);
+			effectInputValues.Add(new PixelpartVariantValue(
+				(PixelpartVariantValue.VariantType)effectInputTypeArray[inputIndex],
+				Plugin.PixelpartGetEffectInputFloat4(internalEffectPtr, effectInputIdArray[inputIndex])));
 		}
 
 		uint numParticleTypes = Plugin.PixelpartGetEffectNumParticleTypes(internalEffectPtr);

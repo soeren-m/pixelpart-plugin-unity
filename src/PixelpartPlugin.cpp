@@ -270,17 +270,20 @@ UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartGetNumEffectInputs(P
 	return static_cast<int32_t>(internalEffect->project.effect.inputs.size());
 }
 
-UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartGetEffectInputs(PixelpartPluginEffect* internalEffect, uint32_t* ids, char* names, int32_t bufferSizeNames) {
-	if(!internalEffect || ids == nullptr || names == nullptr || bufferSizeNames < 2) {
+UNITY_INTERFACE_EXPORT int32_t UNITY_INTERFACE_API PixelpartGetEffectInputs(PixelpartPluginEffect* internalEffect, uint32_t* ids, int32_t* types, char* names, int32_t bufferSizeNames) {
+	if(!internalEffect || ids == nullptr || types == nullptr || names == nullptr || bufferSizeNames < 2) {
 		return 0;
 	}
 
 	int32_t index = 0;
 	std::string namesString;
 	for(const std::pair<pixelpart::id_t, pixelpart::EffectInput>& entry : internalEffect->project.effect.inputs) {
-		ids[index++] = static_cast<uint32_t>(entry.first);
+		ids[index] = static_cast<uint32_t>(entry.first);
+		types[index] = static_cast<int32_t>(entry.second.value.type);
 		namesString += entry.second.name;
-		namesString += " ";
+		namesString += "|";
+
+		index++;
 	}
 
 	if(!namesString.empty()) {

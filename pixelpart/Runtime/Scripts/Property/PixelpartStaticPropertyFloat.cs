@@ -1,24 +1,25 @@
 using System;
-using System.Text;
-using UnityEngine;
 
 namespace Pixelpart {
 public class PixelpartStaticPropertyFloat {
+	public float Value => Plugin.PixelpartStaticPropertyFloatValue(internalProperty);
+
+	public float BaseValue {
+		get => Plugin.PixelpartStaticPropertyFloatGetBaseValue(internalProperty);
+		set => Plugin.PixelpartStaticPropertyFloatSetBaseValue(internalProperty, value);
+	}
+
 	private readonly IntPtr internalProperty;
 
 	public PixelpartStaticPropertyFloat(IntPtr internalPropertyPtr) {
 		internalProperty = internalPropertyPtr;
 	}
 
-	public float Get() {
-		return Plugin.PixelpartStaticPropertyFloatGet(internalProperty);
-	}
-
-	public void SetValue(float value) {
-		Plugin.PixelpartStaticPropertyFloatSetValue(internalProperty, value);
-	}
-	public float GetValue() {
-		return Plugin.PixelpartStaticPropertyFloatGetValue(internalProperty);
-	}
+	[Obsolete("deprecated, use Value")]
+	public float Get() => Value;
+	[Obsolete("deprecated, use BaseValue")]
+	public void SetValue(float value) => BaseValue = value;
+	[Obsolete("deprecated, use BaseValue")]
+	public float GetValue() => BaseValue;
 }
 }

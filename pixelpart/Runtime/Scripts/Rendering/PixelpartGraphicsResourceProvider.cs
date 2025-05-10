@@ -1,75 +1,86 @@
 using System;
-using System.IO;
 using System.Text;
-using System.Linq;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using UnityEngine;
 
 namespace Pixelpart {
-public class PixelpartGraphicsResourceProvider {
-	public Dictionary<string, Texture2D> Textures { get; }
+internal class PixelpartGraphicsResourceProvider {
+	public IReadOnlyDictionary<string, Texture2D> Textures => new ReadOnlyDictionary<string, Texture2D>(textures);
+	private readonly Dictionary<string, Texture2D> textures = new Dictionary<string, Texture2D>();
 
-	public Dictionary<string, Mesh> Meshes { get; }
+	public IReadOnlyDictionary<string, Mesh> Meshes => new ReadOnlyDictionary<string, Mesh>(meshes);
+	private readonly Dictionary<string, Mesh> meshes = new Dictionary<string, Mesh>();
 
-	public PixelpartGraphicsResourceProvider() {
-		Textures = new Dictionary<string, Texture2D>();
-		Meshes = new Dictionary<string, Mesh>();
+	private enum ColorSpace {
+		Linear = 0,
+		SRGB = 1
 	}
 
-	public void Load(IntPtr internalEffect) {
+	public PixelpartGraphicsResourceProvider() {
+
+	}
+
+	public void Load(IntPtr effectRuntime) {
 		Clear();
 
-		byte[] resourceIdBuffer = new byte[2048];
+		var resourceIdBuffer = new byte[2048];
 
-		uint numImageResources = Plugin.PixelpartGetImageResourceCount(internalEffect);
+		var imageResourceCount = Plugin.PixelpartGetImageResourceCount(effectRuntime);
 
-		for(uint i = 0; i < numImageResources; i++) {
-			int resourceIdLength = Plugin.PixelpartGetImageResourceId(internalEffect, i, resourceIdBuffer, resourceIdBuffer.Length);
-			string resourceId = Encoding.UTF8.GetString(resourceIdBuffer, 0, resourceIdLength);
+		for(uint resourceIndex = 0; resourceIndex < imageResourceCount; resourceIndex++) {
+			var resourceIdLength = Plugin.PixelpartGetImageResourceId(effectRuntime, resourceIndex, resourceIdBuffer, resourceIdBuffer.Length);
+			var resourceId = Encoding.UTF8.GetString(resourceIdBuffer, 0, resourceIdLength);
 
-			int imageWidth = Plugin.PixelpartGetImageResourceWidth(internalEffect, resourceId);
-			int imageHeight = Plugin.PixelpartGetImageResourceHeight(internalEffect, resourceId);
-			uint imageDataSize = Plugin.PixelpartGetImageResourceDataSize(internalEffect, resourceId);
-			byte[] imageData = new byte[imageDataSize];
-			Plugin.PixelpartGetImageResourceData(internalEffect, resourceId, imageData);
+			var imageWidth = Plugin.PixelpartGetImageResourceWidth(effectRuntime, resourceId);
+			var imageHeight = Plugin.PixelpartGetImageResourceHeight(effectRuntime, resourceId);
+			var imageChannels = Plugin.PixelpartGetImageResourceChannels(effectRuntime, resourceId);
+			var imageColorSpace = (ColorSpace)Plugin.PixelpartGetImageResourceColorSpace(effectRuntime, resourceId);
+			var imageDataSize = Plugin.PixelpartGetImageResourceDataSize(effectRuntime, resourceId);
 
-			Texture2D texture = new Texture2D(imageWidth, imageHeight, TextureFormat.RGBA32, false);
+			var imageData = new byte[imageDataSize];
+			Plugin.PixelpartGetImageResourceData(effectRuntime, resourceId, imageData);
+
+			var texture = new Texture2D(
+				imageWidth, imageHeight,
+				imageChannels == 3 ? TextureFormat.RGB24 : TextureFormat.RGBA32,
+				false, imageColorSpace == ColorSpace.Linear);
 			texture.filterMode = FilterMode.Bilinear;
 			texture.wrapMode = TextureWrapMode.Repeat;
 			texture.LoadRawTextureData(imageData);
 			texture.Apply();
 
-			Textures[resourceId] = texture;
+			textures[resourceId] = texture;
 		}
 
-		uint numMeshResources = Plugin.PixelpartGetMeshResourceCount(internalEffect);
+		var meshResourceCount = Plugin.PixelpartGetMeshResourceCount(effectRuntime);
 
-		for(uint i = 0; i < numMeshResources; i++) {
-			int resourceIdLength = Plugin.PixelpartGetMeshResourceId(internalEffect, i, resourceIdBuffer, resourceIdBuffer.Length);
-			string resourceId = Encoding.UTF8.GetString(resourceIdBuffer, 0, resourceIdLength);
+		for(uint resourceIndex = 0; resourceIndex < meshResourceCount; resourceIndex++) {
+			var resourceIdLength = Plugin.PixelpartGetMeshResourceId(effectRuntime, resourceIndex, resourceIdBuffer, resourceIdBuffer.Length);
+			var resourceId = Encoding.UTF8.GetString(resourceIdBuffer, 0, resourceIdLength);
 
-			int indexCount = Plugin.PixelpartGetMeshResourceIndexCount(internalEffect, resourceId);
-			int vertexCount = Plugin.PixelpartGetMeshResourceVertexCount(internalEffect, resourceId);
+			var indexCount = Plugin.PixelpartGetMeshResourceIndexCount(effectRuntime, resourceId);
+			var vertexCount = Plugin.PixelpartGetMeshResourceVertexCount(effectRuntime, resourceId);
 
-			int[] triangles = new int[indexCount];
-			Vector3[] vertices = new Vector3[vertexCount];
-			Vector3[] normals = new Vector3[vertexCount];
-			Vector2[] uv = new Vector2[vertexCount];
-			Plugin.PixelpartGetMeshResourceVertexData(internalEffect, resourceId, triangles, vertices, normals, uv);
+			var triangles = new int[indexCount];
+			var vertices = new Vector3[vertexCount];
+			var normals = new Vector3[vertexCount];
+			var uv = new Vector2[vertexCount];
+			Plugin.PixelpartGetMeshResourceVertexData(effectRuntime, resourceId, triangles, vertices, normals, uv);
 
-			Mesh mesh = new Mesh();
+			var mesh = new Mesh();
 			mesh.vertices = vertices;
 			mesh.normals = normals;
 			mesh.uv = uv;
 			mesh.triangles = triangles;
 
-			Meshes[resourceId] = mesh;
+			meshes[resourceId] = mesh;
 		}
 	}
 
 	public void Clear() {
-		Textures.Clear();
-		Meshes.Clear();
+		textures.Clear();
+		meshes.Clear();
 	}
 }
 }

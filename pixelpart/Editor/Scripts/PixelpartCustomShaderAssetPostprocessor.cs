@@ -1,44 +1,43 @@
 using System;
 using System.IO;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 #if UNITY_EDITOR
 using UnityEditor;
 
 namespace Pixelpart {
 public class PixelpartCustomShaderAssetPostprocessor : AssetPostprocessor {
-	static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromPaths) {
+	public static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromPaths) {
 		try {
 			AssetDatabase.StartAssetEditing();
 
-			foreach(string assetPath in importedAssets) {
+			foreach(var assetPath in importedAssets) {
 				if(Path.GetExtension(assetPath) != ".shader") {
 					continue;
 				}
 
-				StreamReader fileReader = new StreamReader(assetPath);
-				string line1 = fileReader.ReadLine();
+				var fileReader = new StreamReader(assetPath);
+				var line1 = fileReader.ReadLine();
 				fileReader.Close();
 
 				if(string.IsNullOrEmpty(line1)) {
 					continue;
 				}
 
-				string[] tokens = line1.Split(new char[] { '\"' }, 3, StringSplitOptions.RemoveEmptyEntries);
+				var tokens = line1.Split(new char[] { '\"' }, 3, StringSplitOptions.RemoveEmptyEntries);
 				if(tokens.Length < 2) {
 					continue;
 				}
 
-				string shaderName = tokens[1];
-				string[] shaderNameTokens = shaderName.Split('/');
+				var shaderName = tokens[1];
+				var shaderNameTokens = shaderName.Split('/');
 				if(shaderNameTokens.Length < 2 || shaderNameTokens[0] != "PixelpartCustom") {
 					continue;
 				}
 
-				bool instancing = shaderNameTokens[1].EndsWith("_Inst", false, null);
+				var instancing = shaderNameTokens[1].EndsWith("_Inst", false, null);
 
-				string materialFilepath = Path.GetDirectoryName(assetPath);
+				var materialFilepath = Path.GetDirectoryName(assetPath);
 				materialFilepath = Path.Combine(materialFilepath, shaderNameTokens[1] + ".mat");
 
 				CreateMaterialAsset(materialFilepath, shaderName, instancing);
@@ -55,13 +54,13 @@ public class PixelpartCustomShaderAssetPostprocessor : AssetPostprocessor {
 			return;
 		}
 
-		Shader shader = Shader.Find(shaderName);
+		var shader = Shader.Find(shaderName);
 		if(shader == null) {
 			Debug.LogError("[Pixelpart] Failed to find custom shader '" + shaderName + "'");
 			return;
 		}
 
-		Material material = new Material(shader);
+		var material = new Material(shader);
 		material.enableInstancing = instancing;
 
 		AssetDatabase.CreateAsset(material, filepath);

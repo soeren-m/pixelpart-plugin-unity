@@ -1,9 +1,8 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Pixelpart {
-public static class PixelpartShaderGenerator {
+internal static class PixelpartShaderGenerator {
 	public static string GenerateShaderCode(string shaderName, string mainCode, string parameterCode, BlendModeType blendMode, LightingModeType lightingMode, bool instancing) {
 		if(lightingMode != LightingModeType.Unlit) {
 			Debug.LogError("[Pixelpart] Custom shaders for lit materials are not supported");
@@ -11,20 +10,20 @@ public static class PixelpartShaderGenerator {
 		}
 
 	#if PIXELPART_USE_URP
-		string shaderCode = instancing ? InstancedUnlitShaderTemplateURP : UnlitShaderTemplateURP;
+		var shaderCode = instancing ? InstancedUnlitShaderTemplateURP : UnlitShaderTemplateURP;
 	#elif PIXELPART_USE_HDRP
-		string shaderCode = instancing ? InstancedUnlitShaderTemplateHDRP : UnlitShaderTemplateHDRP;
+		var shaderCode = instancing ? InstancedUnlitShaderTemplateHDRP : UnlitShaderTemplateHDRP;
 	#else
-		string shaderCode = instancing ? InstancedUnlitShaderTemplate : UnlitShaderTemplate;
+		var shaderCode = instancing ? InstancedUnlitShaderTemplate : UnlitShaderTemplate;
 	#endif
 
-		string renderType = string.Empty;
-		string queue = string.Empty;
-		string cull = string.Empty;
-		string zWrite = string.Empty;
-		string blendOp = string.Empty;
-		string srcBlendMode = string.Empty;
-		string dstBlendMode = string.Empty;
+		var renderType = string.Empty;
+		var queue = string.Empty;
+		var cull = string.Empty;
+		var zWrite = string.Empty;
+		var blendOp = string.Empty;
+		var srcBlendMode = string.Empty;
+		var dstBlendMode = string.Empty;
 
 		if(blendMode == BlendModeType.Off) {
 			renderType = "Opaque";
@@ -82,22 +81,22 @@ public static class PixelpartShaderGenerator {
 	}
 
 	private static string GenerateShaderPropertyCode(string parameterCode) {
-		string result = string.Empty;
-		string[] parameterLines = parameterCode.Split(new string[]{ "\n" }, StringSplitOptions.RemoveEmptyEntries);
+		var result = string.Empty;
+		var parameterLines = parameterCode.Split(new string[]{ "\n" }, StringSplitOptions.RemoveEmptyEntries);
 
-		foreach(string parameterLine in parameterLines) {
-			string[] lineTokens = parameterLine.Split(new string[]{ " " }, StringSplitOptions.RemoveEmptyEntries);
+		foreach(var parameterLine in parameterLines) {
+			var lineTokens = parameterLine.Split(new string[]{ " " }, StringSplitOptions.RemoveEmptyEntries);
 			if(lineTokens.Length < 2) {
 				continue;
 			}
 
-			string parameterType = lineTokens[0];
-			string parameterName = lineTokens[1].Remove(lineTokens[1].Length - 1);
+			var parameterType = lineTokens[0];
+			var parameterName = lineTokens[1].Remove(lineTokens[1].Length - 1);
 
-			string displayName = parameterName.Substring(1);
+			var displayName = parameterName.Substring(1);
 
-			string typeName = "Int";
-			string defaultValue = "0";
+			var typeName = "Int";
+			var defaultValue = "0";
 
 			switch(parameterType) {
 				case "bool":
@@ -119,7 +118,7 @@ public static class PixelpartShaderGenerator {
 					break;
 			}
 
-			string propertyLine =
+			var propertyLine =
 				parameterName + " (\"" + displayName + "\", " + typeName + ") = " + defaultValue + "\n";
 
 			result += propertyLine;
@@ -128,7 +127,7 @@ public static class PixelpartShaderGenerator {
 		return result;
 	}
 
-	private static string UnlitShaderTemplate = @"Shader ""PixelpartCustom/{name}""
+	private static readonly string UnlitShaderTemplate = @"Shader ""PixelpartCustom/{name}""
 {
 	Properties
 	{
@@ -246,7 +245,7 @@ public static class PixelpartShaderGenerator {
 	}
 }";
 
-	private static string InstancedUnlitShaderTemplate = @"Shader ""PixelpartCustom/{name}""
+	private static readonly string InstancedUnlitShaderTemplate = @"Shader ""PixelpartCustom/{name}""
 {
 	Properties
 	{
@@ -368,7 +367,7 @@ public static class PixelpartShaderGenerator {
 	}
 }";
 
-	private static string UnlitShaderTemplateURP = @"Shader ""PixelpartCustom/{name}""
+	private static readonly string UnlitShaderTemplateURP = @"Shader ""PixelpartCustom/{name}""
 {
 	Properties
 	{
@@ -497,7 +496,7 @@ CBUFFER_END
 	}
 }";
 
-	private static string InstancedUnlitShaderTemplateURP = @"Shader ""PixelpartCustom/{name}""
+	private static readonly string InstancedUnlitShaderTemplateURP = @"Shader ""PixelpartCustom/{name}""
 {
 	Properties
 	{
@@ -631,7 +630,7 @@ CBUFFER_END
 	}
 }";
 
-	private static string UnlitShaderTemplateHDRP = @"Shader ""PixelpartCustom/{name}""
+	private static readonly string UnlitShaderTemplateHDRP = @"Shader ""PixelpartCustom/{name}""
 {
 	Properties
 	{
@@ -662,7 +661,7 @@ CBUFFER_END
 		Pass
 		{
 			Name ""DepthForwardOnly""
-  			Tags
+			Tags
 			{
 				""RenderPipeline"" = ""HDRenderPipeline""
 				""LightMode"" = ""DepthForwardOnly""
@@ -772,7 +771,7 @@ CBUFFER_END
 		Pass
 		{
 			Name ""ForwardOnly""
-  			Tags
+			Tags
 			{
 				""RenderPipeline"" = ""HDRenderPipeline""
 				""LightMode"" = ""ForwardOnly""
@@ -881,7 +880,7 @@ CBUFFER_END
 	}
 }";
 
-	private static string InstancedUnlitShaderTemplateHDRP = @"Shader ""PixelpartCustom/{name}""
+	private static readonly string InstancedUnlitShaderTemplateHDRP = @"Shader ""PixelpartCustom/{name}""
 {
 	Properties
 	{
@@ -913,7 +912,7 @@ CBUFFER_END
 		Pass
 		{
 			Name ""DepthForwardOnly""
-  			Tags
+			Tags
 			{
 				""RenderPipeline"" = ""HDRenderPipeline""
 				""DisableBatching"" = ""True""
@@ -1028,7 +1027,7 @@ CBUFFER_END
 		Pass
 		{
 			Name ""ForwardOnly""
-  			Tags
+			Tags
 			{
 				""RenderPipeline"" = ""HDRenderPipeline""
 				""DisableBatching"" = ""True""

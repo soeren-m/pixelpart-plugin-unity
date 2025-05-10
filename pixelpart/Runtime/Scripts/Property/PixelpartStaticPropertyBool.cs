@@ -1,24 +1,25 @@
 using System;
-using System.Text;
-using UnityEngine;
 
 namespace Pixelpart {
 public class PixelpartStaticPropertyBool {
+	public bool Value => Plugin.PixelpartStaticPropertyBoolValue(internalProperty);
+
+	public bool BaseValue {
+		get => Plugin.PixelpartStaticPropertyBoolGetBaseValue(internalProperty);
+		set => Plugin.PixelpartStaticPropertyBoolSetBaseValue(internalProperty, value);
+	}
+
 	private readonly IntPtr internalProperty;
 
 	public PixelpartStaticPropertyBool(IntPtr internalPropertyPtr) {
 		internalProperty = internalPropertyPtr;
 	}
 
-	public bool Get() {
-		return Plugin.PixelpartStaticPropertyBoolGet(internalProperty);
-	}
-
-	public void SetValue(bool value) {
-		Plugin.PixelpartStaticPropertyBoolSetValue(internalProperty, value);
-	}
-	public bool GetValue() {
-		return Plugin.PixelpartStaticPropertyBoolGetValue(internalProperty);
-	}
+	[Obsolete("deprecated, use Value")]
+	public bool Get() => Value;
+	[Obsolete("deprecated, use BaseValue")]
+	public void SetValue(bool value) => BaseValue = value;
+	[Obsolete("deprecated, use BaseValue")]
+	public bool GetValue() => BaseValue;
 }
 }

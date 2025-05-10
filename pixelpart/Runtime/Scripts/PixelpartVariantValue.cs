@@ -15,9 +15,13 @@ public struct PixelpartVariantValue {
 	}
 
 	public VariantType type;
+
 	public float x;
+
 	public float y;
+
 	public float z;
+
 	public float w;
 
 	public PixelpartVariantValue(bool b) {
@@ -27,13 +31,15 @@ public struct PixelpartVariantValue {
 		z = 0.0f;
 		w = 0.0f;
 	}
+
 	public PixelpartVariantValue(int i) {
 		type = VariantType.Int;
-		x = (float)i;
+		x = i;
 		y = 0.0f;
 		z = 0.0f;
 		w = 0.0f;
 	}
+
 	public PixelpartVariantValue(float f) {
 		type = VariantType.Float;
 		x = f;
@@ -41,6 +47,7 @@ public struct PixelpartVariantValue {
 		z = 0.0f;
 		w = 0.0f;
 	}
+
 	public PixelpartVariantValue(Vector2 v) {
 		type = VariantType.Float2;
 		x = v.x;
@@ -48,6 +55,7 @@ public struct PixelpartVariantValue {
 		z = 0.0f;
 		w = 0.0f;
 	}
+
 	public PixelpartVariantValue(Vector3 v) {
 		type = VariantType.Float3;
 		x = v.x;
@@ -55,6 +63,7 @@ public struct PixelpartVariantValue {
 		z = v.z;
 		w = 0.0f;
 	}
+
 	public PixelpartVariantValue(Vector4 v) {
 		type = VariantType.Float4;
 		x = v.x;
@@ -62,6 +71,7 @@ public struct PixelpartVariantValue {
 		z = v.z;
 		w = v.w;
 	}
+
 	public PixelpartVariantValue(VariantType t, Vector4 v) {
 		type = t;
 		x = v.x;

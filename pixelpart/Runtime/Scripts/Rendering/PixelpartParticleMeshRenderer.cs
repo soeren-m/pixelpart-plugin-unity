@@ -1,103 +1,110 @@
 using System;
 using System.Linq;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace Pixelpart {
-public class PixelpartParticleMeshRenderer : PixelpartParticleRendererBase, PixelpartParticleRenderer {
+internal class PixelpartParticleMeshRenderer : IPixelpartParticleRenderer {
+	private const int maxParticlesPerDrawCall = 1023;
+
+	private readonly IntPtr internalEffect;
+
+	private readonly uint particleEmitterId;
+
+	private readonly uint particleTypeId;
+
 	private readonly Mesh mesh;
+
+	private readonly PixelpartParticleMaterial particleMaterial;
 
 	private readonly MaterialPropertyBlock materialPropertyBlock;
 
-	private Matrix4x4[] transforms;
-	private Vector4[] colors;
-	private Vector4[] velocities;
-	private float[] lives;
-	private float[] ids;
+	private Matrix4x4[] transforms = new Matrix4x4[1];
+	private Vector4[] colors = new Vector4[1];
+	private Vector4[] velocities = new Vector4[1];
+	private float[] lives = new float[1];
+	private float[] ids = new float[1];
 
-	public PixelpartParticleMeshRenderer(IntPtr effectPtr, uint ptypeIndex, Material baseMaterial, PixelpartMaterialInfo materialInfo, PixelpartGraphicsResourceProvider resourceProvider) :
-		base(effectPtr, ptypeIndex, baseMaterial, materialInfo, resourceProvider) {
-		transforms = new Matrix4x4[1];
-		colors = new Vector4[1];
-		velocities = new Vector4[1];
-		lives = new float[1];
-		ids = new float[1];
+	public PixelpartParticleMeshRenderer(IntPtr effectRuntimePtr, uint emitterId, uint typeId, Material baseMaterial, PixelpartMaterialInfo materialInfo, PixelpartGraphicsResourceProvider resourceProvider) {
+		internalEffect = effectRuntimePtr;
+		particleEmitterId = emitterId;
+		particleTypeId = typeId;
 
-		byte[] meshResourceIdBuffer = new byte[256];
-		int meshResourceIdLength = Plugin.PixelpartParticleTypeGetMeshRendererMeshResourceId(internalEffect, particleTypeId, meshResourceIdBuffer, meshResourceIdBuffer.Length);
-		string meshResourceId = System.Text.Encoding.UTF8.GetString(meshResourceIdBuffer, 0, meshResourceIdLength);
+		var meshResourceIdBuffer = new byte[256];
+		var meshResourceIdLength = Plugin.PixelpartParticleTypeGetMeshRendererMeshResourceId(internalEffect, typeId, meshResourceIdBuffer, meshResourceIdBuffer.Length);
+		var meshResourceId = System.Text.Encoding.UTF8.GetString(meshResourceIdBuffer, 0, meshResourceIdLength);
 
 		if(!resourceProvider.Meshes.TryGetValue(meshResourceId, out mesh)) {
-			Debug.LogError("[Pixelpart] Cannot find mesh \"" + meshResourceId + "\"");
+			Debug.LogError("[Pixelpart] Failed to find mesh \"" + meshResourceId + "\"");
 		}
 
+		particleMaterial = new PixelpartParticleMaterial(effectRuntimePtr, emitterId, typeId, baseMaterial, materialInfo, resourceProvider);
 		materialPropertyBlock = new MaterialPropertyBlock();
 	}
 
-	public void Draw(Camera camera, Transform transform, Vector3 scale, int layer) {
-		bool visible = Plugin.PixelpartParticleTypeIsVisible(internalEffect, particleTypeId);
+	public void Render(Camera camera, Transform transform, Vector3 scale, int layer) {
+		var visible = Plugin.PixelpartParticleTypeIsVisible(internalEffect, particleTypeId);
 		if(!visible || camera == null || mesh == null) {
 			return;
 		}
 
-		int numParticles = (int)Plugin.PixelpartGetEffectNumParticles(internalEffect, particleTypeIndex);
-		if(numParticles < 1) {
+		var particleCount = (int)Plugin.PixelpartGetEffectParticleCount(internalEffect, particleEmitterId, particleTypeId);
+		if(particleCount < 1) {
 			return;
 		}
 
-		Array.Resize(ref transforms, numParticles);
-		Array.Resize(ref colors, numParticles);
-		Array.Resize(ref velocities, numParticles);
-		Array.Resize(ref lives, numParticles);
-		Array.Resize(ref ids, numParticles);
+		Array.Resize(ref transforms, particleCount);
+		Array.Resize(ref colors, particleCount);
+		Array.Resize(ref velocities, particleCount);
+		Array.Resize(ref lives, particleCount);
+		Array.Resize(ref ids, particleCount);
 
 		Plugin.PixelpartGetParticleMeshInstanceData(internalEffect,
-			particleTypeIndex,
+			particleEmitterId, particleTypeId,
 			camera.transform.position,
 			camera.transform.right,
 			camera.transform.up,
 			scale,
 			transforms, colors, velocities, lives, ids);
 
-		Matrix4x4[] globalTransforms = transforms
-			.Select(mat => transform.localToWorldMatrix * mat).ToArray();
+		var globalTransforms = transforms
+			.Select(mat => transform.localToWorldMatrix * mat)
+			.ToArray();
 
-		ApplyMaterialParameters();
+		particleMaterial.ApplyParameters();
 
-		const int maxNumParticlesPerDrawCall = 1023;
-		int numDrawCalls = (numParticles - 1) / maxNumParticlesPerDrawCall + 1;
+		var drawCallCount = (particleCount - 1) / maxParticlesPerDrawCall + 1;
 
-		for(int drawCallIndex = 0; drawCallIndex < numDrawCalls; drawCallIndex++) {
-			int startIndex = drawCallIndex * maxNumParticlesPerDrawCall;
+		for(var drawCallIndex = 0; drawCallIndex < drawCallCount; drawCallIndex++) {
+			var startIndex = drawCallIndex * maxParticlesPerDrawCall;
 
-			Matrix4x4[] currentTransforms = globalTransforms
+			var currentTransforms = globalTransforms
 				.Skip(startIndex)
-				.Take(maxNumParticlesPerDrawCall)
+				.Take(maxParticlesPerDrawCall)
 				.ToArray();
 
-			var currentColors = colors.Skip(startIndex).Take(maxNumParticlesPerDrawCall);
-			if(currentColors.Count() < maxNumParticlesPerDrawCall) {
+			var currentColors = colors.Skip(startIndex).Take(maxParticlesPerDrawCall);
+			if(currentColors.Count() < maxParticlesPerDrawCall) {
 				currentColors = currentColors.Concat(
-					Enumerable.Repeat(new Vector4(0.0f, 0.0f, 0.0f, 0.0f), maxNumParticlesPerDrawCall - currentColors.Count()));
+					Enumerable.Repeat(new Vector4(0.0f, 0.0f, 0.0f, 0.0f), maxParticlesPerDrawCall - currentColors.Count()));
 			}
 
-			var currentVelocities = velocities.Skip(startIndex).Take(maxNumParticlesPerDrawCall);
-			if(currentVelocities.Count() < maxNumParticlesPerDrawCall) {
+			var currentVelocities = velocities.Skip(startIndex).Take(maxParticlesPerDrawCall);
+			if(currentVelocities.Count() < maxParticlesPerDrawCall) {
 				currentVelocities = currentVelocities.Concat(
-					Enumerable.Repeat(new Vector4(0.0f, 0.0f, 0.0f, 0.0f), maxNumParticlesPerDrawCall - currentVelocities.Count()));
+					Enumerable.Repeat(new Vector4(0.0f, 0.0f, 0.0f, 0.0f), maxParticlesPerDrawCall - currentVelocities.Count()));
 			}
 
-			var currentLives = lives.Skip(startIndex).Take(maxNumParticlesPerDrawCall);
-			if(currentLives.Count() < maxNumParticlesPerDrawCall) {
+			var currentLives = lives.Skip(startIndex).Take(maxParticlesPerDrawCall);
+			if(currentLives.Count() < maxParticlesPerDrawCall) {
 				currentLives = currentLives.Concat(
-					Enumerable.Repeat(0.0f, maxNumParticlesPerDrawCall - currentLives.Count()));
+					Enumerable.Repeat(0.0f, maxParticlesPerDrawCall - currentLives.Count()));
 			}
 
-			var currentObjectIds = ids.Skip(startIndex).Take(maxNumParticlesPerDrawCall);
-			if(currentObjectIds.Count() < maxNumParticlesPerDrawCall) {
+			var currentObjectIds = ids.Skip(startIndex).Take(maxParticlesPerDrawCall);
+			if(currentObjectIds.Count() < maxParticlesPerDrawCall) {
 				currentObjectIds = currentObjectIds.Concat(
-					Enumerable.Repeat(0.0f, maxNumParticlesPerDrawCall - currentObjectIds.Count()));
+					Enumerable.Repeat(0.0f, maxParticlesPerDrawCall - currentObjectIds.Count()));
 			}
 
 			materialPropertyBlock.SetVectorArray("_Color", currentColors.ToArray());
@@ -106,7 +113,7 @@ public class PixelpartParticleMeshRenderer : PixelpartParticleRendererBase, Pixe
 			materialPropertyBlock.SetFloatArray("_ObjectId", currentObjectIds.ToArray());
 
 			Graphics.DrawMeshInstanced(mesh, 0,
-				material, currentTransforms, currentTransforms.Length, materialPropertyBlock, ShadowCastingMode.Off, false, 0, null);
+				particleMaterial.Material, currentTransforms, currentTransforms.Length, materialPropertyBlock, ShadowCastingMode.Off, false, 0, null);
 		}
 	}
 }

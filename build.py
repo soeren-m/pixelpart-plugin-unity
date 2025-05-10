@@ -34,28 +34,11 @@ elif "platform=web" in sys.argv:
                 f.endswith(".cpp") or
                 f.endswith(".inl"))
             or
+            # zlib fix, glm fix
             os.path.isfile(os.path.join(dir, f)) and (
-                "zlib" in dir and "gz" in f and f.endswith(".c")) or
-                "glm" in dir and "glm.cpp" in f
-            or
-            os.path.isdir(os.path.join(dir, f)) and (
-                "test" in f or
-                "doc" in f or
-                "util" in f or
-                "contrib" in f or
-                "examples" in f or
-                "benchmarks" in f or
-                "third_party" in f or
-                "cmake" in f or
-                "amiga" in f or
-                "msdos" in f or
-                "nintendods" in f or
-                "old" in f or
-                "os400" in f or
-                "qnx" in f or
-                "watcom" in f or
-                "win32" in f)
-            ]
+                "zlib" in dir and "gz" in f and f.endswith(".c") or
+                "glm" in dir and "glm.cpp" in f)
+        ]
 
     shutil.copytree("src", "pixelpart/Runtime/Plugins/WebGL", ignore=filter_files, dirs_exist_ok=True)
-    shutil.copytree("pixelpart-runtime", "pixelpart/Runtime/Plugins/WebGL", ignore=filter_files, dirs_exist_ok=True)
+    shutil.copytree("pixelpart-runtime", "pixelpart/Runtime/Plugins/WebGL/pixelpart-runtime", ignore=filter_files, dirs_exist_ok=True)

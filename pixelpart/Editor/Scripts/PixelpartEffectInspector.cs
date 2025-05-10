@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 #if UNITY_EDITOR
@@ -36,28 +35,28 @@ public class PixelpartEffectInspector : Editor {
 	}
 
 	private void ShowInputSettings() {
-		PixelpartEffect effect = (PixelpartEffect)target;
+		var effect = (PixelpartEffect)target;
 
 		EditorGUILayout.Space();
 		EditorGUILayout.LabelField("Inputs", EditorStyles.boldLabel);
 
-		SerializedProperty inputNamesProperty = serializedObject.FindProperty("effectInputNames");
-		SerializedProperty inputValuesProperty = serializedObject.FindProperty("effectInputValues");
+		var inputNamesProperty = serializedObject.FindProperty("effectInputNames");
+		var inputValuesProperty = serializedObject.FindProperty("effectInputValues");
 
-		bool inputsChanged = false;
+		var inputsModified = false;
 
-		for(int inputIndex = 0; inputIndex < inputNamesProperty.arraySize && inputIndex < inputValuesProperty.arraySize; inputIndex++) {
+		for(var inputIndex = 0; inputIndex < inputNamesProperty.arraySize && inputIndex < inputValuesProperty.arraySize; inputIndex++) {
 			EditorGUI.BeginChangeCheck();
 
 			EditorGUILayout.PropertyField(inputValuesProperty.GetArrayElementAtIndex(inputIndex),
 				new GUIContent(inputNamesProperty.GetArrayElementAtIndex(inputIndex).stringValue));
 
 			if(EditorGUI.EndChangeCheck()) {
-				inputsChanged = true;
+				inputsModified = true;
 			}
 		}
 
-		if(inputsChanged) {
+		if(inputsModified) {
 			effect.ApplyInputProperties();
 		}
 	}
@@ -66,14 +65,14 @@ public class PixelpartEffectInspector : Editor {
 		EditorGUILayout.Space();
 		EditorGUILayout.LabelField("Rendering", EditorStyles.boldLabel);
 
-		SerializedProperty materialsProperty = serializedObject.FindProperty("ParticleMaterials");
-		SerializedProperty typeNamesProperty = serializedObject.FindProperty("ParticleTypeNames");
+		var materialsProperty = serializedObject.FindProperty("ParticleMaterials");
+		var typeNamesProperty = serializedObject.FindProperty("ParticleTypeNames");
 
 		particleMaterialsVisible = EditorGUILayout.Foldout(particleMaterialsVisible, materialsProperty.displayName);
 		if(particleMaterialsVisible) {
 			EditorGUI.indentLevel++;
 
-			for(int materialIndex = 0; materialIndex < materialsProperty.arraySize && materialIndex < typeNamesProperty.arraySize; materialIndex++) {
+			for(var materialIndex = 0; materialIndex < materialsProperty.arraySize && materialIndex < typeNamesProperty.arraySize; materialIndex++) {
 				EditorGUILayout.PropertyField(materialsProperty.GetArrayElementAtIndex(materialIndex),
 					new GUIContent(typeNamesProperty.GetArrayElementAtIndex(materialIndex).stringValue));
 			}

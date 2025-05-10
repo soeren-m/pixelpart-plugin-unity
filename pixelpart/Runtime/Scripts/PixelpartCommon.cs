@@ -1,11 +1,9 @@
-using System;
-using UnityEngine;
-
 namespace Pixelpart {
 public enum InterpolationType : int {
 	Off = 0,
 	Linear = 1,
-	Spline = 2
+	Spline = 2,
+	Bezier = 3
 }
 
 public enum BlendModeType : int {

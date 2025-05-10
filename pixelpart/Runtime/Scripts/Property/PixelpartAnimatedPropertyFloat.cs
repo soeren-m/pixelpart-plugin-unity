@@ -1,29 +1,21 @@
 using System;
-using System.Text;
-using UnityEngine;
 
 namespace Pixelpart {
 public class PixelpartAnimatedPropertyFloat {
-	public InterpolationType Interpolation {
-		get {
-			return (InterpolationType)Plugin.PixelpartAnimatedPropertyFloatGetInterpolation(internalProperty);
-		}
-		set {
-			Plugin.PixelpartAnimatedPropertyFloatSetInterpolation(internalProperty, (int)value);
-		}
+	public InterpolationType KeyframeInterpolation {
+		get => (InterpolationType)Plugin.PixelpartAnimatedPropertyFloatGetKeyframeInterpolation(internalProperty);
+		set => Plugin.PixelpartAnimatedPropertyFloatSetKeyframeInterpolation(internalProperty, (int)value);
 	}
 
-	public bool ContainsPoints {
-		get {
-			return Plugin.PixelpartAnimatedPropertyFloatContainsPoints(internalProperty);
-		}
-	}
+	public int KeyframeCount => Plugin.PixelpartAnimatedPropertyFloatKeyframeCount(internalProperty);
 
-	public int NumPoints {
-		get {
-			return Plugin.PixelpartAnimatedPropertyFloatGetNumPoints(internalProperty);
-		}
-	}
+	[Obsolete("deprecated, use KeyframeInterpolation")]
+	public InterpolationType Interpolation => KeyframeInterpolation;
+	[Obsolete("deprecated, use KeyframeCount")]
+	public int NumPoints => KeyframeCount;
+
+	[Obsolete("deprecated, use KeyframeCount")]
+	public bool ContainsPoints => KeyframeCount > 0;
 
 	private readonly IntPtr internalProperty;
 
@@ -31,38 +23,51 @@ public class PixelpartAnimatedPropertyFloat {
 		internalProperty = internalPropertyPtr;
 	}
 
-	public float Get(float position) {
-		return Plugin.PixelpartAnimatedPropertyFloatGet(internalProperty, position);
-	}
+	public float At(float position) =>
+		Plugin.PixelpartAnimatedPropertyFloatAt(internalProperty, position);
 
-	public void AddPoint(float position, float value) {
-		Plugin.PixelpartAnimatedPropertyFloatAddPoint(internalProperty, position, value);
-	}
-	public void RemovePoint(int index) {
-		Plugin.PixelpartAnimatedPropertyFloatRemovePoint(internalProperty, index);
-	}
-	public void SetPoint(int index, float value) {
-		Plugin.PixelpartAnimatedPropertyFloatSetPoint(internalProperty, index, value);
-	}
-	public void SetPointPosition(int index, float position) {
-		Plugin.PixelpartAnimatedPropertyFloatSetPointPosition(internalProperty, index, position);
-	}
-	public void Clear() {
-		Plugin.PixelpartAnimatedPropertyFloatClear(internalProperty);
-	}
+	public void AddKeyframe(float position, float value) =>
+		Plugin.PixelpartAnimatedPropertyFloatAddKeyframe(internalProperty, position, value);
 
-	public float GetPoint(int index) {
-		return Plugin.PixelpartAnimatedPropertyFloatGetPoint(internalProperty, index);
-	}
-	public int GetPointIndex(float position, float epsilon) {
-		return Plugin.PixelpartAnimatedPropertyFloatGetPointIndex(internalProperty, position, epsilon);
-	}
+	public void RemoveKeyframe(int index) =>
+		Plugin.PixelpartAnimatedPropertyFloatRemoveKeyframe(internalProperty, index);
 
-	public void EnableAdaptiveCache() {
+	public void SetKeyframeValue(int index, float value) =>
+		Plugin.PixelpartAnimatedPropertyFloatSetKeyframeValue(internalProperty, index, value);
+
+	public void SetKeyframePosition(int index, float position) =>
+		Plugin.PixelpartAnimatedPropertyFloatSetKeyframePosition(internalProperty, index, position);
+
+	public void ClearKeyframes() =>
+		Plugin.PixelpartAnimatedPropertyFloatClearKeyframes(internalProperty);
+
+	public float GetKeyframeValue(int index) =>
+		Plugin.PixelpartAnimatedPropertyFloatKeyframeValue(internalProperty, index);
+
+	public int GetKeyframeIndex(float position, float epsilon) =>
+		Plugin.PixelpartAnimatedPropertyFloatKeyframeIndex(internalProperty, position, epsilon);
+
+	public void EnableAdaptiveCache() =>
 		Plugin.PixelpartAnimatedPropertyFloatEnableAdaptiveCache(internalProperty);
-	}
-	public void EnableFixedCache(int size) {
+
+	public void EnableFixedCache(int size) =>
 		Plugin.PixelpartAnimatedPropertyFloatEnableFixedCache(internalProperty, size);
-	}
+
+	[Obsolete("deprecated, use At")]
+	public float Get(float position) => At(position);
+	[Obsolete("deprecated, use AddKeyframe")]
+	public void AddPoint(float position, float value) => AddKeyframe(position, value);
+	[Obsolete("deprecated, use RemoveKeyframe")]
+	public void RemovePoint(int index) => RemoveKeyframe(index);
+	[Obsolete("deprecated, use SetKeyframeValue")]
+	public void SetPoint(int index, float value) => SetKeyframeValue(index, value);
+	[Obsolete("deprecated, use SetKeyframePosition")]
+	public void SetPointPosition(int index, float position) => SetKeyframePosition(index, position);
+	[Obsolete("deprecated, use ClearKeyframes")]
+	public void Clear() => ClearKeyframes();
+	[Obsolete("deprecated, use GetKeyframeValue")]
+	public float GetPoint(int index) => GetKeyframeValue(index);
+	[Obsolete("deprecated, use GetKeyframeIndex")]
+	public int GetPointIndex(float position, float epsilon) => GetKeyframeIndex(position, epsilon);
 }
 }

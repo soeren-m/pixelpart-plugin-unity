@@ -1,58 +1,60 @@
 using System;
 using System.Linq;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace Pixelpart {
-public class PixelpartParticleTrailRenderer : PixelpartParticleRendererBase, PixelpartParticleRenderer {
+internal class PixelpartParticleTrailRenderer : IPixelpartParticleRenderer {
+	private readonly IntPtr internalEffect;
+
+	private readonly uint particleEmitterId;
+
+	private readonly uint particleTypeId;
+
 	private readonly Mesh mesh;
 
-	private int[] triangles;
-	private Vector3[] vertices;
-	private Color[] colors;
-	private Vector3[] normals;
-	private Vector2[] uv0;
-	private Vector4[] uv1;
-	private Vector4[] uv2;
+	private readonly PixelpartParticleMaterial particleMaterial;
 
-	public PixelpartParticleTrailRenderer(IntPtr effectPtr, uint ptypeIndex, Material baseMaterial, PixelpartMaterialInfo materialInfo, PixelpartGraphicsResourceProvider resourceProvider) :
-		base(effectPtr, ptypeIndex, baseMaterial, materialInfo, resourceProvider) {
-		triangles = new int[12];
-		vertices = new Vector3[2];
-		colors = new Color[2];
-		normals = new Vector3[2];
-		uv0 = new Vector2[2];
-		uv1 = new Vector4[2];
-		uv2 = new Vector4[2];
+	private int[] triangles = new int[12];
+	private Vector3[] vertices = new Vector3[2];
+	private Color[] colors = new Color[2];
+	private Vector3[] normals = new Vector3[2];
+	private Vector2[] uv0 = new Vector2[2];
+	private Vector4[] uv1 = new Vector4[2];
+	private Vector4[] uv2 = new Vector4[2];
+
+	public PixelpartParticleTrailRenderer(IntPtr effectRuntimePtr, uint emitterId, uint typeId, Material baseMaterial, PixelpartMaterialInfo materialInfo, PixelpartGraphicsResourceProvider resourceProvider) {
+		internalEffect = effectRuntimePtr;
+		particleEmitterId = emitterId;
+		particleTypeId = typeId;
 
 		mesh = new Mesh();
 		mesh.MarkDynamic();
+
+		particleMaterial = new PixelpartParticleMaterial(effectRuntimePtr, emitterId, typeId, baseMaterial, materialInfo, resourceProvider);
 	}
 
-	public void Draw(Camera camera, Transform transform, Vector3 scale, int layer) {
-		bool visible = Plugin.PixelpartParticleTypeIsVisible(internalEffect, particleTypeId);
+	public void Render(Camera camera, Transform transform, Vector3 scale, int layer) {
+		var visible = Plugin.PixelpartParticleTypeIsVisible(internalEffect, particleTypeId);
 		if(!visible || camera == null) {
 			return;
 		}
 
-		int numTriangles = 0;
-		int numVertices = 0;
-		Plugin.PixelpartPrepareParticleTrailVertexData(internalEffect, particleTypeIndex, out numTriangles, out numVertices);
-		if(numTriangles == 0 || numVertices == 0) {
+		Plugin.PixelpartPrepareParticleTrailVertexData(internalEffect, particleEmitterId, particleTypeId, out int triangleCount, out int vertexCount);
+		if(triangleCount == 0 || vertexCount == 0) {
 			return;
 		}
 
-		Array.Resize(ref triangles, numTriangles * 3);
-		Array.Resize(ref vertices, numVertices);
-		Array.Resize(ref colors, numVertices);
-		Array.Resize(ref normals, numVertices);
-		Array.Resize(ref uv0, numVertices);
-		Array.Resize(ref uv1, numVertices);
-		Array.Resize(ref uv2, numVertices);
+		Array.Resize(ref triangles, triangleCount * 3);
+		Array.Resize(ref vertices, vertexCount);
+		Array.Resize(ref colors, vertexCount);
+		Array.Resize(ref normals, vertexCount);
+		Array.Resize(ref uv0, vertexCount);
+		Array.Resize(ref uv1, vertexCount);
+		Array.Resize(ref uv2, vertexCount);
 
 		Plugin.PixelpartGetParticleTrailVertexData(internalEffect,
-			particleTypeIndex,
+			particleEmitterId, particleTypeId,
 			camera.transform.position,
 			camera.transform.right,
 			camera.transform.up,
@@ -60,7 +62,7 @@ public class PixelpartParticleTrailRenderer : PixelpartParticleRendererBase, Pix
 			triangles, vertices, colors, normals,
 			uv0, uv1, uv2);
 
-		ApplyMaterialParameters();
+		particleMaterial.ApplyParameters();
 
 		mesh.Clear();
 		mesh.vertices = vertices;
@@ -72,7 +74,7 @@ public class PixelpartParticleTrailRenderer : PixelpartParticleRendererBase, Pix
 		mesh.triangles = triangles;
 
 		Graphics.DrawMesh(mesh, transform.localToWorldMatrix,
-			material, 0, null, 0, null, ShadowCastingMode.Off, false, null, false);
+			particleMaterial.Material, 0, null, 0, null, ShadowCastingMode.Off, false, null, false);
 	}
 }
 }

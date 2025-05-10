@@ -26,6 +26,9 @@ public class PixelpartEffect : MonoBehaviour {
 	public float LoopTime = 1.0f;
 
 	[Range(0.0f, 10.0f)]
+	public float WarmupTime = 0.0f;
+
+	[Range(0.0f, 10.0f)]
 	public float Speed = 1.0f;
 
 	[Range(1.0f, 100.0f)]
@@ -421,6 +424,13 @@ public class PixelpartEffect : MonoBehaviour {
 		effectInputCollection = new PixelpartEffectInputCollection(effectRuntime, effectInputNames, effectInputValues);
 		triggerCollection = new PixelpartTriggerCollection(effectRuntime);
 		effectRenderer = new PixelpartEffectRenderer(effectRuntime, ParticleMaterials, EffectAsset.CustomMaterialAssets);
+
+		if(WarmupTime > 0.0f) {
+			var timeStep = 1.0f / Math.Max(FrameRate, 0.01f);
+
+			Plugin.PixelpartAdvanceEffect(effectRuntime,
+				WarmupTime, false, 0.0f, 1.0f, timeStep);
+		}
 
 		ApplyInputProperties();
 	}

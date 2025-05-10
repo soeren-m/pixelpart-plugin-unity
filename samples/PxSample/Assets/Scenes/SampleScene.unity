@@ -155,6 +155,7 @@ MonoBehaviour:
   Playing: 1
   Loop: 0
   LoopTime: 1
+  WarmupTime: 0
   Speed: 1
   FrameRate: 60
   ParticleTypeNames:

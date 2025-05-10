@@ -30,6 +30,7 @@ public class PixelpartEffectInspector : Editor {
 		EditorGUILayout.PropertyField(serializedObject.FindProperty("Playing"));
 		EditorGUILayout.PropertyField(serializedObject.FindProperty("Loop"));
 		EditorGUILayout.PropertyField(serializedObject.FindProperty("LoopTime"));
+		EditorGUILayout.PropertyField(serializedObject.FindProperty("WarmupTime"));
 		EditorGUILayout.PropertyField(serializedObject.FindProperty("Speed"));
 		EditorGUILayout.PropertyField(serializedObject.FindProperty("FrameRate"));
 	}

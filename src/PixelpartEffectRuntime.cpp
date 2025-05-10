@@ -96,7 +96,7 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartAdvanceEffect(Pixelpart
 		return;
 	}
 
-	dt = std::min(std::max(dt, 0.0f), 1.0f);
+	dt = std::max(dt, 0.0f);
 	loopTime = std::max(loopTime, 0.0f);
 	speed = std::max(speed, 0.0f);
 	timeStep = std::max(timeStep * speed, 0.001f);

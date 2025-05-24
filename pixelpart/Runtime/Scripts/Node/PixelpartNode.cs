@@ -39,9 +39,9 @@ public abstract class PixelpartNode {
 
 	public PixelpartAnimatedPropertyFloat3 Position { get; }
 
-	public PixelpartAnimatedPropertyFloat3 Orientation { get; }
+	public PixelpartAnimatedPropertyFloat3 Rotation { get; }
 
-	public PixelpartAnimatedPropertyFloat3 Size { get; }
+	public PixelpartAnimatedPropertyFloat3 Scale { get; }
 
 	public PixelpartNode(IntPtr effectRuntimePtr, uint id) {
 		effectRuntime = effectRuntimePtr;
@@ -49,10 +49,10 @@ public abstract class PixelpartNode {
 
 		Position = new PixelpartAnimatedPropertyFloat3(
 			Plugin.PixelpartNodeGetPosition(effectRuntimePtr, id));
-		Orientation = new PixelpartAnimatedPropertyFloat3(
-			Plugin.PixelpartNodeGetOrientation(effectRuntimePtr, id));
-		Size = new PixelpartAnimatedPropertyFloat3(
-			Plugin.PixelpartNodeGetSize(effectRuntimePtr, id));
+		Rotation = new PixelpartAnimatedPropertyFloat3(
+			Plugin.PixelpartNodeGetRotation(effectRuntimePtr, id));
+		Scale = new PixelpartAnimatedPropertyFloat3(
+			Plugin.PixelpartNodeGetScale(effectRuntimePtr, id));
 	}
 }
 }

@@ -301,7 +301,7 @@ UNITY_INTERFACE_EXPORT pixelpart::AnimatedProperty<pixelpart::float3_t>* UNITY_I
 	}
 }
 
-UNITY_INTERFACE_EXPORT pixelpart::AnimatedProperty<pixelpart::float3_t>* UNITY_INTERFACE_API PixelpartNodeGetOrientation(PixelpartEffectRuntime* effectRuntime, UnityUInt nodeId) {
+UNITY_INTERFACE_EXPORT pixelpart::AnimatedProperty<pixelpart::float3_t>* UNITY_INTERFACE_API PixelpartNodeGetRotation(PixelpartEffectRuntime* effectRuntime, UnityUInt nodeId) {
 	if(!effectRuntime) {
 		return nullptr;
 	}
@@ -310,14 +310,14 @@ UNITY_INTERFACE_EXPORT pixelpart::AnimatedProperty<pixelpart::float3_t>* UNITY_I
 		pixelpart::Node& node =
 			effectRuntime->effectAsset.effect().sceneGraph().at(pixelpart::id_t(nodeId));
 
-		return &node.orientation();
+		return &node.rotation();
 	}
 	catch(...) {
 		return nullptr;
 	}
 }
 
-UNITY_INTERFACE_EXPORT pixelpart::AnimatedProperty<pixelpart::float3_t>* UNITY_INTERFACE_API PixelpartNodeGetSize(PixelpartEffectRuntime* effectRuntime, UnityUInt nodeId) {
+UNITY_INTERFACE_EXPORT pixelpart::AnimatedProperty<pixelpart::float3_t>* UNITY_INTERFACE_API PixelpartNodeGetScale(PixelpartEffectRuntime* effectRuntime, UnityUInt nodeId) {
 	if(!effectRuntime) {
 		return nullptr;
 	}
@@ -326,7 +326,7 @@ UNITY_INTERFACE_EXPORT pixelpart::AnimatedProperty<pixelpart::float3_t>* UNITY_I
 		pixelpart::Node& node =
 			effectRuntime->effectAsset.effect().sceneGraph().at(pixelpart::id_t(nodeId));
 
-		return &node.size();
+		return &node.scale();
 	}
 	catch(...) {
 		return nullptr;

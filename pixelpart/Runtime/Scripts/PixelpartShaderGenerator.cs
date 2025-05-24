@@ -127,6 +127,7 @@ internal static class PixelpartShaderGenerator {
 		return result;
 	}
 
+#pragma warning disable 0414
 	private static readonly string UnlitShaderTemplate = @"Shader ""PixelpartCustom/{name}""
 {
 	Properties
@@ -1140,5 +1141,6 @@ CBUFFER_END
 		}
 	}
 }";
+#pragma warning restore 0414
 }
 }

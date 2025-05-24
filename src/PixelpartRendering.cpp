@@ -373,7 +373,7 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetParticleSpriteVertex
 			}
 
 			pixelpart::float3_t emitterPosition = particleEmitter.position().at(alpha);
-			pixelpart::mat3_t emitterOrientationMatrix = internal::rotation3d(particleEmitter.orientation().at(alpha));
+			pixelpart::mat3_t emitterRotationMatrix = internal::rotation3d(particleEmitter.rotation().at(alpha));
 
 			for(uint32_t p = 0; p < particleCount; p++) {
 				pixelpart::mat3_t rotationMatrix = internal::rotation3d(particleRenderData.rotation[p]);
@@ -410,10 +410,10 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetParticleSpriteVertex
 						break;
 					}
 					case pixelpart::AlignmentMode::emitter: {
-						position[0] = particleRenderData.globalPosition[p] * effectScale + emitterOrientationMatrix * position[0];
-						position[1] = particleRenderData.globalPosition[p] * effectScale + emitterOrientationMatrix * position[1];
-						position[2] = particleRenderData.globalPosition[p] * effectScale + emitterOrientationMatrix * position[2];
-						position[3] = particleRenderData.globalPosition[p] * effectScale + emitterOrientationMatrix * position[3];
+						position[0] = particleRenderData.globalPosition[p] * effectScale + emitterRotationMatrix * position[0];
+						position[1] = particleRenderData.globalPosition[p] * effectScale + emitterRotationMatrix * position[1];
+						position[2] = particleRenderData.globalPosition[p] * effectScale + emitterRotationMatrix * position[2];
+						position[3] = particleRenderData.globalPosition[p] * effectScale + emitterRotationMatrix * position[3];
 						break;
 					}
 					default: {
@@ -441,7 +441,7 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetParticleSpriteVertex
 			pixelpart::float_t zOffset = -0.001 * static_cast<pixelpart::float_t>(particleType.layer());
 
 			pixelpart::float3_t emitterPosition = particleEmitter.position().at(alpha);
-			pixelpart::mat3_t emitterOrientationMatrix = internal::rotation3d(particleEmitter.orientation().at(alpha));
+			pixelpart::mat3_t emitterRotationMatrix = internal::rotation3d(particleEmitter.rotation().at(alpha));
 			UnityVector3 normal = UnityVector3{ 0.0f, 0.0f, -1.0f };
 
 			for(uint32_t p = 0; p < particleCount; p++) {
@@ -472,10 +472,10 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetParticleSpriteVertex
 					}
 					case pixelpart::AlignmentMode::emitter: {
 						pixelpart::mat3_t rotationMatrix = internal::rotation3d(particles.rotation[p]);
-						position[0] = particles.globalPosition[p] + emitterOrientationMatrix * (rotationMatrix * (pixelpart::float3_t(-0.5, -0.5, 0.0) * particles.size[p] - pivot) + pivot);
-						position[1] = particles.globalPosition[p] + emitterOrientationMatrix * (rotationMatrix * (pixelpart::float3_t(+0.5, -0.5, 0.0) * particles.size[p] - pivot) + pivot);
-						position[2] = particles.globalPosition[p] + emitterOrientationMatrix * (rotationMatrix * (pixelpart::float3_t(+0.5, +0.5, 0.0) * particles.size[p] - pivot) + pivot);
-						position[3] = particles.globalPosition[p] + emitterOrientationMatrix * (rotationMatrix * (pixelpart::float3_t(-0.5, +0.5, 0.0) * particles.size[p] - pivot) + pivot);
+						position[0] = particles.globalPosition[p] + emitterRotationMatrix * (rotationMatrix * (pixelpart::float3_t(-0.5, -0.5, 0.0) * particles.size[p] - pivot) + pivot);
+						position[1] = particles.globalPosition[p] + emitterRotationMatrix * (rotationMatrix * (pixelpart::float3_t(+0.5, -0.5, 0.0) * particles.size[p] - pivot) + pivot);
+						position[2] = particles.globalPosition[p] + emitterRotationMatrix * (rotationMatrix * (pixelpart::float3_t(+0.5, +0.5, 0.0) * particles.size[p] - pivot) + pivot);
+						position[3] = particles.globalPosition[p] + emitterRotationMatrix * (rotationMatrix * (pixelpart::float3_t(-0.5, +0.5, 0.0) * particles.size[p] - pivot) + pivot);
 						break;
 					}
 					default: {
@@ -814,7 +814,7 @@ UNITY_INTERFACE_EXPORT UnityBool UNITY_INTERFACE_API PixelpartGetParticleMeshIns
 		}
 
 		pixelpart::float3_t emitterPosition = particleEmitter.position().at(alpha);
-		pixelpart::mat4_t emitterOrientationMatrix = pixelpart::mat4_t(internal::rotation3d(particleEmitter.orientation().at(alpha)));
+		pixelpart::mat4_t emitterRotationMatrix = pixelpart::mat4_t(internal::rotation3d(particleEmitter.rotation().at(alpha)));
 		pixelpart::mat4_t globalScaleMatrix = glm::scale(pixelpart::float3_t(effectScale));
 
 		for(uint32_t p = 0; p < particleCount; p++) {
@@ -827,7 +827,7 @@ UNITY_INTERFACE_EXPORT UnityBool UNITY_INTERFACE_API PixelpartGetParticleMeshIns
 					alignmentMatrix = pixelpart::mat4_t(internal::lookAt(emitterPosition - particleRenderData.globalPosition[p]));
 					break;
 				case pixelpart::AlignmentMode::emitter:
-					alignmentMatrix = emitterOrientationMatrix;
+					alignmentMatrix = emitterRotationMatrix;
 					break;
 				default:
 					break;

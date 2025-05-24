@@ -169,9 +169,9 @@ internal static class Plugin {
 	[DllImport(pluginName)]
 	public static extern IntPtr PixelpartNodeGetPosition(IntPtr effectRuntime, uint nodeId);
 	[DllImport(pluginName)]
-	public static extern IntPtr PixelpartNodeGetOrientation(IntPtr effectRuntime, uint nodeId);
+	public static extern IntPtr PixelpartNodeGetRotation(IntPtr effectRuntime, uint nodeId);
 	[DllImport(pluginName)]
-	public static extern IntPtr PixelpartNodeGetSize(IntPtr effectRuntime, uint nodeId);
+	public static extern IntPtr PixelpartNodeGetScale(IntPtr effectRuntime, uint nodeId);
 
 	// ParticleEmitter
 	[DllImport(pluginName)]

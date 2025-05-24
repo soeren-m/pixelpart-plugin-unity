@@ -67,10 +67,6 @@ internal class PixelpartParticleMeshRenderer : IPixelpartParticleRenderer {
 			scale,
 			transforms, colors, velocities, lives, ids);
 
-		var globalTransforms = transforms
-			.Select(mat => transform.localToWorldMatrix * mat)
-			.ToArray();
-
 		particleMaterial.ApplyParameters();
 
 		var drawCallCount = (particleCount - 1) / maxParticlesPerDrawCall + 1;
@@ -78,42 +74,34 @@ internal class PixelpartParticleMeshRenderer : IPixelpartParticleRenderer {
 		for(var drawCallIndex = 0; drawCallIndex < drawCallCount; drawCallIndex++) {
 			var startIndex = drawCallIndex * maxParticlesPerDrawCall;
 
-			var currentTransforms = globalTransforms
+			var drawCallTransforms = transforms
 				.Skip(startIndex)
 				.Take(maxParticlesPerDrawCall)
 				.ToArray();
 
-			var currentColors = colors.Skip(startIndex).Take(maxParticlesPerDrawCall);
-			if(currentColors.Count() < maxParticlesPerDrawCall) {
-				currentColors = currentColors.Concat(
-					Enumerable.Repeat(new Vector4(0.0f, 0.0f, 0.0f, 0.0f), maxParticlesPerDrawCall - currentColors.Count()));
-			}
+			var drawCallColors = colors.Skip(startIndex).Take(maxParticlesPerDrawCall);
+			drawCallColors = drawCallColors.Concat(
+				Enumerable.Repeat(new Vector4(0.0f, 0.0f, 0.0f, 0.0f), maxParticlesPerDrawCall - drawCallColors.Count()));
 
-			var currentVelocities = velocities.Skip(startIndex).Take(maxParticlesPerDrawCall);
-			if(currentVelocities.Count() < maxParticlesPerDrawCall) {
-				currentVelocities = currentVelocities.Concat(
-					Enumerable.Repeat(new Vector4(0.0f, 0.0f, 0.0f, 0.0f), maxParticlesPerDrawCall - currentVelocities.Count()));
-			}
+			var drawCallVelocities = velocities.Skip(startIndex).Take(maxParticlesPerDrawCall);
+			drawCallVelocities = drawCallVelocities.Concat(
+				Enumerable.Repeat(new Vector4(0.0f, 0.0f, 0.0f, 0.0f), maxParticlesPerDrawCall - drawCallVelocities.Count()));
 
-			var currentLives = lives.Skip(startIndex).Take(maxParticlesPerDrawCall);
-			if(currentLives.Count() < maxParticlesPerDrawCall) {
-				currentLives = currentLives.Concat(
-					Enumerable.Repeat(0.0f, maxParticlesPerDrawCall - currentLives.Count()));
-			}
+			var drawCallLives = lives.Skip(startIndex).Take(maxParticlesPerDrawCall);
+			drawCallLives = drawCallLives.Concat(
+				Enumerable.Repeat(0.0f, maxParticlesPerDrawCall - drawCallLives.Count()));
 
-			var currentObjectIds = ids.Skip(startIndex).Take(maxParticlesPerDrawCall);
-			if(currentObjectIds.Count() < maxParticlesPerDrawCall) {
-				currentObjectIds = currentObjectIds.Concat(
-					Enumerable.Repeat(0.0f, maxParticlesPerDrawCall - currentObjectIds.Count()));
-			}
+			var drawCallObjectIds = ids.Skip(startIndex).Take(maxParticlesPerDrawCall);
+			drawCallObjectIds = drawCallObjectIds.Concat(
+				Enumerable.Repeat(0.0f, maxParticlesPerDrawCall - drawCallObjectIds.Count()));
 
-			materialPropertyBlock.SetVectorArray("_Color", currentColors.ToArray());
-			materialPropertyBlock.SetVectorArray("_Velocity", currentVelocities.ToArray());
-			materialPropertyBlock.SetFloatArray("_Life", currentLives.ToArray());
-			materialPropertyBlock.SetFloatArray("_ObjectId", currentObjectIds.ToArray());
+			materialPropertyBlock.SetVectorArray("_Color", drawCallColors.ToArray());
+			materialPropertyBlock.SetVectorArray("_Velocity", drawCallVelocities.ToArray());
+			materialPropertyBlock.SetFloatArray("_Life", drawCallLives.ToArray());
+			materialPropertyBlock.SetFloatArray("_ObjectId", drawCallObjectIds.ToArray());
 
 			Graphics.DrawMeshInstanced(mesh, 0,
-				particleMaterial.Material, currentTransforms, currentTransforms.Length, materialPropertyBlock, ShadowCastingMode.Off, false, 0, null);
+				particleMaterial.Material, drawCallTransforms, drawCallTransforms.Length, materialPropertyBlock, ShadowCastingMode.Off, false, layer, null);
 		}
 	}
 }

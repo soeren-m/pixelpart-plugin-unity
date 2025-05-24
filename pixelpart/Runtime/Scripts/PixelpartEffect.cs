@@ -84,8 +84,9 @@ public class PixelpartEffect : MonoBehaviour {
 			return;
 		}
 
-		var timeStep = 1.0f / Math.Max(FrameRate, 0.01f);
+		UpdateTransform();
 
+		var timeStep = 1.0f / Math.Max(FrameRate, 0.01f);
 		Plugin.PixelpartAdvanceEffect(effectRuntime,
 			Time.deltaTime,
 			Loop, LoopTime,
@@ -426,8 +427,9 @@ public class PixelpartEffect : MonoBehaviour {
 		effectRenderer = new PixelpartEffectRenderer(effectRuntime, ParticleMaterials, EffectAsset.CustomMaterialAssets);
 
 		if(WarmupTime > 0.0f) {
-			var timeStep = 1.0f / Math.Max(FrameRate, 0.01f);
+			UpdateTransform();
 
+			var timeStep = 1.0f / Math.Max(FrameRate, 0.01f);
 			Plugin.PixelpartAdvanceEffect(effectRuntime,
 				WarmupTime, false, 0.0f, 1.0f, timeStep);
 		}
@@ -446,6 +448,16 @@ public class PixelpartEffect : MonoBehaviour {
 		effectInputCollection = new PixelpartEffectInputCollection();
 		triggerCollection = new PixelpartTriggerCollection();
 		effectRenderer = null;
+	}
+
+	private void UpdateTransform() {
+		var scale = new Vector3(
+			EffectAsset.Scale * (FlipH ? -1.0f : +1.0f),
+			EffectAsset.Scale * (FlipV ? -1.0f : +1.0f),
+			EffectAsset.Scale);
+
+		Plugin.PixelpartSetEffectTransform(effectRuntime,
+			transform.localToWorldMatrix, scale);
 	}
 
 	private void SetInputPropertyValue(string inputName, PixelpartVariantValue value) {

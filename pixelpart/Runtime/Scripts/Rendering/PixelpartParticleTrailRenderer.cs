@@ -73,8 +73,8 @@ internal class PixelpartParticleTrailRenderer : IPixelpartParticleRenderer {
 		mesh.SetUVs(2, uv2.ToList());
 		mesh.triangles = triangles;
 
-		Graphics.DrawMesh(mesh, transform.localToWorldMatrix,
-			particleMaterial.Material, 0, null, 0, null, ShadowCastingMode.Off, false, null, false);
+		Graphics.DrawMesh(mesh, Matrix4x4.identity,
+			particleMaterial.Material, layer, null, 0, null, ShadowCastingMode.Off, false, null, false);
 	}
 }
 }

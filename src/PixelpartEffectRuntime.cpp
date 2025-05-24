@@ -1,13 +1,18 @@
 #include "PixelpartEffectRuntime.h"
 #include "PixelpartPluginCommon.h"
 #include "PixelpartUnityTypes.h"
+#include "PixelpartUtil.h"
 #include "PixelpartShaderLanguage.h"
 #include "PixelpartShaderLanguageURP.h"
 #include "PixelpartShaderLanguageHDRP.h"
+#include "pixelpart-runtime/common/Curve.h"
+#include "pixelpart-runtime/common/Transform.h"
+#include "pixelpart-runtime/effect/Node.h"
 #include "pixelpart-runtime/computegraph/ComputeGraph.h"
 #include "pixelpart-runtime/shadergraph/ShaderGraph.h"
 #include "pixelpart-runtime/json/json.hpp"
 #include <cstring>
+#include <memory>
 #include <locale>
 #include <algorithm>
 
@@ -89,6 +94,33 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartDeleteEffect(PixelpartE
 	}
 
 	delete effectRuntime;
+}
+
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartSetEffectTransform(PixelpartEffectRuntime* effectRuntime, UnityMatrix4x4 transformMatrix, UnityVector3 scale) {
+	if(!effectRuntime) {
+		return;
+	}
+
+	glm::mat4 floatTransformMatrix;
+	std::memcpy(&floatTransformMatrix[0][0], transformMatrix.data, sizeof(float) * 16);
+
+	pixelpart::Transform transform(floatTransformMatrix);
+
+	for(const std::unique_ptr<pixelpart::Node>& node : effectRuntime->effectAsset.effect().sceneGraph().nodes()) {
+		if(node->parentId()) {
+			continue;
+		}
+
+		node->position().keyframes({ pixelpart::Curve<pixelpart::float3_t>::Point{ 0.0,
+			transform.position() / internal::fromUnity(scale)
+		} });
+		node->rotation().keyframes({ pixelpart::Curve<pixelpart::float3_t>::Point{ 0.0,
+			transform.rotation()
+		} });
+		node->scale().keyframes({ pixelpart::Curve<pixelpart::float3_t>::Point{ 0.0,
+			transform.scale()
+		} });
+	}
 }
 
 UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartAdvanceEffect(PixelpartEffectRuntime* effectRuntime, UnityFloat dt, UnityBool loop, UnityFloat loopTime, UnityFloat speed, UnityFloat timeStep) {

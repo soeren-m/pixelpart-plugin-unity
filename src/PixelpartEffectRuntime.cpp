@@ -106,19 +106,22 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartSetEffectTransform(Pixe
 
 	pixelpart::Transform transform(floatTransformMatrix);
 
+	pixelpart::float3_t cappedTransformScale = glm::max(transform.scale(), pixelpart::float3_t(0.0001));
+	pixelpart::float3_t cappedEffectScale = glm::max(internal::fromUnity(scale), pixelpart::float3_t(0.0001));
+
 	for(const std::unique_ptr<pixelpart::Node>& node : effectRuntime->effectAsset.effect().sceneGraph().nodes()) {
 		if(node->parentId()) {
 			continue;
 		}
 
 		node->position().keyframes({ pixelpart::Curve<pixelpart::float3_t>::Point{ 0.0,
-			transform.position() / internal::fromUnity(scale)
+			transform.position() / cappedEffectScale
 		} });
 		node->rotation().keyframes({ pixelpart::Curve<pixelpart::float3_t>::Point{ 0.0,
 			transform.rotation()
 		} });
 		node->scale().keyframes({ pixelpart::Curve<pixelpart::float3_t>::Point{ 0.0,
-			transform.scale()
+			cappedTransformScale / cappedEffectScale
 		} });
 	}
 }

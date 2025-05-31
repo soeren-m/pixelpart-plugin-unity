@@ -45,7 +45,7 @@
                         "index": 0
                     }
                 },
-                "orientation": {
+                "rotation": {
                     "curve": {
                         "interpolation": "linear",
                         "points": [
@@ -78,7 +78,7 @@
                         "index": 0
                     }
                 },
-                "size": {
+                "scale": {
                     "curve": {
                         "interpolation": "linear",
                         "points": [
@@ -155,7 +155,7 @@
                         "index": 0
                     }
                 },
-                "orientation": {
+                "rotation": {
                     "curve": {
                         "interpolation": "linear",
                         "points": [
@@ -188,7 +188,7 @@
                         "index": 0
                     }
                 },
-                "size": {
+                "scale": {
                     "curve": {
                         "interpolation": "linear",
                         "points": [

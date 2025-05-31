@@ -151,7 +151,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae89953306b284bcc811ae1d93a76850, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EffectAsset: {fileID: -4737904469928516042, guid: 6ffc93ba380872442b40c00fddf4dcf6,
+  EffectAsset: {fileID: 2175203938411701487, guid: 6ffc93ba380872442b40c00fddf4dcf6,
     type: 3}
   Playing: 1
   Loop: 0
@@ -168,7 +168,7 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 5f93a7652604cf440b4e373ccb1b9048, type: 2}
   effectInputNames: []
   effectInputValues: []
-  prevEffectAsset: {fileID: -4737904469928516042, guid: 6ffc93ba380872442b40c00fddf4dcf6,
+  prevEffectAsset: {fileID: 2175203938411701487, guid: 6ffc93ba380872442b40c00fddf4dcf6,
     type: 3}
 --- !u!4 &266700973
 Transform:

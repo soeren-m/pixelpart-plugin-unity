@@ -15,7 +15,7 @@ internal class PixelpartEffectRenderer {
 
 	private readonly int[] sortedParticleRuntimeIndices;
 
-	public PixelpartEffectRenderer(IntPtr effectRuntimePtr, IList<Material> particleMaterials, IList<PixelpartCustomMaterialAsset> customMaterialAssets) {
+	public PixelpartEffectRenderer(IntPtr effectRuntimePtr, IList<Material> particleMaterials, IList<PixelpartMaterialDescriptor> customMaterials) {
 		effectRuntime = effectRuntimePtr;
 
 		graphicsResourceProvider = new PixelpartGraphicsResourceProvider();
@@ -47,18 +47,18 @@ internal class PixelpartEffectRenderer {
 			var materialId = System.Text.Encoding.UTF8.GetString(materialIdBuffer, 0, materialIdLength);
 			var materialBuiltIn = Plugin.PixelpartParticleTypeIsMaterialBuiltIn(effectRuntimePtr, runtimeId.TypeId);
 
-			PixelpartMaterialInfo materialInfo = null;
+			PixelpartMaterialDescriptor materialDescriptor = null;
 			if(materialBuiltIn) {
-				if(!PixelpartBuiltInMaterialProvider.Instance.BuiltInMaterials.TryGetValue(materialId, out materialInfo)) {
-					materialInfo = null;
+				if(!PixelpartBuiltInMaterialProvider.Instance.BuiltInMaterials.TryGetValue(materialId, out materialDescriptor)) {
+					materialDescriptor = null;
 				}
 			}
 			else {
-				materialInfo = customMaterialAssets.FirstOrDefault(asset => asset.ResourceId == materialId)?.MaterialInfo;
+				materialDescriptor = customMaterials.FirstOrDefault(desc => desc.ResourceId == materialId);
 			}
 
-			if(materialInfo == null) {
-				Debug.LogWarning("[Pixelpart] Failed to find shader information for material \"" + materialId + "\"");
+			if(materialDescriptor == null) {
+				Debug.LogWarning("[Pixelpart] Failed to find material information for \"" + materialId + "\"");
 				continue;
 			}
 
@@ -66,17 +66,17 @@ internal class PixelpartEffectRenderer {
 				case ParticleRendererType.Sprite:
 					particleRenderers[runtimeInstanceIndex] = new PixelpartParticleSpriteRenderer(effectRuntimePtr,
 						runtimeId.EmitterId, runtimeId.TypeId,
-						baseMaterial, materialInfo, graphicsResourceProvider);
+						baseMaterial, materialDescriptor, graphicsResourceProvider);
 					break;
 				case ParticleRendererType.Trail:
 					particleRenderers[runtimeInstanceIndex] = new PixelpartParticleTrailRenderer(effectRuntimePtr,
 						runtimeId.EmitterId, runtimeId.TypeId,
-						baseMaterial, materialInfo, graphicsResourceProvider);
+						baseMaterial, materialDescriptor, graphicsResourceProvider);
 					break;
 				case ParticleRendererType.Mesh:
 					particleRenderers[runtimeInstanceIndex] = new PixelpartParticleMeshRenderer(effectRuntimePtr,
 						runtimeId.EmitterId, runtimeId.TypeId,
-						baseMaterial, materialInfo, graphicsResourceProvider);
+						baseMaterial, materialDescriptor, graphicsResourceProvider);
 					break;
 				default:
 					Debug.LogWarning("[Pixelpart] Particle type with id " + runtimeId.TypeId + " has unknown renderer type");
@@ -85,7 +85,7 @@ internal class PixelpartEffectRenderer {
 		}
 	}
 
-	public void Render(Camera camera, Transform transform, Vector3 scale, int layer) {
+	public void Render(Camera camera, Transform transform, Vector3 effectScale, int layer) {
 		if(particleRuntimeIds.Length == 0) {
 			return;
 		}
@@ -97,7 +97,7 @@ internal class PixelpartEffectRenderer {
 				continue;
 			}
 
-			particleRenderers[index].Render(camera, transform, scale, layer);
+			particleRenderers[index].Render(camera, transform, effectScale, layer);
 		}
 	}
 }

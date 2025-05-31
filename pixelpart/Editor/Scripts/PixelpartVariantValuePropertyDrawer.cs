@@ -1,6 +1,4 @@
 using UnityEngine;
-
-#if UNITY_EDITOR
 using UnityEditor;
 
 namespace Pixelpart {
@@ -112,4 +110,3 @@ public class EventOptionDrawer : PropertyDrawer {
 	}
 }
 }
-#endif

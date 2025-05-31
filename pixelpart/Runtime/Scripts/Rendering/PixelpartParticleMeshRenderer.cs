@@ -25,7 +25,7 @@ internal class PixelpartParticleMeshRenderer : IPixelpartParticleRenderer {
 	private float[] lives = new float[1];
 	private float[] ids = new float[1];
 
-	public PixelpartParticleMeshRenderer(IntPtr effectRuntimePtr, uint emitterId, uint typeId, Material baseMaterial, PixelpartMaterialInfo materialInfo, PixelpartGraphicsResourceProvider resourceProvider) {
+	public PixelpartParticleMeshRenderer(IntPtr effectRuntimePtr, uint emitterId, uint typeId, Material baseMaterial, PixelpartMaterialDescriptor materialDescriptor, PixelpartGraphicsResourceProvider resourceProvider) {
 		internalEffect = effectRuntimePtr;
 		particleEmitterId = emitterId;
 		particleTypeId = typeId;
@@ -38,11 +38,11 @@ internal class PixelpartParticleMeshRenderer : IPixelpartParticleRenderer {
 			Debug.LogError("[Pixelpart] Failed to find mesh \"" + meshResourceId + "\"");
 		}
 
-		particleMaterial = new PixelpartParticleMaterial(effectRuntimePtr, emitterId, typeId, baseMaterial, materialInfo, resourceProvider);
+		particleMaterial = new PixelpartParticleMaterial(effectRuntimePtr, emitterId, typeId, baseMaterial, materialDescriptor, resourceProvider);
 		materialPropertyBlock = new MaterialPropertyBlock();
 	}
 
-	public void Render(Camera camera, Transform transform, Vector3 scale, int layer) {
+	public void Render(Camera camera, Transform transform, Vector3 effectScale, int layer) {
 		var visible = Plugin.PixelpartParticleTypeIsVisible(internalEffect, particleTypeId);
 		if(!visible || camera == null || mesh == null) {
 			return;
@@ -64,7 +64,7 @@ internal class PixelpartParticleMeshRenderer : IPixelpartParticleRenderer {
 			camera.transform.position,
 			camera.transform.right,
 			camera.transform.up,
-			scale,
+			effectScale,
 			transforms, colors, velocities, lives, ids);
 
 		particleMaterial.ApplyParameters();

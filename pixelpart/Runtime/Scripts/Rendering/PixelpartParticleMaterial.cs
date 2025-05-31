@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Pixelpart {
 internal class PixelpartParticleMaterial {
-	public enum MaterialParameterType {
+	enum MaterialParameterType {
 		Int = 0,
 		Float = 1,
 		Float2 = 2,
@@ -19,9 +19,7 @@ internal class PixelpartParticleMaterial {
 
 	public Material Material { get; }
 
-	public string MaterialId { get; }
-
-	private readonly IntPtr internalEffect;
+	private readonly IntPtr effectRuntime;
 
 	private readonly uint particleEmitterId;
 
@@ -29,50 +27,43 @@ internal class PixelpartParticleMaterial {
 
 	private readonly PixelpartGraphicsResourceProvider graphicsResourceProvider;
 
-	private readonly PixelpartMaterialInfo materialInformation;
+	private readonly PixelpartMaterialDescriptor materialDescriptor;
 
-	public PixelpartParticleMaterial(IntPtr effectRuntimePtr, uint emitterId, uint typeId, Material baseMaterial, PixelpartMaterialInfo materialInfo, PixelpartGraphicsResourceProvider resourceProvider) {
-		internalEffect = effectRuntimePtr;
+	public PixelpartParticleMaterial(IntPtr effectRuntimePtr, uint emitterId, uint typeId, Material baseMaterial, PixelpartMaterialDescriptor materialDesc, PixelpartGraphicsResourceProvider resourceProvider) {
+		effectRuntime = effectRuntimePtr;
 		particleEmitterId = emitterId;
 		particleTypeId = typeId;
 		graphicsResourceProvider = resourceProvider;
 
-		var materialIdBuffer = new byte[256];
-		var materialIdLength = Plugin.PixelpartParticleTypeGetMaterialId(internalEffect, particleTypeId, materialIdBuffer, materialIdBuffer.Length);
-		MaterialId = System.Text.Encoding.UTF8.GetString(materialIdBuffer, 0, materialIdLength);
-
-		materialInformation = materialInfo;
+		materialDescriptor = materialDesc;
 		Material = new Material(baseMaterial);
 
-		var builtIn = Plugin.PixelpartParticleTypeIsMaterialBuiltIn(internalEffect, particleTypeId);
+		if(!string.IsNullOrEmpty(materialDescriptor.ResourceId)) {
+			for(var samplerIndex = 0; samplerIndex < materialDescriptor.TextureResourceIds.Length; samplerIndex++) {
+				var samplerName = materialDescriptor.SamplerNames[samplerIndex];
+				var resourceId = materialDescriptor.TextureResourceIds[samplerIndex];
 
-		if(!builtIn) {
-			for(var samplerIndex = 0; samplerIndex < materialInformation.TextureResourceIds.Length; samplerIndex++) {
-				var samplerName = materialInformation.SamplerNames[samplerIndex];
-				var resourceId = materialInformation.TextureResourceIds[samplerIndex];
-
-				Texture2D texture = null;
-				if(graphicsResourceProvider.Textures.TryGetValue(resourceId, out texture)) {
+				if(graphicsResourceProvider.Textures.TryGetValue(resourceId, out Texture2D texture)) {
 					Material.SetTexture(samplerName, texture);
 				}
 				else {
-					Debug.LogError("[Pixelpart] Cannot find texture '" + resourceId + "'");
+					Debug.LogError("[Pixelpart] Cannot find texture \"" + resourceId + "\"");
 				}
 			}
 		}
 	}
 
 	public void ApplyParameters() {
-		var effectTime = Plugin.PixelpartGetEffectTime(internalEffect);
-		var objectTime = Plugin.PixelpartNodeGetLocalTime(internalEffect, particleEmitterId);
+		var effectTime = Plugin.PixelpartGetEffectTime(effectRuntime);
+		var objectTime = Plugin.PixelpartNodeGetLocalTime(effectRuntime, particleEmitterId);
 
 		Material.SetFloat("_EffectTime", effectTime);
 		Material.SetFloat("_ObjectTime", objectTime);
 
-		var parameterCount = Plugin.PixelpartParticleTypeGetMaterialParameterCount(internalEffect, particleTypeId);
+		var parameterCount = Plugin.PixelpartParticleTypeGetMaterialParameterCount(effectRuntime, particleTypeId);
 
 		var parameterIds = new uint[parameterCount];
-		Plugin.PixelpartParticleTypeGetMaterialParameterIds(internalEffect, particleTypeId, parameterIds);
+		Plugin.PixelpartParticleTypeGetMaterialParameterIds(effectRuntime, particleTypeId, parameterIds);
 
 		foreach(var parameterId in parameterIds) {
 			ApplyParameter(parameterId);
@@ -80,24 +71,24 @@ internal class PixelpartParticleMaterial {
 	}
 
 	private void ApplyParameter(uint parameterId) {
-		var parameterName = materialInformation.GetParameterName(parameterId);
+		var parameterName = materialDescriptor.GetParameterName(parameterId);
 		if(parameterName == null) {
 			return;
 		}
 
-		var parameterType = (MaterialParameterType)Plugin.PixelpartParticleTypeGetMaterialParameterType(internalEffect, particleTypeId, parameterId);
+		var parameterType = (MaterialParameterType)Plugin.PixelpartParticleTypeGetMaterialParameterType(effectRuntime, particleTypeId, parameterId);
 
 		switch(parameterType) {
 			case MaterialParameterType.Int:
 			case MaterialParameterType.Enum: {
 				Material.SetInt(parameterName,
-					Plugin.PixelpartParticleTypeGetMaterialParameterValueInt(internalEffect, particleTypeId, parameterId));
+					Plugin.PixelpartParticleTypeGetMaterialParameterValueInt(effectRuntime, particleTypeId, parameterId));
 				break;
 			}
 
 			case MaterialParameterType.Float: {
 				Material.SetFloat(parameterName,
-					Plugin.PixelpartParticleTypeGetMaterialParameterValueFloat(internalEffect, particleTypeId, parameterId));
+					Plugin.PixelpartParticleTypeGetMaterialParameterValueFloat(effectRuntime, particleTypeId, parameterId));
 				break;
 			}
 
@@ -106,26 +97,26 @@ internal class PixelpartParticleMaterial {
 			case MaterialParameterType.Float4:
 			case MaterialParameterType.Color: {
 				Material.SetVector(parameterName,
-					Plugin.PixelpartParticleTypeGetMaterialParameterValueFloat4(internalEffect, particleTypeId, parameterId));
+					Plugin.PixelpartParticleTypeGetMaterialParameterValueFloat4(effectRuntime, particleTypeId, parameterId));
 				break;
 			}
 
 			case MaterialParameterType.Bool: {
 				Material.SetInt(parameterName,
-					Plugin.PixelpartParticleTypeGetMaterialParameterValueBool(internalEffect, particleTypeId, parameterId) ? 1 : 0);
+					Plugin.PixelpartParticleTypeGetMaterialParameterValueBool(effectRuntime, particleTypeId, parameterId) ? 1 : 0);
 				break;
 			}
 
 			case MaterialParameterType.ResourceImage: {
 				var resourceIdBuffer = new byte[256];
-				var resourceIdLength = Plugin.PixelpartParticleTypeGetMaterialParameterValueResourceId(internalEffect, particleTypeId, parameterId, resourceIdBuffer, resourceIdBuffer.Length);
+				var resourceIdLength = Plugin.PixelpartParticleTypeGetMaterialParameterValueResourceId(effectRuntime, particleTypeId, parameterId, resourceIdBuffer, resourceIdBuffer.Length);
 				var imageResourceId = System.Text.Encoding.UTF8.GetString(resourceIdBuffer, 0, resourceIdLength);
 
 				if(graphicsResourceProvider.Textures.TryGetValue(imageResourceId, out Texture2D texture)) {
 					Material.SetTexture(parameterName, texture);
 				}
 				else {
-					Debug.LogError("[Pixelpart] Cannot find texture '" + imageResourceId + "'");
+					Debug.LogError("[Pixelpart] Cannot find texture \"" + imageResourceId + "\"");
 				}
 
 				break;

@@ -4,11 +4,11 @@ using System.Collections.ObjectModel;
 namespace Pixelpart {
 internal class PixelpartBuiltInMaterialProvider {
 #if PIXELPART_USE_URP
-	private const string BuiltInMaterialPath = "Packages/net.pixelpart.urp/Runtime/Materials/";
+	private const string builtInMaterialPath = "Packages/net.pixelpart.urp/Runtime/Materials/";
 #elif PIXELPART_USE_HDRP
-	private const string BuiltInMaterialPath = "Packages/net.pixelpart.hdrp/Runtime/Materials/";
+	private const string builtInMaterialPath = "Packages/net.pixelpart.hdrp/Runtime/Materials/";
 #else
-	private const string BuiltInMaterialPath = "Packages/net.pixelpart/Runtime/Materials/";
+	private const string builtInMaterialPath = "Packages/net.pixelpart/Runtime/Materials/";
 #endif
 
 	public static PixelpartBuiltInMaterialProvider Instance {
@@ -41,98 +41,99 @@ internal class PixelpartBuiltInMaterialProvider {
 		{ "DistanceFadeTransition", 43 }
 	};
 
-	public IReadOnlyDictionary<string, PixelpartMaterialInfo> BuiltInMaterials =>
-		new ReadOnlyDictionary<string, PixelpartMaterialInfo>(builtInMaterials);
-	private readonly Dictionary<string, PixelpartMaterialInfo> builtInMaterials = new Dictionary<string, PixelpartMaterialInfo>();
+	private static readonly List<string> spriteUnlitParameterNames = new List<string>{
+		"MainTexture",
+		"Emission",
+		"ColorBlendMode",
+		"SpriteSheetRowNumber",
+		"SpriteSheetColumnNumber",
+		"SpriteSheetOrigin",
+		"SpriteAnimationNumFrames",
+		"SpriteAnimationStartFrame",
+		"SpriteAnimationDuration",
+		"SpriteAnimationLoop",
+		"SoftParticles",
+		"SoftParticleTransition",
+		"DistanceFade",
+		"DistanceFadeTransition"
+	};
+	private static readonly List<string> spriteLitParameterNames = new List<string>{
+		"MainTexture",
+		"Emission",
+		"Roughness",
+		"Metallic",
+		"ColorBlendMode",
+		"SpriteSheetRowNumber",
+		"SpriteSheetColumnNumber",
+		"SpriteSheetOrigin",
+		"SpriteAnimationNumFrames",
+		"SpriteAnimationStartFrame",
+		"SpriteAnimationDuration",
+		"SpriteAnimationLoop",
+		"SoftParticles",
+		"SoftParticleTransition",
+		"DistanceFade",
+		"DistanceFadeTransition"
+	};
+	private static readonly List<string> trailUnlitParameterNames = new List<string>{
+		"MainTexture",
+		"Emission",
+		"ColorBlendMode",
+		"SoftParticles",
+		"SoftParticleTransition",
+		"DistanceFade",
+		"DistanceFadeTransition"
+	};
+	private static readonly List<string> trailLitParameterNames = new List<string>{
+		"MainTexture",
+		"Emission",
+		"Roughness",
+		"Metallic",
+		"ColorBlendMode",
+		"SoftParticles",
+		"SoftParticleTransition",
+		"DistanceFade",
+		"DistanceFadeTransition"
+	};
+	private static readonly List<string> meshUnlitParameterNames = new List<string>{
+		"MainTexture",
+		"Emission",
+		"ColorBlendMode"
+	};
+	private static readonly List<string> meshUnlitAlphaParameterNames = new List<string>{
+		"MainTexture",
+		"Emission",
+		"ColorBlendMode",
+		"SoftParticles",
+		"SoftParticleTransition",
+		"DistanceFade",
+		"DistanceFadeTransition"
+	};
+	private static readonly List<string> meshLitParameterNames = new List<string>{
+		"MainTexture",
+		"Emission",
+		"Roughness",
+		"Metallic",
+		"ColorBlendMode"
+	};
+	private static readonly List<string> meshLitAlphaParameterNames = new List<string>{
+		"MainTexture",
+		"Emission",
+		"Roughness",
+		"Metallic",
+		"ColorBlendMode",
+		"SoftParticles",
+		"SoftParticleTransition",
+		"DistanceFade",
+		"DistanceFadeTransition"
+	};
+
+	public IReadOnlyDictionary<string, PixelpartMaterialDescriptor> BuiltInMaterials =>
+		new ReadOnlyDictionary<string, PixelpartMaterialDescriptor>(builtInMaterials);
+	private readonly Dictionary<string, PixelpartMaterialDescriptor> builtInMaterials =
+		new Dictionary<string, PixelpartMaterialDescriptor>();
 
 	public PixelpartBuiltInMaterialProvider() {
-		var spriteUnlitParameterNames = new List<string>{
-			"MainTexture",
-			"Emission",
-			"ColorBlendMode",
-			"SpriteSheetRowNumber",
-			"SpriteSheetColumnNumber",
-			"SpriteSheetOrigin",
-			"SpriteAnimationNumFrames",
-			"SpriteAnimationStartFrame",
-			"SpriteAnimationDuration",
-			"SpriteAnimationLoop",
-			"SoftParticles",
-			"SoftParticleTransition",
-			"DistanceFade",
-			"DistanceFadeTransition"
-		};
-		var spriteLitParameterNames = new List<string>{
-			"MainTexture",
-			"Emission",
-			"Roughness",
-			"Metallic",
-			"ColorBlendMode",
-			"SpriteSheetRowNumber",
-			"SpriteSheetColumnNumber",
-			"SpriteSheetOrigin",
-			"SpriteAnimationNumFrames",
-			"SpriteAnimationStartFrame",
-			"SpriteAnimationDuration",
-			"SpriteAnimationLoop",
-			"SoftParticles",
-			"SoftParticleTransition",
-			"DistanceFade",
-			"DistanceFadeTransition"
-		};
-		var trailUnlitParameterNames = new List<string>{
-			"MainTexture",
-			"Emission",
-			"ColorBlendMode",
-			"SoftParticles",
-			"SoftParticleTransition",
-			"DistanceFade",
-			"DistanceFadeTransition"
-		};
-		var trailLitParameterNames = new List<string>{
-			"MainTexture",
-			"Emission",
-			"Roughness",
-			"Metallic",
-			"ColorBlendMode",
-			"SoftParticles",
-			"SoftParticleTransition",
-			"DistanceFade",
-			"DistanceFadeTransition"
-		};
-		var meshUnlitParameterNames = new List<string>{
-			"MainTexture",
-			"Emission",
-			"ColorBlendMode"
-		};
-		var meshUnlitAlphaParameterNames = new List<string>{
-			"MainTexture",
-			"Emission",
-			"ColorBlendMode",
-			"SoftParticles",
-			"SoftParticleTransition",
-			"DistanceFade",
-			"DistanceFadeTransition"
-		};
-		var meshLitParameterNames = new List<string>{
-			"MainTexture",
-			"Emission",
-			"Roughness",
-			"Metallic",
-			"ColorBlendMode"
-		};
-		var meshLitAlphaParameterNames = new List<string>{
-			"MainTexture",
-			"Emission",
-			"Roughness",
-			"Metallic",
-			"ColorBlendMode",
-			"SoftParticles",
-			"SoftParticleTransition",
-			"DistanceFade",
-			"DistanceFadeTransition"
-		};
-
 	#if PIXELPART_USE_URP
 		AddMaterial("SpriteUnlitAlpha", "PixelpartSpriteUnlitAlphaURP", BlendModeType.Normal, LightingModeType.Unlit, spriteUnlitParameterNames);
 		AddMaterial("SpriteUnlitAdditive", "PixelpartSpriteUnlitAdditiveURP", BlendModeType.Additive, LightingModeType.Unlit, spriteUnlitParameterNames);
@@ -188,11 +189,10 @@ internal class PixelpartBuiltInMaterialProvider {
 			index++;
 		}
 
-		builtInMaterials[name] = new PixelpartMaterialInfo(
-			BuiltInMaterialPath + materialName + ".mat",
+		builtInMaterials[name] = PixelpartMaterialDescriptor.CreateDescriptorForBuiltInMaterial(
+			builtInMaterialPath + materialName + ".mat", materialName,
 			blendMode, lightingMode,
-			parameterIds, parameterNames,
-			new string[0], new string[0]);
+			parameterIds, parameterNames);
 	}
 }
 }

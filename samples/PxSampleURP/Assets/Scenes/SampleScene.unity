@@ -381,18 +381,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae89953306b284bcc811ae1d93a76850, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EffectAsset: {fileID: 11400000, guid: 1ad98ddfa61d2be4a936a7cf8e8a29e4, type: 2}
+  EffectAsset: {fileID: -4737904469928516042, guid: e6afa79bb5702394c8288b041339d854,
+    type: 3}
   Playing: 1
   Loop: 0
   LoopTime: 1
+  WarmupTime: 0
   Speed: 1
   FrameRate: 60
+  EffectScale: 1
+  FlipH: 0
+  FlipV: 0
   ParticleTypeNames:
   - Particle
   ParticleMaterials:
   - {fileID: 2100000, guid: 9e4c313ddbce91e49ac6f9edc783ae66, type: 2}
-  FlipH: 0
-  FlipV: 0
+  effectInputNames: []
+  effectInputValues: []
+  prevEffectAsset: {fileID: -4737904469928516042, guid: e6afa79bb5702394c8288b041339d854,
+    type: 3}
 --- !u!4 &912889471
 Transform:
   m_ObjectHideFlags: 0

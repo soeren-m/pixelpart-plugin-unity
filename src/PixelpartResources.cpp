@@ -10,20 +10,20 @@
 #include <string>
 
 extern "C" {
-UNITY_INTERFACE_EXPORT UnityUInt UNITY_INTERFACE_API PixelpartGetImageResourceCount(PixelpartEffectRuntime* effectRuntime) {
+UNITY_INTERFACE_EXPORT UnityInt UNITY_INTERFACE_API PixelpartGetImageResourceCount(PixelpartEffectRuntime* effectRuntime) {
 	if(!effectRuntime) {
 		return 0;
 	}
 
-	return static_cast<UnityUInt>(effectRuntime->effectAsset.effect().resources().images().size());
+	return static_cast<UnityInt>(effectRuntime->effectAsset.effect().resources().images().size());
 }
 
-UNITY_INTERFACE_EXPORT UnityInt UNITY_INTERFACE_API PixelpartGetImageResourceId(PixelpartEffectRuntime* effectRuntime, UnityUInt index, char* resourceIdBuffer, UnityInt bufferLength) {
+UNITY_INTERFACE_EXPORT UnityInt UNITY_INTERFACE_API PixelpartGetImageResourceId(PixelpartEffectRuntime* effectRuntime, UnityInt index, char* resourceIdBuffer, UnityInt bufferLength) {
 	if(!effectRuntime || !resourceIdBuffer) {
 		return 0;
 	}
 
-	uint32_t currentIndex = 0;
+	UnityInt currentIndex = 0;
 	for(const auto& entry : effectRuntime->effectAsset.effect().resources().images()) {
 		if(currentIndex == index) {
 			if(entry.first.size() > static_cast<std::size_t>(bufferLength)) {
@@ -137,20 +137,20 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetImageResourceData(Pi
 	}
 }
 
-UNITY_INTERFACE_EXPORT UnityUInt UNITY_INTERFACE_API PixelpartGetMeshResourceCount(PixelpartEffectRuntime* effectRuntime) {
+UNITY_INTERFACE_EXPORT UnityInt UNITY_INTERFACE_API PixelpartGetMeshResourceCount(PixelpartEffectRuntime* effectRuntime) {
 	if(!effectRuntime) {
 		return 0;
 	}
 
-	return static_cast<UnityUInt>(effectRuntime->effectAsset.effect().resources().meshes().size());
+	return static_cast<UnityInt>(effectRuntime->effectAsset.effect().resources().meshes().size());
 }
 
-UNITY_INTERFACE_EXPORT UnityInt UNITY_INTERFACE_API PixelpartGetMeshResourceId(PixelpartEffectRuntime* effectRuntime, UnityUInt index, char* resourceIdBuffer, UnityInt bufferLength) {
+UNITY_INTERFACE_EXPORT UnityInt UNITY_INTERFACE_API PixelpartGetMeshResourceId(PixelpartEffectRuntime* effectRuntime, UnityInt index, char* resourceIdBuffer, UnityInt bufferLength) {
 	if(!effectRuntime || !resourceIdBuffer) {
 		return 0;
 	}
 
-	uint32_t currentIndex = 0;
+	UnityInt currentIndex = 0;
 	for(const auto& entry : effectRuntime->effectAsset.effect().resources().meshes()) {
 		if(currentIndex == index) {
 			if(entry.first.size() > static_cast<std::size_t>(bufferLength)) {
@@ -248,20 +248,20 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetMeshResourceVertexDa
 	}
 }
 
-UNITY_INTERFACE_EXPORT UnityUInt UNITY_INTERFACE_API PixelpartGetMaterialResourceCount(PixelpartEffectRuntime* effectRuntime) {
+UNITY_INTERFACE_EXPORT UnityInt UNITY_INTERFACE_API PixelpartGetMaterialResourceCount(PixelpartEffectRuntime* effectRuntime) {
 	if(!effectRuntime) {
 		return 0;
 	}
 
-	return static_cast<UnityUInt>(effectRuntime->effectAsset.effect().resources().materials().size());
+	return static_cast<UnityInt>(effectRuntime->effectAsset.effect().resources().materials().size());
 }
 
-UNITY_INTERFACE_EXPORT UnityInt UNITY_INTERFACE_API PixelpartGetMaterialResourceId(PixelpartEffectRuntime* effectRuntime, UnityUInt index, char* resourceIdBuffer, UnityInt bufferLength) {
+UNITY_INTERFACE_EXPORT UnityInt UNITY_INTERFACE_API PixelpartGetMaterialResourceId(PixelpartEffectRuntime* effectRuntime, UnityInt index, char* resourceIdBuffer, UnityInt bufferLength) {
 	if(!effectRuntime || !resourceIdBuffer) {
 		return 0;
 	}
 
-	uint32_t currentIndex = 0;
+	UnityInt currentIndex = 0;
 	for(const auto& entry : effectRuntime->effectAsset.effect().resources().materials()) {
 		if(currentIndex == index) {
 			if(entry.first.size() > static_cast<std::size_t>(bufferLength)) {

@@ -23,7 +23,7 @@ internal class PixelpartParticleSpriteRenderer : IPixelpartParticleRenderer {
 	private Vector4[] uv1 = new Vector4[2];
 	private Vector4[] uv2 = new Vector4[2];
 
-	public PixelpartParticleSpriteRenderer(IntPtr effectRuntimePtr, uint emitterId, uint typeId, Material baseMaterial, PixelpartMaterialInfo materialInfo, PixelpartGraphicsResourceProvider resourceProvider) {
+	public PixelpartParticleSpriteRenderer(IntPtr effectRuntimePtr, uint emitterId, uint typeId, Material baseMaterial, PixelpartMaterialDescriptor materialDescriptor, PixelpartGraphicsResourceProvider resourceProvider) {
 		internalEffect = effectRuntimePtr;
 		particleEmitterId = emitterId;
 		particleTypeId = typeId;
@@ -31,10 +31,10 @@ internal class PixelpartParticleSpriteRenderer : IPixelpartParticleRenderer {
 		mesh = new Mesh();
 		mesh.MarkDynamic();
 
-		particleMaterial = new PixelpartParticleMaterial(effectRuntimePtr, emitterId, typeId, baseMaterial, materialInfo, resourceProvider);
+		particleMaterial = new PixelpartParticleMaterial(effectRuntimePtr, emitterId, typeId, baseMaterial, materialDescriptor, resourceProvider);
 	}
 
-	public void Render(Camera camera, Transform transform, Vector3 scale, int layer) {
+	public void Render(Camera camera, Transform transform, Vector3 effectScale, int layer) {
 		var visible = Plugin.PixelpartParticleTypeIsVisible(internalEffect, particleTypeId);
 		if(!visible || camera == null) {
 			return;
@@ -58,7 +58,7 @@ internal class PixelpartParticleSpriteRenderer : IPixelpartParticleRenderer {
 			camera.transform.position,
 			camera.transform.right,
 			camera.transform.up,
-			scale,
+			effectScale,
 			triangles, vertices, colors, normals,
 			uv0, uv1, uv2);
 

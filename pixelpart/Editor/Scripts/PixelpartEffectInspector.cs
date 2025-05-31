@@ -1,6 +1,4 @@
 using UnityEngine;
-
-#if UNITY_EDITOR
 using UnityEditor;
 
 namespace Pixelpart {
@@ -66,6 +64,10 @@ public class PixelpartEffectInspector : Editor {
 		EditorGUILayout.Space();
 		EditorGUILayout.LabelField("Rendering", EditorStyles.boldLabel);
 
+		EditorGUILayout.PropertyField(serializedObject.FindProperty("EffectScale"));
+		EditorGUILayout.PropertyField(serializedObject.FindProperty("FlipH"));
+		EditorGUILayout.PropertyField(serializedObject.FindProperty("FlipV"));
+
 		var materialsProperty = serializedObject.FindProperty("ParticleMaterials");
 		var typeNamesProperty = serializedObject.FindProperty("ParticleTypeNames");
 
@@ -80,10 +82,6 @@ public class PixelpartEffectInspector : Editor {
 
 			EditorGUI.indentLevel--;
 		}
-
-		EditorGUILayout.PropertyField(serializedObject.FindProperty("FlipH"));
-		EditorGUILayout.PropertyField(serializedObject.FindProperty("FlipV"));
 	}
 }
 }
-#endif

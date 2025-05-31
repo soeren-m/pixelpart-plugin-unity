@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 2035111234}
-  m_IndirectSpecularColor: {r: 130.95044, g: 162.22789, b: 214.71747, a: 1}
+  m_IndirectSpecularColor: {r: 130.97964, g: 162.1937, b: 214.52975, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -152,7 +152,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 168218571}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.019999983, y: 1.196, z: 1.810152}
+  m_LocalPosition: {x: 0.019999983, y: 1.196, z: 1.810153}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 405591765}
@@ -883,18 +883,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae89953306b284bcc811ae1d93a76850, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EffectAsset: {fileID: 11400000, guid: a948ba3b586e98a47ba76e0a02eb5320, type: 2}
+  EffectAsset: {fileID: -4737904469928516042, guid: 13961e3d369554d49ad518e42076c82c,
+    type: 3}
   Playing: 1
   Loop: 0
   LoopTime: 1
+  WarmupTime: 0
   Speed: 1
   FrameRate: 60
+  EffectScale: 1
+  FlipH: 0
+  FlipV: 0
   ParticleTypeNames:
   - Particle
   ParticleMaterials:
   - {fileID: 2100000, guid: 49ac2b8f8196b5d4caac4ce12cd952aa, type: 2}
-  FlipH: 0
-  FlipV: 0
+  effectInputNames: []
+  effectInputValues: []
+  prevEffectAsset: {fileID: -4737904469928516042, guid: 13961e3d369554d49ad518e42076c82c,
+    type: 3}
 --- !u!4 &966710813
 Transform:
   m_ObjectHideFlags: 0
@@ -939,7 +946,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1037846703}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.019999983, y: 1.196, z: -0.6870376}
+  m_LocalPosition: {x: 0.019999983, y: 1.196, z: -0.6870378}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 405591765}
@@ -2087,7 +2094,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2059789766}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.5101519, y: 1.196, z: 1.176076}
+  m_LocalPosition: {x: 2.5101528, y: 1.196, z: 1.1760765}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 405591765}

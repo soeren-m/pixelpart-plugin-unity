@@ -12,7 +12,8 @@ internal static class Plugin {
 
 	// General
 	[DllImport(pluginName)]
-	public static extern IntPtr PixelpartLoadEffect(byte[] data, int size);
+	public static extern IntPtr PixelpartLoadEffect(byte[] data, int size,
+		byte[] errorBuffer, int errorBufferSize, out int errorLength);
 	[DllImport(pluginName)]
 	public static extern void PixelpartDeleteEffect(IntPtr effectRuntime);
 	[DllImport(pluginName)]
@@ -89,20 +90,23 @@ internal static class Plugin {
 	[DllImport(pluginName)]
 	public static extern void PixelpartPrepareParticleMeshVertexData(IntPtr effectRuntime, uint particleEmitterId, uint particleTypeId, out int triangleCount, out int vertexCount);
 	[DllImport(pluginName)]
-	public static extern bool PixelpartGetParticleSpriteVertexData(IntPtr effectRuntime, uint particleEmitterId, uint particleTypeId, Vector3 cameraPosition, Vector3 viewRight, Vector3 viewUp, Vector3 scale,
+	public static extern bool PixelpartGetParticleSpriteVertexData(IntPtr effectRuntime, uint particleEmitterId, uint particleTypeId,
+		Vector3 cameraPosition, Vector3 viewRight, Vector3 viewUp, Vector3 effectSize,
 		int[] triangles, [In, Out] Vector3[] vertices, [In, Out] Color[] colors, [In, Out] Vector3[] normals, [In, Out] Vector2[] uv, [In, Out] Vector4[] uv2, [In, Out] Vector4[] uv3);
 	[DllImport(pluginName)]
-	public static extern bool PixelpartGetParticleTrailVertexData(IntPtr effectRuntime, uint particleEmitterId, uint particleTypeId, Vector3 cameraPosition, Vector3 viewRight, Vector3 viewUp, Vector3 scale,
+	public static extern bool PixelpartGetParticleTrailVertexData(IntPtr effectRuntime, uint particleEmitterId, uint particleTypeId,
+		Vector3 cameraPosition, Vector3 viewRight, Vector3 viewUp, Vector3 effectSize,
 		int[] triangles, [In, Out] Vector3[] vertices, [In, Out] Color[] colors, [In, Out] Vector3[] normals, [In, Out] Vector2[] uv, [In, Out] Vector4[] uv2, [In, Out] Vector4[] uv3);
 	[DllImport(pluginName)]
-	public static extern bool PixelpartGetParticleMeshInstanceData(IntPtr effectRuntime, uint particleEmitterId, uint particleTypeId, Vector3 cameraPosition, Vector3 viewRight, Vector3 viewUp, Vector3 scale,
+	public static extern bool PixelpartGetParticleMeshInstanceData(IntPtr effectRuntime, uint particleEmitterId, uint particleTypeId,
+		Vector3 cameraPosition, Vector3 viewRight, Vector3 viewUp, Vector3 effectSize,
 		[In, Out] Matrix4x4[] transforms, [In, Out] Vector4[] colors, [In, Out] Vector4[] velocities, [In, Out] float[] lives, [In, Out] float[] ids);
 
 	// Resources
 	[DllImport(pluginName)]
-	public static extern uint PixelpartGetImageResourceCount(IntPtr effectRuntime);
+	public static extern int PixelpartGetImageResourceCount(IntPtr effectRuntime);
 	[DllImport(pluginName)]
-	public static extern int PixelpartGetImageResourceId(IntPtr effectRuntime, uint index, byte[] resourceIdBuffer, int bufferLength);
+	public static extern int PixelpartGetImageResourceId(IntPtr effectRuntime, int index, byte[] resourceIdBuffer, int bufferLength);
 	[DllImport(pluginName)]
 	public static extern int PixelpartGetImageResourceWidth(IntPtr effectRuntime, [MarshalAs(UnmanagedType.LPStr)] string resourceId);
 	[DllImport(pluginName)]
@@ -116,9 +120,9 @@ internal static class Plugin {
 	[DllImport(pluginName)]
 	public static extern void PixelpartGetImageResourceData(IntPtr effectRuntime, [MarshalAs(UnmanagedType.LPStr)] string resourceId, byte[] imageData);
 	[DllImport(pluginName)]
-	public static extern uint PixelpartGetMeshResourceCount(IntPtr effectRuntime);
+	public static extern int PixelpartGetMeshResourceCount(IntPtr effectRuntime);
 	[DllImport(pluginName)]
-	public static extern int PixelpartGetMeshResourceId(IntPtr effectRuntime, uint index, byte[] resourceIdBuffer, int bufferLength);
+	public static extern int PixelpartGetMeshResourceId(IntPtr effectRuntime, int index, byte[] resourceIdBuffer, int bufferLength);
 	[DllImport(pluginName)]
 	public static extern int PixelpartGetMeshResourceIndexCount(IntPtr effectRuntime, [MarshalAs(UnmanagedType.LPStr)] string resourceId);
 	[DllImport(pluginName)]
@@ -126,9 +130,9 @@ internal static class Plugin {
 	[DllImport(pluginName)]
 	public static extern void PixelpartGetMeshResourceVertexData(IntPtr effectRuntime, [MarshalAs(UnmanagedType.LPStr)] string resourceId, int[] triangles, [In, Out] Vector3[] vertices, [In, Out] Vector3[] normals, [In, Out] Vector2[] uv);
 	[DllImport(pluginName)]
-	public static extern uint PixelpartGetMaterialResourceCount(IntPtr effectRuntime);
+	public static extern int PixelpartGetMaterialResourceCount(IntPtr effectRuntime);
 	[DllImport(pluginName)]
-	public static extern int PixelpartGetMaterialResourceId(IntPtr effectRuntime, uint index, byte[] resourceIdBuffer, int bufferLength);
+	public static extern int PixelpartGetMaterialResourceId(IntPtr effectRuntime, int index, byte[] resourceIdBuffer, int bufferLength);
 	[DllImport(pluginName)]
 	public static extern int PixelpartGetMaterialResourceBlendMode(IntPtr effectRuntime, [MarshalAs(UnmanagedType.LPStr)] string resourceId);
 	[DllImport(pluginName)]

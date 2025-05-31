@@ -256,7 +256,8 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartPrepareParticleTrailVer
 	}
 }
 
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetParticleSpriteVertexData(PixelpartEffectRuntime* effectRuntime, UnityUInt particleEmitterId, UnityUInt particleTypeId, UnityVector3 cameraPosition, UnityVector3 viewRight, UnityVector3 viewUp, UnityVector3 scale,
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetParticleSpriteVertexData(PixelpartEffectRuntime* effectRuntime, UnityUInt particleEmitterId, UnityUInt particleTypeId,
+	UnityVector3 cameraPosition, UnityVector3 viewRight, UnityVector3 viewUp, UnityVector3 effectSize,
 	UnityInt* triangles, UnityVector3* vertices, UnityColor* colors, UnityVector3* normals, UnityVector2* uv0, UnityVector4* uv1, UnityVector4* uv2) {
 	if(!effectRuntime) {
 		return;
@@ -282,7 +283,7 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetParticleSpriteVertex
 		PixelpartParticleMeshData& meshData = effectRuntime->meshData[runtimeId];
 		pixelpart::float_t alpha = particleEmitter.life(effectRuntime->effectEngine->runtimeContext());
 
-		pixelpart::float3_t effectScale = internal::fromUnity(scale);
+		pixelpart::float3_t effectScale = internal::fromUnity(effectSize);
 		pixelpart::float3_t cameraRight = internal::fromUnity(viewRight);
 		pixelpart::float3_t cameraUp = internal::fromUnity(viewUp);
 
@@ -533,7 +534,8 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetParticleSpriteVertex
 	}
 }
 
-UNITY_INTERFACE_EXPORT UnityBool UNITY_INTERFACE_API PixelpartGetParticleTrailVertexData(PixelpartEffectRuntime* effectRuntime, UnityUInt particleEmitterId, UnityUInt particleTypeId, UnityVector3 cameraPosition, UnityVector3 viewRight, UnityVector3 viewUp, UnityVector3 scale,
+UNITY_INTERFACE_EXPORT UnityBool UNITY_INTERFACE_API PixelpartGetParticleTrailVertexData(PixelpartEffectRuntime* effectRuntime, UnityUInt particleEmitterId, UnityUInt particleTypeId,
+	UnityVector3 cameraPosition, UnityVector3 viewRight, UnityVector3 viewUp, UnityVector3 effectSize,
 	UnityInt* triangles, UnityVector3* vertices, UnityColor* colors, UnityVector3* normals, UnityVector2* uv0, UnityVector4* uv1, UnityVector4* uv2) {
 	if(!effectRuntime) {
 		return false;
@@ -559,7 +561,7 @@ UNITY_INTERFACE_EXPORT UnityBool UNITY_INTERFACE_API PixelpartGetParticleTrailVe
 		PixelpartParticleMeshData& meshData = effectRuntime->meshData[runtimeId];
 		pixelpart::float_t alpha = particleEmitter.life(effectRuntime->effectEngine->runtimeContext());
 
-		pixelpart::float3_t effectScale = internal::fromUnity(scale);
+		pixelpart::float3_t effectScale = internal::fromUnity(effectSize);
 		pixelpart::float3_t cameraPos = internal::fromUnity(cameraPosition);
 		pixelpart::float3_t cameraRight = internal::fromUnity(viewRight);
 		pixelpart::float3_t cameraUp = internal::fromUnity(viewUp);
@@ -706,7 +708,8 @@ UNITY_INTERFACE_EXPORT UnityBool UNITY_INTERFACE_API PixelpartGetParticleTrailVe
 	return true;
 }
 
-UNITY_INTERFACE_EXPORT UnityBool UNITY_INTERFACE_API PixelpartGetParticleMeshInstanceData(PixelpartEffectRuntime* effectRuntime, UnityUInt particleEmitterId, UnityUInt particleTypeId, UnityVector3 cameraPosition, UnityVector3 viewRight, UnityVector3 viewUp, UnityVector3 scale,
+UNITY_INTERFACE_EXPORT UnityBool UNITY_INTERFACE_API PixelpartGetParticleMeshInstanceData(PixelpartEffectRuntime* effectRuntime, UnityUInt particleEmitterId, UnityUInt particleTypeId,
+	UnityVector3 cameraPosition, UnityVector3 viewRight, UnityVector3 viewUp, UnityVector3 effectSize,
 	UnityMatrix4x4* transforms, UnityVector4* colors, UnityVector4* velocities, UnityFloat* lives, UnityFloat* ids) {
 	if(!effectRuntime) {
 		return false;
@@ -732,7 +735,7 @@ UNITY_INTERFACE_EXPORT UnityBool UNITY_INTERFACE_API PixelpartGetParticleMeshIns
 		PixelpartParticleMeshData& meshData = effectRuntime->meshData[runtimeId];
 		pixelpart::float_t alpha = particleEmitter.life(effectRuntime->effectEngine->runtimeContext());
 
-		pixelpart::float3_t effectScale = internal::fromUnity(scale);
+		pixelpart::float3_t effectScale = internal::fromUnity(effectSize);
 		pixelpart::float3_t cameraPos = internal::fromUnity(cameraPosition);
 		pixelpart::float3_t cameraRight = internal::fromUnity(viewRight);
 		pixelpart::float3_t cameraUp = internal::fromUnity(viewUp);

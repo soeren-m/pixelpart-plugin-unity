@@ -1,8 +1,6 @@
 using System;
 using System.IO;
 using UnityEngine;
-
-#if UNITY_EDITOR
 using UnityEditor;
 
 namespace Pixelpart {
@@ -69,4 +67,3 @@ public class PixelpartCustomShaderAssetPostprocessor : AssetPostprocessor {
 	}
 }
 }
-#endif

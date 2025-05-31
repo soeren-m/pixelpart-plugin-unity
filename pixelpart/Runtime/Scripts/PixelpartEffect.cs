@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,7 +12,7 @@ namespace Pixelpart {
 [AddComponentMenu("Pixelpart/Effect")]
 public class PixelpartEffect : MonoBehaviour {
 #if UNITY_EDITOR
-	private const string GizmoIconPath = "Packages/net.pixelpart/Editor/Resources/Gizmos/PixelpartEffectIcon.png";
+	private const string gizmoIconPath = "Packages/net.pixelpart/Editor/Resources/Gizmos/PixelpartEffectIcon.png";
 #endif
 
 	public const uint NullId = 0xFFFFFFFF;
@@ -34,22 +35,21 @@ public class PixelpartEffect : MonoBehaviour {
 	[Range(1.0f, 100.0f)]
 	public float FrameRate = 60.0f;
 
-	public List<string> ParticleTypeNames = new List<string>();
-
-	public List<Material> ParticleMaterials = new List<Material>();
+	public float EffectScale = 1.0f;
 
 	public bool FlipH = false;
 
 	public bool FlipV = false;
+
+	public List<string> ParticleTypeNames = new List<string>();
+
+	public List<Material> ParticleMaterials = new List<Material>();
 
 	public bool Is3D => effectRuntime != IntPtr.Zero
 		? Plugin.PixelpartIsEffect3d(effectRuntime) : false;
 
 	public float CurrentTime => effectRuntime != IntPtr.Zero
 		? Plugin.PixelpartGetEffectTime(effectRuntime) : 0.0f;
-
-	public float AssetScale => EffectAsset != null
-		? EffectAsset.Scale : 0.0f;
 
 	[SerializeField]
 	private List<string> effectInputNames = new List<string>();
@@ -100,9 +100,9 @@ public class PixelpartEffect : MonoBehaviour {
 		}
 
 		var scale = new Vector3(
-			EffectAsset.Scale * (FlipH ? -1.0f : +1.0f),
-			EffectAsset.Scale * (FlipV ? -1.0f : +1.0f),
-			EffectAsset.Scale);
+			EffectScale * (FlipH ? -1.0f : +1.0f),
+			EffectScale * (FlipV ? -1.0f : +1.0f),
+			EffectScale);
 
 		effectRenderer.Render(Camera.main, transform, scale, gameObject.layer);
 	}
@@ -416,15 +416,17 @@ public class PixelpartEffect : MonoBehaviour {
 			return;
 		}
 
-		effectRuntime = EffectAsset.LoadEffect();
-		if(effectRuntime == IntPtr.Zero) {
-			Debug.LogError("[Pixelpart] Failed to load effect asset", this);
+		try {
+			effectRuntime = EffectAsset.LoadEffect();
+		}
+		catch(InvalidOperationException e) {
+			Debug.LogError("[Pixelpart] Failed to load effect asset: " + e.Message, this);
 			return;
 		}
 
 		effectInputCollection = new PixelpartEffectInputCollection(effectRuntime, effectInputNames, effectInputValues);
 		triggerCollection = new PixelpartTriggerCollection(effectRuntime);
-		effectRenderer = new PixelpartEffectRenderer(effectRuntime, ParticleMaterials, EffectAsset.CustomMaterialAssets);
+		effectRenderer = new PixelpartEffectRenderer(effectRuntime, ParticleMaterials, EffectAsset.CustomMaterials);
 
 		if(WarmupTime > 0.0f) {
 			UpdateTransform();
@@ -452,9 +454,9 @@ public class PixelpartEffect : MonoBehaviour {
 
 	private void UpdateTransform() {
 		var scale = new Vector3(
-			EffectAsset.Scale * (FlipH ? -1.0f : +1.0f),
-			EffectAsset.Scale * (FlipV ? -1.0f : +1.0f),
-			EffectAsset.Scale);
+			EffectScale * (FlipH ? -1.0f : +1.0f),
+			EffectScale * (FlipV ? -1.0f : +1.0f),
+			EffectScale);
 
 		Plugin.PixelpartSetEffectTransform(effectRuntime,
 			transform.localToWorldMatrix, scale);
@@ -521,8 +523,13 @@ public class PixelpartEffect : MonoBehaviour {
 			return;
 		}
 
-		var effectRuntimePtr = EffectAsset.LoadEffect();
-		if(effectRuntimePtr == IntPtr.Zero) {
+		var effectRuntimePtr = IntPtr.Zero;
+
+		try {
+			effectRuntimePtr = EffectAsset.LoadEffect();
+		}
+		catch(InvalidOperationException e) {
+			Debug.LogError("[Pixelpart] Failed to load effect asset: " + e.Message, this);
 			return;
 		}
 
@@ -537,30 +544,30 @@ public class PixelpartEffect : MonoBehaviour {
 
 			var particleTypeNameBuffer = new byte[256];
 			var particleTypeNameBufferSize = Plugin.PixelpartParticleTypeGetName(effectRuntimePtr, particleTypeId, particleTypeNameBuffer, particleTypeNameBuffer.Length);
-			var particleTypeName = System.Text.Encoding.UTF8.GetString(particleTypeNameBuffer, 0, particleTypeNameBufferSize);
+			var particleTypeName = Encoding.UTF8.GetString(particleTypeNameBuffer, 0, particleTypeNameBufferSize);
 
 			var rendererType = (ParticleRendererType)Plugin.PixelpartParticleTypeGetRenderer(effectRuntimePtr, particleTypeId);
 			var needsInstancing = rendererType == ParticleRendererType.Mesh;
 
 			var materialIdBuffer = new byte[256];
 			var materialIdLength = Plugin.PixelpartParticleTypeGetMaterialId(effectRuntimePtr, particleTypeId, materialIdBuffer, materialIdBuffer.Length);
-			var materialId = System.Text.Encoding.UTF8.GetString(materialIdBuffer, 0, materialIdLength);
+			var materialId = Encoding.UTF8.GetString(materialIdBuffer, 0, materialIdLength);
 			var materialPath = string.Empty;
 
 			if(Plugin.PixelpartParticleTypeIsMaterialBuiltIn(effectRuntimePtr, particleTypeId)) {
-				if(PixelpartBuiltInMaterialProvider.Instance.BuiltInMaterials.TryGetValue(materialId, out PixelpartMaterialInfo builtInMaterial)) {
+				if(PixelpartBuiltInMaterialProvider.Instance.BuiltInMaterials.TryGetValue(materialId, out PixelpartMaterialDescriptor builtInMaterial)) {
 					materialPath = builtInMaterial.MaterialPath;
 				}
 			}
 			else {
 				var customMaterial =
-					EffectAsset.CustomMaterialAssets.FirstOrDefault(materialAsset =>
+					EffectAsset.CustomMaterials.FirstOrDefault(materialAsset =>
 						materialAsset.ResourceId == materialId && materialAsset.Instancing == needsInstancing);
 
-				materialPath = customMaterial?.MaterialInfo.MaterialPath ?? string.Empty;
+				materialPath = customMaterial?.MaterialPath ?? string.Empty;
 			}
 
-			var material = (Material)AssetDatabase.LoadAssetAtPath(materialPath, typeof(Material));
+			var material = AssetDatabase.LoadAssetAtPath<Material>(materialPath);
 			if(material == null) {
 				Debug.LogWarning(
 					"[Pixelpart] Failed to find material asset \"" + materialPath + "\" for material \"" + materialId + "\"", this);
@@ -574,7 +581,7 @@ public class PixelpartEffect : MonoBehaviour {
 	}
 
 	public void OnDrawGizmos() {
-		Gizmos.DrawIcon(transform.position, GizmoIconPath, true);
+		Gizmos.DrawIcon(transform.position, gizmoIconPath, true);
 	}
 #endif
 }

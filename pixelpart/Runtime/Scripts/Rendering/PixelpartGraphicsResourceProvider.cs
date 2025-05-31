@@ -28,7 +28,7 @@ internal class PixelpartGraphicsResourceProvider {
 
 		var imageResourceCount = Plugin.PixelpartGetImageResourceCount(effectRuntime);
 
-		for(uint resourceIndex = 0; resourceIndex < imageResourceCount; resourceIndex++) {
+		for(var resourceIndex = 0; resourceIndex < imageResourceCount; resourceIndex++) {
 			var resourceIdLength = Plugin.PixelpartGetImageResourceId(effectRuntime, resourceIndex, resourceIdBuffer, resourceIdBuffer.Length);
 			var resourceId = Encoding.UTF8.GetString(resourceIdBuffer, 0, resourceIdLength);
 
@@ -55,7 +55,7 @@ internal class PixelpartGraphicsResourceProvider {
 
 		var meshResourceCount = Plugin.PixelpartGetMeshResourceCount(effectRuntime);
 
-		for(uint resourceIndex = 0; resourceIndex < meshResourceCount; resourceIndex++) {
+		for(var resourceIndex = 0; resourceIndex < meshResourceCount; resourceIndex++) {
 			var resourceIdLength = Plugin.PixelpartGetMeshResourceId(effectRuntime, resourceIndex, resourceIdBuffer, resourceIdBuffer.Length);
 			var resourceId = Encoding.UTF8.GetString(resourceIdBuffer, 0, resourceIdLength);
 

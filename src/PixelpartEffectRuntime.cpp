@@ -26,7 +26,8 @@ std::shared_ptr<pixelpart::ThreadPool> PixelpartEffectRuntime::threadPool;
 #endif
 
 extern "C" {
-UNITY_INTERFACE_EXPORT void* UNITY_INTERFACE_API PixelpartLoadEffect(const char* data, UnityInt size) {
+UNITY_INTERFACE_EXPORT void* UNITY_INTERFACE_API PixelpartLoadEffect(const char* data, UnityInt size,
+	char* errorBuffer, UnityInt errorBufferSize, UnityInt* errorLength) {
 	if(!data || size <= 0) {
 		return nullptr;
 	}
@@ -60,8 +61,13 @@ UNITY_INTERFACE_EXPORT void* UNITY_INTERFACE_API PixelpartLoadEffect(const char*
 				new pixelpart::ThreadPool(std::thread::hardware_concurrency()));
 	#endif
 		}
-		catch(...) {
-			// Do nothing
+		catch(const std::exception& e) {
+			if(errorLength && errorBufferSize > 1) {
+				*errorLength = std::min(static_cast<std::size_t>(errorBufferSize) - 1, std::strlen(e.what()));
+				std::strncpy(errorBuffer, e.what(), *errorLength);
+			}
+
+			return nullptr;
 		}
 	}
 
@@ -81,8 +87,11 @@ UNITY_INTERFACE_EXPORT void* UNITY_INTERFACE_API PixelpartLoadEffect(const char*
 
 		return effectRuntime;
 	}
-	catch(...) {
-		return nullptr;
+	catch(const std::exception& e) {
+		if(errorLength && errorBufferSize > 1) {
+			*errorLength = std::min(static_cast<std::size_t>(errorBufferSize) - 1, std::strlen(e.what()));
+			std::strncpy(errorBuffer, e.what(), *errorLength);
+		}
 	}
 
 	return nullptr;

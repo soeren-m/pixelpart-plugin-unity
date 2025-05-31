@@ -1,4 +1,3 @@
-using System.Text;
 using UnityEngine;
 using UnityEditor;
 #if UNITY_2020_2_OR_NEWER
@@ -16,12 +15,9 @@ public class PixelpartEffectAssetImporter : ScriptedImporter {
 		var asset = ScriptableObject.CreateInstance<PixelpartEffectAsset>();
 		asset.Load(assetPath);
 
-		var hash = Hash128.Compute(Encoding.ASCII.GetString(asset.Data));
-		var id = assetPath + hash.ToString();
-
 		var icon = Resources.Load<Texture2D>(assetIconPath);
 
-		ctx.AddObjectToAsset(id, asset, icon);
+		ctx.AddObjectToAsset(assetPath, asset, icon);
 		ctx.SetMainObject(asset);
 	}
 }

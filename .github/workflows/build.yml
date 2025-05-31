@@ -28,7 +28,7 @@ jobs:
 
   package:
     name: Package plugin
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: [windows-build, linux-build, macos-build, web-build]
     steps:
       - name: Checkout repository
@@ -41,33 +41,40 @@ jobs:
           architecture: x64
 
       - name: Download Windows artifacts
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: pixelpart-windows
+          path: artifacts/windows
 
       - name: Download Linux artifacts
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: pixelpart-linux
+          path: artifacts/linux
 
       - name: Download macOS artifacts
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: pixelpart-macos
+          path: artifacts/macos
 
       - name: Download web artifacts
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4
         with:
           name: pixelpart-web
+          path: artifacts/web
+
+      - name: Display downloaded artifacts
+        run: ls -R artifacts
 
       - name: Copy binaries
         run: |
-          cp pixelpart-windows/x86/pixelpart.dll ./pixelpart/Runtime/Plugins/x86/
-          cp pixelpart-windows/x86_64/pixelpart.dll ./pixelpart/Runtime/Plugins/x86_64/
-          cp pixelpart-linux/x86/libpixelpart.so ./pixelpart/Runtime/Plugins/x86/
-          cp pixelpart-linux/x86_64/libpixelpart.so ./pixelpart/Runtime/Plugins/x86_64/
-          cp pixelpart-macos/pixelpart.bundle ./pixelpart/Runtime/Plugins/macOS/
-          cp -r pixelpart-web/* ./pixelpart/Runtime/Plugins/WebGL/
+          cp artifacts/windows/x86/pixelpart.dll ./pixelpart/Runtime/Plugins/x86/
+          cp artifacts/windows/x86_64/pixelpart.dll ./pixelpart/Runtime/Plugins/x86_64/
+          cp artifacts/linux/x86/libpixelpart.so ./pixelpart/Runtime/Plugins/x86/
+          cp artifacts/linux/x86_64/libpixelpart.so ./pixelpart/Runtime/Plugins/x86_64/
+          cp artifacts/macos/pixelpart.bundle ./pixelpart/Runtime/Plugins/macOS/
+          cp -r artifacts/web/* ./pixelpart/Runtime/Plugins/WebGL/
 
       - name: Create Unity packages
         run: |

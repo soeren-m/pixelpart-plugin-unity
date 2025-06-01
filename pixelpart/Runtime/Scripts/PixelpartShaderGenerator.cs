@@ -1,134 +1,145 @@
 using System;
 using UnityEngine;
 
-namespace Pixelpart {
-internal static class PixelpartShaderGenerator {
-	public static string GenerateShaderCode(string shaderName, string mainCode, string parameterCode, BlendModeType blendMode, LightingModeType lightingMode, bool instancing) {
-		if(lightingMode != LightingModeType.Unlit) {
-			Debug.LogError("[Pixelpart] Custom shaders for lit materials are not supported");
-			return string.Empty;
-		}
+namespace Pixelpart
+{
+    internal static class PixelpartShaderGenerator
+    {
+        public static string GenerateShaderCode(string shaderName, string mainCode, string parameterCode, BlendModeType blendMode, LightingModeType lightingMode, bool instancing)
+        {
+            if (lightingMode != LightingModeType.Unlit)
+            {
+                Debug.LogError("[Pixelpart] Custom shaders for lit materials are not supported");
+                return string.Empty;
+            }
 
-	#if PIXELPART_USE_URP
-		var shaderCode = instancing ? InstancedUnlitShaderTemplateURP : UnlitShaderTemplateURP;
-	#elif PIXELPART_USE_HDRP
-		var shaderCode = instancing ? InstancedUnlitShaderTemplateHDRP : UnlitShaderTemplateHDRP;
-	#else
-		var shaderCode = instancing ? InstancedUnlitShaderTemplate : UnlitShaderTemplate;
-	#endif
+#if PIXELPART_USE_URP
+            var shaderCode = instancing ? InstancedUnlitShaderTemplateURP : UnlitShaderTemplateURP;
+#elif PIXELPART_USE_HDRP
+            var shaderCode = instancing ? InstancedUnlitShaderTemplateHDRP : UnlitShaderTemplateHDRP;
+#else
+            var shaderCode = instancing ? InstancedUnlitShaderTemplate : UnlitShaderTemplate;
+#endif
 
-		var renderType = string.Empty;
-		var queue = string.Empty;
-		var cull = string.Empty;
-		var zWrite = string.Empty;
-		var blendOp = string.Empty;
-		var srcBlendMode = string.Empty;
-		var dstBlendMode = string.Empty;
+            var renderType = string.Empty;
+            var queue = string.Empty;
+            var cull = string.Empty;
+            var zWrite = string.Empty;
+            var blendOp = string.Empty;
+            var srcBlendMode = string.Empty;
+            var dstBlendMode = string.Empty;
 
-		if(blendMode == BlendModeType.Off) {
-			renderType = "Opaque";
-			queue = "Geometry";
-			cull = "Back";
-			zWrite = "On";
-		}
-		else {
-			renderType = "Transparent";
-			queue = "Transparent";
-			cull = "Off";
-			zWrite = "Off";
-		}
+            if (blendMode == BlendModeType.Off)
+            {
+                renderType = "Opaque";
+                queue = "Geometry";
+                cull = "Back";
+                zWrite = "On";
+            }
+            else
+            {
+                renderType = "Transparent";
+                queue = "Transparent";
+                cull = "Off";
+                zWrite = "Off";
+            }
 
-	#if PIXELPART_USE_HDRP
-		renderType = "HDUnlitShader";
-	#endif
+#if PIXELPART_USE_HDRP
+            renderType = "HDUnlitShader";
+#endif
 
-		switch(blendMode) {
-			case BlendModeType.Normal:
-				blendOp = "Add";
-				srcBlendMode = "SrcAlpha";
-				dstBlendMode = "OneMinusSrcAlpha";
-				break;
-			case BlendModeType.Additive:
-				blendOp = "Add";
-				srcBlendMode = "SrcAlpha";
-				dstBlendMode = "One";
-				break;
-			case BlendModeType.Subtractive:
-				blendOp = "ReverseSubtract";
-				srcBlendMode = "SrcAlpha";
-				dstBlendMode = "One";
-				break;
-			default:
-				blendOp = "Add";
-				srcBlendMode = "One";
-				dstBlendMode = "Zero";
-				break;
-		}
+            switch (blendMode)
+            {
+                case BlendModeType.Normal:
+                    blendOp = "Add";
+                    srcBlendMode = "SrcAlpha";
+                    dstBlendMode = "OneMinusSrcAlpha";
+                    break;
+                case BlendModeType.Additive:
+                    blendOp = "Add";
+                    srcBlendMode = "SrcAlpha";
+                    dstBlendMode = "One";
+                    break;
+                case BlendModeType.Subtractive:
+                    blendOp = "ReverseSubtract";
+                    srcBlendMode = "SrcAlpha";
+                    dstBlendMode = "One";
+                    break;
+                default:
+                    blendOp = "Add";
+                    srcBlendMode = "One";
+                    dstBlendMode = "Zero";
+                    break;
+            }
 
-		shaderCode = shaderCode.Replace("{name}", shaderName);
-		shaderCode = shaderCode.Replace("{rendertype}", renderType);
-		shaderCode = shaderCode.Replace("{queue}", queue);
-		shaderCode = shaderCode.Replace("{cull}", cull);
-		shaderCode = shaderCode.Replace("{zwrite}", zWrite);
-		shaderCode = shaderCode.Replace("{blendop}", blendOp);
-		shaderCode = shaderCode.Replace("{srcblendmode}", srcBlendMode);
-		shaderCode = shaderCode.Replace("{dstblendmode}", dstBlendMode);
-		shaderCode = shaderCode.Replace("{main}", mainCode);
-		shaderCode = shaderCode.Replace("{parameter}", parameterCode);
-		shaderCode = shaderCode.Replace("{property}", GenerateShaderPropertyCode(parameterCode));
+            shaderCode = shaderCode.Replace("{name}", shaderName);
+            shaderCode = shaderCode.Replace("{rendertype}", renderType);
+            shaderCode = shaderCode.Replace("{queue}", queue);
+            shaderCode = shaderCode.Replace("{cull}", cull);
+            shaderCode = shaderCode.Replace("{zwrite}", zWrite);
+            shaderCode = shaderCode.Replace("{blendop}", blendOp);
+            shaderCode = shaderCode.Replace("{srcblendmode}", srcBlendMode);
+            shaderCode = shaderCode.Replace("{dstblendmode}", dstBlendMode);
+            shaderCode = shaderCode.Replace("{main}", mainCode);
+            shaderCode = shaderCode.Replace("{parameter}", parameterCode);
+            shaderCode = shaderCode.Replace("{property}", GenerateShaderPropertyCode(parameterCode));
 
-		return shaderCode;
-	}
+            return shaderCode;
+        }
 
-	private static string GenerateShaderPropertyCode(string parameterCode) {
-		var result = string.Empty;
-		var parameterLines = parameterCode.Split(new string[]{ "\n" }, StringSplitOptions.RemoveEmptyEntries);
+        private static string GenerateShaderPropertyCode(string parameterCode)
+        {
+            var result = string.Empty;
+            var parameterLines = parameterCode.Split(new string[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
 
-		foreach(var parameterLine in parameterLines) {
-			var lineTokens = parameterLine.Split(new string[]{ " " }, StringSplitOptions.RemoveEmptyEntries);
-			if(lineTokens.Length < 2) {
-				continue;
-			}
+            foreach (var parameterLine in parameterLines)
+            {
+                var lineTokens = parameterLine.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+                if (lineTokens.Length < 2)
+                {
+                    continue;
+                }
 
-			var parameterType = lineTokens[0];
-			var parameterName = lineTokens[1].Remove(lineTokens[1].Length - 1);
+                var parameterType = lineTokens[0];
+                var parameterName = lineTokens[1].Remove(lineTokens[1].Length - 1);
 
-			var displayName = parameterName.Substring(1);
+                var displayName = parameterName.Substring(1);
 
-			var typeName = "Int";
-			var defaultValue = "0";
+                var typeName = "Int";
+                var defaultValue = "0";
 
-			switch(parameterType) {
-				case "bool":
-				case "int":
-					typeName = "Int";
-					defaultValue = "0";
-					break;
-				case "float":
-					typeName = "Float";
-					defaultValue = "0.0";
-					break;
-				case "float2":
-				case "float3":
-				case "float4":
-					typeName = "Vector";
-					defaultValue = "(0, 0, 0, 0)";
-					break;
-				default:
-					break;
-			}
+                switch (parameterType)
+                {
+                    case "bool":
+                    case "int":
+                        typeName = "Int";
+                        defaultValue = "0";
+                        break;
+                    case "float":
+                        typeName = "Float";
+                        defaultValue = "0.0";
+                        break;
+                    case "float2":
+                    case "float3":
+                    case "float4":
+                        typeName = "Vector";
+                        defaultValue = "(0, 0, 0, 0)";
+                        break;
+                    default:
+                        break;
+                }
 
-			var propertyLine =
-				parameterName + " (\"" + displayName + "\", " + typeName + ") = " + defaultValue + "\n";
+                var propertyLine =
+                    parameterName + " (\"" + displayName + "\", " + typeName + ") = " + defaultValue + "\n";
 
-			result += propertyLine;
-		}
+                result += propertyLine;
+            }
 
-		return result;
-	}
+            return result;
+        }
 
 #pragma warning disable 0414
-	private static readonly string UnlitShaderTemplate = @"Shader ""PixelpartCustom/{name}""
+        private static readonly string UnlitShaderTemplate = @"Shader ""PixelpartCustom/{name}""
 {
 	Properties
 	{
@@ -246,7 +257,7 @@ internal static class PixelpartShaderGenerator {
 	}
 }";
 
-	private static readonly string InstancedUnlitShaderTemplate = @"Shader ""PixelpartCustom/{name}""
+        private static readonly string InstancedUnlitShaderTemplate = @"Shader ""PixelpartCustom/{name}""
 {
 	Properties
 	{
@@ -368,7 +379,7 @@ internal static class PixelpartShaderGenerator {
 	}
 }";
 
-	private static readonly string UnlitShaderTemplateURP = @"Shader ""PixelpartCustom/{name}""
+        private static readonly string UnlitShaderTemplateURP = @"Shader ""PixelpartCustom/{name}""
 {
 	Properties
 	{
@@ -497,7 +508,7 @@ CBUFFER_END
 	}
 }";
 
-	private static readonly string InstancedUnlitShaderTemplateURP = @"Shader ""PixelpartCustom/{name}""
+        private static readonly string InstancedUnlitShaderTemplateURP = @"Shader ""PixelpartCustom/{name}""
 {
 	Properties
 	{
@@ -631,7 +642,7 @@ CBUFFER_END
 	}
 }";
 
-	private static readonly string UnlitShaderTemplateHDRP = @"Shader ""PixelpartCustom/{name}""
+        private static readonly string UnlitShaderTemplateHDRP = @"Shader ""PixelpartCustom/{name}""
 {
 	Properties
 	{
@@ -881,7 +892,7 @@ CBUFFER_END
 	}
 }";
 
-	private static readonly string InstancedUnlitShaderTemplateHDRP = @"Shader ""PixelpartCustom/{name}""
+        private static readonly string InstancedUnlitShaderTemplateHDRP = @"Shader ""PixelpartCustom/{name}""
 {
 	Properties
 	{
@@ -1142,5 +1153,5 @@ CBUFFER_END
 	}
 }";
 #pragma warning restore 0414
-}
+    }
 }

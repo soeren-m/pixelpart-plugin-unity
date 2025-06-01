@@ -6,19 +6,22 @@ using UnityEditor.AssetImporters;
 using UnityEditor.Experimental.AssetImporters;
 #endif
 
-namespace Pixelpart {
-[ScriptedImporter(1, "ppfx", AllowCaching = true)]
-public class PixelpartEffectAssetImporter : ScriptedImporter {
-	private const string assetIconPath = "Gizmos/PixelpartEffectIcon";
+namespace Pixelpart
+{
+    [ScriptedImporter(1, "ppfx", AllowCaching = true)]
+    public class PixelpartEffectAssetImporter : ScriptedImporter
+    {
+        private const string assetIconPath = "Gizmos/PixelpartEffectIcon";
 
-	public override void OnImportAsset(AssetImportContext ctx) {
-		var asset = ScriptableObject.CreateInstance<PixelpartEffectAsset>();
-		asset.Load(assetPath);
+        public override void OnImportAsset(AssetImportContext ctx)
+        {
+            var asset = ScriptableObject.CreateInstance<PixelpartEffectAsset>();
+            asset.Load(assetPath);
 
-		var icon = Resources.Load<Texture2D>(assetIconPath);
+            var icon = Resources.Load<Texture2D>(assetIconPath);
 
-		ctx.AddObjectToAsset(assetPath, asset, icon);
-		ctx.SetMainObject(asset);
-	}
-}
+            ctx.AddObjectToAsset(assetPath, asset, icon);
+            ctx.SetMainObject(asset);
+        }
+    }
 }

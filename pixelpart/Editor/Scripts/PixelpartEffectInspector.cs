@@ -1,87 +1,99 @@
 using UnityEngine;
 using UnityEditor;
 
-namespace Pixelpart {
-[CustomEditor(typeof(PixelpartEffect))]
-public class PixelpartEffectInspector : Editor {
-	private bool particleMaterialsVisible = true;
+namespace Pixelpart
+{
+    [CustomEditor(typeof(PixelpartEffect))]
+    public class PixelpartEffectInspector : Editor
+    {
+        private bool particleMaterialsVisible = true;
 
-	public override void OnInspectorGUI() {
-		serializedObject.Update();
+        public override void OnInspectorGUI()
+        {
+            serializedObject.Update();
 
-		ShowAssetSettings();
-		ShowPlaybackSettings();
-		ShowInputSettings();
-		ShowRenderingSettings();
+            ShowAssetSettings();
+            ShowPlaybackSettings();
+            ShowInputSettings();
+            ShowRenderingSettings();
 
-		serializedObject.ApplyModifiedProperties();
-	}
+            serializedObject.ApplyModifiedProperties();
+        }
 
-	private void ShowAssetSettings() {
-		EditorGUILayout.LabelField("Asset", EditorStyles.boldLabel);
-		EditorGUILayout.PropertyField(serializedObject.FindProperty("EffectAsset"));
-	}
+        private void ShowAssetSettings()
+        {
+            EditorGUILayout.LabelField("Asset", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("EffectAsset"));
+        }
 
-	private void ShowPlaybackSettings() {
-		EditorGUILayout.Space();
-		EditorGUILayout.LabelField("Playback", EditorStyles.boldLabel);
-		EditorGUILayout.PropertyField(serializedObject.FindProperty("Playing"));
-		EditorGUILayout.PropertyField(serializedObject.FindProperty("Loop"));
-		EditorGUILayout.PropertyField(serializedObject.FindProperty("LoopTime"));
-		EditorGUILayout.PropertyField(serializedObject.FindProperty("WarmupTime"));
-		EditorGUILayout.PropertyField(serializedObject.FindProperty("Speed"));
-		EditorGUILayout.PropertyField(serializedObject.FindProperty("FrameRate"));
-	}
+        private void ShowPlaybackSettings()
+        {
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Playback", EditorStyles.boldLabel);
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("Playing"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("Loop"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("LoopTime"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("WarmupTime"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("Speed"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("FrameRate"));
+        }
 
-	private void ShowInputSettings() {
-		var effect = (PixelpartEffect)target;
+        private void ShowInputSettings()
+        {
+            var effect = (PixelpartEffect)target;
 
-		EditorGUILayout.Space();
-		EditorGUILayout.LabelField("Inputs", EditorStyles.boldLabel);
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Inputs", EditorStyles.boldLabel);
 
-		var inputNamesProperty = serializedObject.FindProperty("effectInputNames");
-		var inputValuesProperty = serializedObject.FindProperty("effectInputValues");
+            var inputNamesProperty = serializedObject.FindProperty("effectInputNames");
+            var inputValuesProperty = serializedObject.FindProperty("effectInputValues");
 
-		var inputsModified = false;
+            var inputsModified = false;
 
-		for(var inputIndex = 0; inputIndex < inputNamesProperty.arraySize && inputIndex < inputValuesProperty.arraySize; inputIndex++) {
-			EditorGUI.BeginChangeCheck();
+            for (var inputIndex = 0; inputIndex < inputNamesProperty.arraySize && inputIndex < inputValuesProperty.arraySize; inputIndex++)
+            {
+                EditorGUI.BeginChangeCheck();
 
-			EditorGUILayout.PropertyField(inputValuesProperty.GetArrayElementAtIndex(inputIndex),
-				new GUIContent(inputNamesProperty.GetArrayElementAtIndex(inputIndex).stringValue));
+                EditorGUILayout.PropertyField(inputValuesProperty.GetArrayElementAtIndex(inputIndex),
+                    new GUIContent(inputNamesProperty.GetArrayElementAtIndex(inputIndex).stringValue));
 
-			if(EditorGUI.EndChangeCheck()) {
-				inputsModified = true;
-			}
-		}
+                if (EditorGUI.EndChangeCheck())
+                {
+                    inputsModified = true;
+                }
+            }
 
-		if(inputsModified) {
-			effect.ApplyInputProperties();
-		}
-	}
+            if (inputsModified)
+            {
+                effect.ApplyInputProperties();
+            }
+        }
 
-	private void ShowRenderingSettings() {
-		EditorGUILayout.Space();
-		EditorGUILayout.LabelField("Rendering", EditorStyles.boldLabel);
+        private void ShowRenderingSettings()
+        {
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Rendering", EditorStyles.boldLabel);
 
-		EditorGUILayout.PropertyField(serializedObject.FindProperty("EffectScale"));
-		EditorGUILayout.PropertyField(serializedObject.FindProperty("FlipH"));
-		EditorGUILayout.PropertyField(serializedObject.FindProperty("FlipV"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("EffectScale"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("FlipH"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("FlipV"));
 
-		var materialsProperty = serializedObject.FindProperty("ParticleMaterials");
-		var typeNamesProperty = serializedObject.FindProperty("ParticleTypeNames");
+            var materialsProperty = serializedObject.FindProperty("ParticleMaterials");
+            var typeNamesProperty = serializedObject.FindProperty("ParticleTypeNames");
 
-		particleMaterialsVisible = EditorGUILayout.Foldout(particleMaterialsVisible, materialsProperty.displayName);
-		if(particleMaterialsVisible) {
-			EditorGUI.indentLevel++;
+            particleMaterialsVisible = EditorGUILayout.Foldout(particleMaterialsVisible, materialsProperty.displayName);
+            if (particleMaterialsVisible)
+            {
+                EditorGUI.indentLevel++;
 
-			for(var materialIndex = 0; materialIndex < materialsProperty.arraySize && materialIndex < typeNamesProperty.arraySize; materialIndex++) {
-				EditorGUILayout.PropertyField(materialsProperty.GetArrayElementAtIndex(materialIndex),
-					new GUIContent(typeNamesProperty.GetArrayElementAtIndex(materialIndex).stringValue));
-			}
+                for (var materialIndex = 0; materialIndex < materialsProperty.arraySize && materialIndex < typeNamesProperty.arraySize; materialIndex++)
+                {
+                    EditorGUILayout.PropertyField(materialsProperty.GetArrayElementAtIndex(materialIndex),
+                        new GUIContent(typeNamesProperty.GetArrayElementAtIndex(materialIndex).stringValue));
+                }
 
-			EditorGUI.indentLevel--;
-		}
-	}
-}
+                EditorGUI.indentLevel--;
+            }
+        }
+    }
 }

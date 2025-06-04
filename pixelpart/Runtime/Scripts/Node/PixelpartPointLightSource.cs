@@ -2,9 +2,17 @@ using System;
 
 namespace Pixelpart
 {
-    public class PixelpartSpotLightSource : PixelpartLightSource
+    /// <summary>
+    /// Light source used to model light coming from a single point emitting light in all directions.
+    /// </summary>
+    public class PixelpartPointLightSource : PixelpartLightSource
     {
-        public PixelpartSpotLightSource(IntPtr effectRuntimePtr, uint id) : base(effectRuntimePtr, id)
+        /// <summary>
+        /// Construct <see cref="PixelpartPointLightSource"/>.
+        /// </summary>
+        /// <param name="effectRuntimePtr">Effect runtime</param>
+        /// <param name="id">Node ID</param>
+        public PixelpartPointLightSource(IntPtr effectRuntimePtr, uint id) : base(effectRuntimePtr, id)
         {
 
         }

@@ -10,6 +10,12 @@ using UnityEditor;
 
 namespace Pixelpart
 {
+    /// <summary>
+    /// Node that plays a Pixelpart effect.
+    /// </summary>
+    /// <remarks>
+    /// This class offers methods and properties to change how the effect is simulated and rendered.
+    /// </remarks>
     [AddComponentMenu("Pixelpart/Effect")]
     public class PixelpartEffect : MonoBehaviour
     {
@@ -19,37 +25,88 @@ namespace Pixelpart
 
         public const uint NullId = 0xFFFFFFFF;
 
+        /// <summary>
+        /// Effect resource that is shown.
+        /// </summary>
         public PixelpartEffectAsset EffectAsset = null;
 
+        /// <summary>
+        /// Whether the effect is currently playing or not.
+        /// </summary>
         public bool Playing = true;
 
+        /// <summary>
+        /// Whether the effect restarts automatically after time <c>LoopTime</c>.
+        /// </summary>
         public bool Loop = false;
 
+        /// <summary>
+        /// Time in seconds after which the effect loops.
+        /// </summary>
+        /// <remarks>
+        /// Only effective if <c>Loop = true</c>.
+        /// </remarks>
         [Range(0.0f, 100.0f)]
         public float LoopTime = 1.0f;
 
+        /// <summary>
+        /// Time in seconds the effect is pre-simulated before being rendered.
+        /// </summary>
+        /// <remarks>
+        /// This value impacts performance and should be kept as low as possible.
+        /// </remarks>
         [Range(0.0f, 10.0f)]
         public float WarmupTime = 0.0f;
 
+        /// <summary>
+        /// How fast the effect is being played.
+        /// </summary>
         [Range(0.0f, 10.0f)]
         public float Speed = 1.0f;
 
+        /// <summary>
+        /// At which rate the effect is simulated, in frames per second.
+        /// </summary>
         [Range(1.0f, 100.0f)]
         public float FrameRate = 60.0f;
 
+        /// <summary>
+        /// Multiplier for the size of the effect.
+        /// </summary>
+        /// <remarks>
+        /// Adjust this value if the effect appears too small or too large in the scene.
+        /// </remarks>
         public float EffectScale = 1.0f;
 
+        /// <summary>
+        /// Whether the effect is flipped horizontally.
+        /// </summary>
         public bool FlipH = false;
 
+        /// <summary>
+        /// Whether the effect is flipped vertically.
+        /// </summary>
         public bool FlipV = false;
 
+        /// <summary>
+        /// Names of particle types in the effect.
+        /// </summary>
         public List<string> ParticleTypeNames = new List<string>();
 
+        /// <summary>
+        /// Material of each particle type in <see cref="ParticleTypeNames"/>.
+        /// </summary>
         public List<Material> ParticleMaterials = new List<Material>();
 
+        /// <summary>
+        /// Whether the effect is a 3D effect.
+        /// </summary>
         public bool Is3D => effectRuntime != IntPtr.Zero
             ? Plugin.PixelpartIsEffect3d(effectRuntime) : false;
 
+        /// <summary>
+        /// Time in seconds since the effect has started playing.
+        /// </summary>
         public float CurrentTime => effectRuntime != IntPtr.Zero
             ? Plugin.PixelpartGetEffectTime(effectRuntime) : 0.0f;
 
@@ -69,6 +126,9 @@ namespace Pixelpart
 
         private PixelpartEffectRenderer effectRenderer = null;
 
+        /// <summary>
+        /// Construct <see cref="PixelpartEffect"/>.
+        /// </summary>
         public PixelpartEffect()
         {
 
@@ -121,6 +181,9 @@ namespace Pixelpart
             DeleteEffect();
         }
 
+        /// <summary>
+        /// Restart the effect and remove all existing particles.
+        /// </summary>
         public void RestartEffect()
         {
             if (effectRuntime == IntPtr.Zero)
@@ -132,6 +195,9 @@ namespace Pixelpart
             Plugin.PixelpartRestartEffect(effectRuntime, true);
         }
 
+        /// <summary>
+        /// Restart the effect, but do not remove existing particles.
+        /// </summary>
         public void ResetEffect()
         {
             if (effectRuntime == IntPtr.Zero)
@@ -143,6 +209,12 @@ namespace Pixelpart
             Plugin.PixelpartRestartEffect(effectRuntime, false);
         }
 
+        /// <summary>
+        /// Generate <paramref name="count"/> particles of the given type from the given emitter.
+        /// </summary>
+        /// <param name="particleEmitterName">Name of the particle emitter</param>
+        /// <param name="particleTypeName">Name of the particle type</param>
+        /// <param name="count">Number of particles to generate</param>
         public void SpawnParticles(string particleEmitterName, string particleTypeName, int count)
         {
             if (effectRuntime == IntPtr.Zero)
@@ -168,6 +240,12 @@ namespace Pixelpart
             Plugin.PixelpartSpawnParticles(effectRuntime, particleEmitterId, particleTypeId, count);
         }
 
+        /// <summary>
+        /// Set the effect input <paramref name="inputName"/> to the given value.
+        /// The effect input must be of type <c>bool</c>.
+        /// </summary>
+        /// <param name="inputName">Name of the effect input</param>
+        /// <param name="value">New value</param>
         public void SetInputBool(string inputName, bool value)
         {
             if (!effectInputCollection.TryGetInputId(inputName, out uint inputId))
@@ -179,6 +257,12 @@ namespace Pixelpart
             SetInputPropertyValue(inputName, new PixelpartVariantValue(value));
         }
 
+        /// <summary>
+        /// Set the effect input <paramref name="inputName"/> to the given value.
+        /// The effect input must be of type <c>int</c>.
+        /// </summary>
+        /// <param name="inputName">Name of the effect input</param>
+        /// <param name="value">New value</param>
         public void SetInputInt(string inputName, int value)
         {
             if (!effectInputCollection.TryGetInputId(inputName, out uint inputId))
@@ -190,6 +274,12 @@ namespace Pixelpart
             SetInputPropertyValue(inputName, new PixelpartVariantValue(value));
         }
 
+        /// <summary>
+        /// Set the effect input <paramref name="inputName"/> to the given value.
+        /// The effect input must be of type <c>float</c>.
+        /// </summary>
+        /// <param name="inputName">Name of the effect input</param>
+        /// <param name="value">New value</param>
         public void SetInputFloat(string inputName, float value)
         {
             if (!effectInputCollection.TryGetInputId(inputName, out uint inputId))
@@ -201,6 +291,12 @@ namespace Pixelpart
             SetInputPropertyValue(inputName, new PixelpartVariantValue(value));
         }
 
+        /// <summary>
+        /// Set the effect input <paramref name="inputName"/> to the given value.
+        /// The effect input must be of type <c>Vector2</c>.
+        /// </summary>
+        /// <param name="inputName">Name of the effect input</param>
+        /// <param name="value">New value</param>
         public void SetInputFloat2(string inputName, Vector2 value)
         {
             if (!effectInputCollection.TryGetInputId(inputName, out uint inputId))
@@ -212,6 +308,12 @@ namespace Pixelpart
             SetInputPropertyValue(inputName, new PixelpartVariantValue(value));
         }
 
+        /// <summary>
+        /// Set the effect input <paramref name="inputName"/> to the given value.
+        /// The effect input must be of type <c>Vector3</c>.
+        /// </summary>
+        /// <param name="inputName">Name of the effect input</param>
+        /// <param name="value">New value</param>
         public void SetInputFloat3(string inputName, Vector3 value)
         {
             if (!effectInputCollection.TryGetInputId(inputName, out uint inputId))
@@ -223,6 +325,12 @@ namespace Pixelpart
             SetInputPropertyValue(inputName, new PixelpartVariantValue(value));
         }
 
+        /// <summary>
+        /// Set the effect input <paramref name="inputName"/> to the given value.
+        /// The effect input must be of type <c>Vector4</c>.
+        /// </summary>
+        /// <param name="inputName">Name of the effect input</param>
+        /// <param name="value">New value</param>
         public void SetInputFloat4(string inputName, Vector4 value)
         {
             if (!effectInputCollection.TryGetInputId(inputName, out uint inputId))
@@ -234,6 +342,12 @@ namespace Pixelpart
             SetInputPropertyValue(inputName, new PixelpartVariantValue(value));
         }
 
+        /// <summary>
+        /// Return value of an effect input.
+        /// The effect input must be of type <c>bool</c>.
+        /// </summary>
+        /// <param name="inputName">Name of the effect input</param>
+        /// <returns>Value of the effect input</returns>
         public bool GetInputBool(string inputName)
         {
             if (!effectInputCollection.TryGetInputId(inputName, out uint inputId))
@@ -244,6 +358,12 @@ namespace Pixelpart
             return Plugin.PixelpartGetEffectInputBool(effectRuntime, inputId);
         }
 
+        /// <summary>
+        /// Return value of an effect input.
+        /// The effect input must be of type <c>int</c>.
+        /// </summary>
+        /// <param name="inputName">Name of the effect input</param>
+        /// <returns>Value of the effect input</returns>
         public int GetInputInt(string inputName)
         {
             if (!effectInputCollection.TryGetInputId(inputName, out uint inputId))
@@ -254,6 +374,12 @@ namespace Pixelpart
             return Plugin.PixelpartGetEffectInputInt(effectRuntime, inputId);
         }
 
+        /// <summary>
+        /// Return value of an effect input.
+        /// The effect input must be of type <c>float</c>.
+        /// </summary>
+        /// <param name="inputName">Name of the effect input</param>
+        /// <returns>Value of the effect input</returns>
         public float GetInputFloat(string inputName)
         {
             if (!effectInputCollection.TryGetInputId(inputName, out uint inputId))
@@ -264,6 +390,12 @@ namespace Pixelpart
             return Plugin.PixelpartGetEffectInputFloat(effectRuntime, inputId);
         }
 
+        /// <summary>
+        /// Return value of an effect input.
+        /// The effect input must be of type <c>Vector2</c>.
+        /// </summary>
+        /// <param name="inputName">Name of the effect input</param>
+        /// <returns>Value of the effect input</returns>
         public Vector2 GetInputFloat2(string inputName)
         {
             if (!effectInputCollection.TryGetInputId(inputName, out uint inputId))
@@ -274,6 +406,12 @@ namespace Pixelpart
             return Plugin.PixelpartGetEffectInputFloat2(effectRuntime, inputId);
         }
 
+        /// <summary>
+        /// Return value of an effect input.
+        /// The effect input must be of type <c>Vector3</c>.
+        /// </summary>
+        /// <param name="inputName">Name of the effect input</param>
+        /// <returns>Value of the effect input</returns>
         public Vector3 GetInputFloat3(string inputName)
         {
             if (!effectInputCollection.TryGetInputId(inputName, out uint inputId))
@@ -284,6 +422,12 @@ namespace Pixelpart
             return Plugin.PixelpartGetEffectInputFloat3(effectRuntime, inputId);
         }
 
+        /// <summary>
+        /// Return value of an effect input.
+        /// The effect input must be of type <c>Vector4</c>.
+        /// </summary>
+        /// <param name="inputName">Name of the effect input</param>
+        /// <returns>Value of the effect input</returns>
         public Vector4 GetInputFloat4(string inputName)
         {
             if (!effectInputCollection.TryGetInputId(inputName, out uint inputId))
@@ -302,6 +446,10 @@ namespace Pixelpart
             }
         }
 
+        /// <summary>
+        /// Activate trigger <paramref name="triggerName"/>.
+        /// </summary>
+        /// <param name="triggerName">Name of the trigger</param>
         public void ActivateTrigger(string triggerName)
         {
             if (!triggerCollection.TryGetTriggerId(triggerName, out uint triggerId))
@@ -312,6 +460,11 @@ namespace Pixelpart
             Plugin.PixelpartActivateTrigger(effectRuntime, triggerId);
         }
 
+        /// <summary>
+        /// Return whether trigger <paramref name="triggerName"/> was activated.
+        /// </summary>
+        /// <param name="triggerName">Name of the trigger</param>
+        /// <returns><c>true</c> if the trigger was activated</returns>
         public bool IsTriggerActivated(string triggerName)
         {
             if (!triggerCollection.TryGetTriggerId(triggerName, out uint triggerId))
@@ -322,6 +475,11 @@ namespace Pixelpart
             return Plugin.PixelpartIsTriggerActivated(effectRuntime, triggerId);
         }
 
+        /// <summary>
+        /// Return the node with the given name.
+        /// </summary>
+        /// <param name="nodeName">Node name</param>
+        /// <returns>Node or <c>null</c> if no node with this name exists</returns>
         public PixelpartNode FindNode(string nodeName)
         {
             if (effectRuntime == IntPtr.Zero)
@@ -345,6 +503,11 @@ namespace Pixelpart
             return node;
         }
 
+        /// <summary>
+        /// Return the node with the given ID.
+        /// </summary>
+        /// <param name="id">Node ID</param>
+        /// <returns>Node or <c>null</c> if no node with this ID exists</returns>
         public PixelpartNode GetNode(uint id)
         {
             if (effectRuntime == IntPtr.Zero)
@@ -367,6 +530,11 @@ namespace Pixelpart
             return node;
         }
 
+        /// <summary>
+        /// Return the node at the given index.
+        /// </summary>
+        /// <param name="index">Node index, starting from 0</param>
+        /// <returns>Node or <c>null</c> if no node at this index exists</returns>
         public PixelpartNode GetNodeAtIndex(int index)
         {
             if (effectRuntime == IntPtr.Zero)
@@ -396,6 +564,11 @@ namespace Pixelpart
             return node;
         }
 
+        /// <summary>
+        /// Return the particle type with the given name.
+        /// </summary>
+        /// <param name="particleTypeName">Particle type name</param>
+        /// <returns>Particle type or <c>null</c> if no particle type with this name exists</returns>
         public PixelpartParticleType FindParticleType(string particleTypeName)
         {
             if (effectRuntime == IntPtr.Zero)
@@ -413,6 +586,11 @@ namespace Pixelpart
             return new PixelpartParticleType(effectRuntime, id);
         }
 
+        /// <summary>
+        /// Return the particle type with the given ID.
+        /// </summary>
+        /// <param name="id">Particle type ID</param>
+        /// <returns>Particle type or <c>null</c> if no particle type with this ID exists</returns>
         public PixelpartParticleType GetParticleType(uint id)
         {
             if (effectRuntime == IntPtr.Zero)
@@ -429,6 +607,11 @@ namespace Pixelpart
             return new PixelpartParticleType(effectRuntime, id);
         }
 
+        /// <summary>
+        /// Return the particle type at the given index.
+        /// </summary>
+        /// <param name="index">Particle type index</param>
+        /// <returns>Particle type or <c>null</c> if no particle type at this index exists</returns>
         public PixelpartParticleType GetParticleTypeAtIndex(int index)
         {
             if (effectRuntime == IntPtr.Zero)
@@ -452,30 +635,84 @@ namespace Pixelpart
             return new PixelpartParticleType(effectRuntime, id);
         }
 
+        /// <summary>
+        /// Return the particle emitter with the given name.
+        /// <b>Deprecated</b>, use <see cref="FindNode"/>.
+        /// </summary>
+        /// <param name="nodeName">Node name</param>
+        /// <returns>Node or <c>null</c> if no node with this name exists</returns>
         [Obsolete("deprecated, use FindNode")]
         public PixelpartParticleEmitter FindParticleEmitter(string nodeName) => (PixelpartParticleEmitter)FindNode(nodeName);
 
+        /// <summary>
+        /// Return the force field with the given name.
+        /// <b>Deprecated</b>, use <see cref="FindNode"/>.
+        /// </summary>
+        /// <param name="nodeName">Node name</param>
+        /// <returns>Node or <c>null</c> if no node with this name exists</returns>
         [Obsolete("deprecated, use FindNode")]
         public PixelpartForceField FindForceField(string nodeName) => (PixelpartForceField)FindNode(nodeName);
 
+        /// <summary>
+        /// Return the collider with the given name.
+        /// <b>Deprecated</b>, use <see cref="FindNode"/>.
+        /// </summary>
+        /// <param name="nodeName">Node name</param>
+        /// <returns>Node or <c>null</c> if no node with this name exists</returns>
         [Obsolete("deprecated, use FindNode")]
         public PixelpartCollider FindCollider(string nodeName) => (PixelpartCollider)FindNode(nodeName);
 
+        /// <summary>
+        /// Return the particle emitter with the given ID.
+        /// <b>Deprecated</b>, use <see cref="GetNode"/>.
+        /// </summary>
+        /// <param name="id">Node ID</param>
+        /// <returns>Node or <c>null</c> if no node with this ID exists</returns>
         [Obsolete("deprecated, use GetNode")]
         public PixelpartParticleEmitter GetParticleEmitter(uint id) => (PixelpartParticleEmitter)GetNode(id);
 
+        /// <summary>
+        /// Return the force field with the given ID.
+        /// <b>Deprecated</b>, use <see cref="GetNode"/>.
+        /// </summary>
+        /// <param name="id">Node ID</param>
+        /// <returns>Node or <c>null</c> if no node with this ID exists</returns>
         [Obsolete("deprecated, use GetNode")]
         public PixelpartForceField GetForceField(uint id) => (PixelpartForceField)GetNode(id);
 
+        /// <summary>
+        /// Return the collider with the given ID.
+        /// <b>Deprecated</b>, use <see cref="GetNode"/>.
+        /// </summary>
+        /// <param name="id">Node ID</param>
+        /// <returns>Node or <c>null</c> if no node with this ID exists</returns>
         [Obsolete("deprecated, use GetNode")]
         public PixelpartCollider GetCollider(uint id) => (PixelpartCollider)GetNode(id);
 
+        /// <summary>
+        /// Return the particle emitter at the given index.
+        /// <b>Deprecated</b>, use <see cref="GetNodeAtIndex"/>.
+        /// </summary>
+        /// <param name="id">Node index, starting from 0</param>
+        /// <returns>Node or <c>null</c> if no node at this index exists</returns>
         [Obsolete("deprecated, use GetNodeAtIndex")]
         public PixelpartParticleEmitter GetParticleEmitterAtIndex(int index) => (PixelpartParticleEmitter)GetNodeAtIndex(index);
 
+        /// <summary>
+        /// Return the force field at the given index.
+        /// <b>Deprecated</b>, use <see cref="GetNodeAtIndex"/>.
+        /// </summary>
+        /// <param name="id">Node index, starting from 0</param>
+        /// <returns>Node or <c>null</c> if no node at this index exists</returns>
         [Obsolete("deprecated, use GetNodeAtIndex")]
         public PixelpartForceField GetForceFieldAtIndex(int index) => (PixelpartForceField)GetNodeAtIndex(index);
 
+        /// <summary>
+        /// Return the collider at the given index.
+        /// <b>Deprecated</b>, use <see cref="GetNodeAtIndex"/>.
+        /// </summary>
+        /// <param name="id">Node index, starting from 0</param>
+        /// <returns>Node or <c>null</c> if no node at this index exists</returns>
         [Obsolete("deprecated, use GetNodeAtIndex")]
         public PixelpartCollider GetColliderAtIndex(int index) => (PixelpartCollider)GetNodeAtIndex(index);
 

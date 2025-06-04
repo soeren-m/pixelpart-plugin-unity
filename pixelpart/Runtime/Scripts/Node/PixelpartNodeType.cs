@@ -1,5 +1,8 @@
 namespace Pixelpart
 {
+    /// <summary>
+    /// Types of nodes in a Pixelpart effect.
+    /// </summary>
     public enum PixelpartNodeType : int
     {
         GroupNode = 0,

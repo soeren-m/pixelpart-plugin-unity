@@ -9,20 +9,36 @@ using UnityEditor;
 
 namespace Pixelpart
 {
+    /// <summary>
+    /// Asset for a Pixelpart effect that is contained in a <i>ppfx</i> file.
+    /// </summary>
+    /// <remarks>
+    /// This class derives from <c>ScriptableObject</c> and stores the effect as a byte array.
+    /// </remarks>
     public class PixelpartEffectAsset : ScriptableObject
     {
 #if PIXELPART_USE_URP
-	private const int renderPipelineId = 1;
+        private const int renderPipelineId = 1;
 #elif PIXELPART_USE_HDRP
-	private const int renderPipelineId = 2;
+        private const int renderPipelineId = 2;
 #else
         private const int renderPipelineId = 0;
 #endif
 
+        /// <summary>
+        /// Effect data as byte array.
+        /// </summary>
         public byte[] Data = null;
 
+        /// <summary>
+        /// Information about custom materials if the effect contains any.
+        /// </summary>
         public PixelpartMaterialDescriptor[] CustomMaterials = null;
 
+        /// <summary>
+        /// Load effect from a <i>ppfx</i> file.
+        /// </summary>
+        /// <param name="path">File to import</param>
         public void Load(string path)
         {
             Data = File.ReadAllBytes(path);
@@ -42,6 +58,14 @@ namespace Pixelpart
             }
         }
 
+        /// <summary>
+        /// Create internal representation of effect.
+        /// </summary>
+        /// <remarks>
+        /// Only call after <see cref="Load"/>.
+        /// </remarks>
+        /// <returns>Pointer to internal effect runtime</returns>
+        /// <exception cref="InvalidOperationException"></exception>
         public IntPtr LoadEffect()
         {
             if (Data == null || Data.Length < 1)

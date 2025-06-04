@@ -2,8 +2,17 @@ using System;
 
 namespace Pixelpart
 {
+    /// <summary>
+    /// Factory for creating a <see cref="PixelpartNode"/>.
+    /// </summary>
     public static class PixelpartNodeFactory
     {
+        /// <summary>
+        /// Create a node object from its ID in the effect.
+        /// </summary>
+        /// <param name="effectRuntime">Effect runtime</param>
+        /// <param name="nodeId">Node ID</param>
+        /// <returns>Created node</returns>
         public static PixelpartNode CreateNode(IntPtr effectRuntime, uint nodeId)
         {
             var nodeTypeIndex = Plugin.PixelpartNodeGetType(effectRuntime, nodeId);

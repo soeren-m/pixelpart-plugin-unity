@@ -4,6 +4,7 @@
 #include "PixelpartUnityTypes.h"
 #include "PixelpartUtil.h"
 #include "pixelpart-runtime/common/Math.h"
+#include "pixelpart-runtime/common/Transform.h"
 #include "pixelpart-runtime/common/Id.h"
 #include "pixelpart-runtime/effect/ParticleEmitter.h"
 #include "pixelpart-runtime/effect/ParticleType.h"
@@ -281,11 +282,14 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetParticleSpriteVertex
 		uint32_t particleCount = particleCollection->count();
 
 		PixelpartParticleMeshData& meshData = effectRuntime->meshData[runtimeId];
-		pixelpart::float_t alpha = particleEmitter.life(effectRuntime->effectEngine->runtimeContext());
 
 		pixelpart::float3_t effectScale = internal::fromUnity(effectSize);
 		pixelpart::float3_t cameraRight = internal::fromUnity(viewRight);
 		pixelpart::float3_t cameraUp = internal::fromUnity(viewUp);
+
+		pixelpart::Transform emitterTransform = effect.sceneGraph().globalTransform(particleEmitter.id(), effectRuntime->effectEngine->runtimeContext());
+		pixelpart::float3_t emitterPosition = emitterTransform.position();
+		pixelpart::mat3_t emitterRotationMatrix = internal::rotation3d(emitterTransform.rotation());
 
 		for(int32_t p = 0; p < static_cast<int32_t>(particleCount); p++) {
 			triangles[p * 6 + 0] = p * 4 + 0;
@@ -373,9 +377,6 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetParticleSpriteVertex
 				particleRenderData = meshData.sortedParticleCollection.readPtr();
 			}
 
-			pixelpart::float3_t emitterPosition = particleEmitter.position().at(alpha);
-			pixelpart::mat3_t emitterRotationMatrix = internal::rotation3d(particleEmitter.rotation().at(alpha));
-
 			for(uint32_t p = 0; p < particleCount; p++) {
 				pixelpart::mat3_t rotationMatrix = internal::rotation3d(particleRenderData.rotation[p]);
 				pixelpart::float3_t pivot = particleType.pivot().value() * particleRenderData.size[p];
@@ -441,8 +442,6 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetParticleSpriteVertex
 		else {
 			pixelpart::float_t zOffset = -0.001 * static_cast<pixelpart::float_t>(particleType.layer());
 
-			pixelpart::float3_t emitterPosition = particleEmitter.position().at(alpha);
-			pixelpart::mat3_t emitterRotationMatrix = internal::rotation3d(particleEmitter.rotation().at(alpha));
 			UnityVector3 normal = UnityVector3{ 0.0f, 0.0f, -1.0f };
 
 			for(uint32_t p = 0; p < particleCount; p++) {
@@ -559,7 +558,6 @@ UNITY_INTERFACE_EXPORT UnityBool UNITY_INTERFACE_API PixelpartGetParticleTrailVe
 		uint32_t particleCount = particleCollection->count();
 
 		PixelpartParticleMeshData& meshData = effectRuntime->meshData[runtimeId];
-		pixelpart::float_t alpha = particleEmitter.life(effectRuntime->effectEngine->runtimeContext());
 
 		pixelpart::float3_t effectScale = internal::fromUnity(effectSize);
 		pixelpart::float3_t cameraPos = internal::fromUnity(cameraPosition);
@@ -733,12 +731,15 @@ UNITY_INTERFACE_EXPORT UnityBool UNITY_INTERFACE_API PixelpartGetParticleMeshIns
 		uint32_t particleCount = particleCollection->count();
 
 		PixelpartParticleMeshData& meshData = effectRuntime->meshData[runtimeId];
-		pixelpart::float_t alpha = particleEmitter.life(effectRuntime->effectEngine->runtimeContext());
 
 		pixelpart::float3_t effectScale = internal::fromUnity(effectSize);
 		pixelpart::float3_t cameraPos = internal::fromUnity(cameraPosition);
 		pixelpart::float3_t cameraRight = internal::fromUnity(viewRight);
 		pixelpart::float3_t cameraUp = internal::fromUnity(viewUp);
+
+		pixelpart::Transform emitterTransform = effect.sceneGraph().globalTransform(particleEmitter.id(), effectRuntime->effectEngine->runtimeContext());
+		pixelpart::float3_t emitterPosition = emitterTransform.position();
+		pixelpart::mat3_t emitterRotationMatrix = internal::rotation3d(emitterTransform.rotation());
 
 		pixelpart::ParticleCollection::ReadPtr particleRenderData = particles;
 
@@ -816,8 +817,6 @@ UNITY_INTERFACE_EXPORT UnityBool UNITY_INTERFACE_API PixelpartGetParticleMeshIns
 			}
 		}
 
-		pixelpart::float3_t emitterPosition = particleEmitter.position().at(alpha);
-		pixelpart::mat4_t emitterRotationMatrix = pixelpart::mat4_t(internal::rotation3d(particleEmitter.rotation().at(alpha)));
 		pixelpart::mat4_t globalScaleMatrix = glm::scale(pixelpart::float3_t(effectScale));
 
 		for(uint32_t p = 0; p < particleCount; p++) {
@@ -830,7 +829,7 @@ UNITY_INTERFACE_EXPORT UnityBool UNITY_INTERFACE_API PixelpartGetParticleMeshIns
 					alignmentMatrix = pixelpart::mat4_t(internal::lookAt(emitterPosition - particleRenderData.globalPosition[p]));
 					break;
 				case pixelpart::AlignmentMode::emitter:
-					alignmentMatrix = emitterRotationMatrix;
+					alignmentMatrix = pixelpart::mat4_t(emitterRotationMatrix);
 					break;
 				default:
 					break;

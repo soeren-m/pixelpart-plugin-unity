@@ -79,6 +79,13 @@ namespace Pixelpart
             mesh.SetUVs(2, uv2.ToList());
             mesh.triangles = triangles;
 
+            var boundingBoxMin = mesh.bounds.min;
+            var boundingBoxMax = mesh.bounds.max;
+            mesh.bounds = new Bounds(Vector3.zero, new Vector3(
+                Mathf.Max(Mathf.Abs(boundingBoxMin.x), Mathf.Abs(boundingBoxMax.x)) * 2.0f,
+                Mathf.Max(Mathf.Abs(boundingBoxMin.y), Mathf.Abs(boundingBoxMax.y)) * 2.0f,
+                Mathf.Max(Mathf.Abs(boundingBoxMin.z), Mathf.Abs(boundingBoxMax.z)) * 2.0f));
+
             Graphics.DrawMesh(mesh, Matrix4x4.identity,
                 particleMaterial.Material, layer, null, 0, null, ShadowCastingMode.Off, false, null, false);
         }

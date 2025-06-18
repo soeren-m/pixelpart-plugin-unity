@@ -3665,7 +3665,7 @@
         {
             "name": "shader_node_softparticlefade",
             "category": "shader_category_util",
-            "code": " {outdef0} = Pixelpart_SoftParticleFade(_CameraDepthTexture, sampler_CameraDepthTexture, in_ProjectedPosition, {in0});",
+            "code": " {outdef0} = Pixelpart_SoftParticleFade(in_ProjectedPosition, {in0});",
             "inputs": [
                 "shader_slot_transition"
             ],

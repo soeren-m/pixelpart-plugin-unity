@@ -1,5 +1,5 @@
-#ifndef PIXELPART_COMMON
-#define PIXELPART_COMMON
+#ifndef PIXELPART_COMMON_HLSL
+#define PIXELPART_COMMON_HLSL
 
 float Pixelpart_Mod(float x, float y) {
 	return x - y * floor(x / y);

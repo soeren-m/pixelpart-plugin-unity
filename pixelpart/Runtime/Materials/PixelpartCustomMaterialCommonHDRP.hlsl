@@ -1,5 +1,5 @@
-#ifndef PIXELPART_COMMON_HLSL
-#define PIXELPART_COMMON_HLSL
+#ifndef PIXELPART_CUSTOM_MATERIAL_COMMON_HDRP_HLSL
+#define PIXELPART_CUSTOM_MATERIAL_COMMON_HDRP_HLSL
 
 float Pixelpart_Mod(float x, float y) {
 	return x - y * floor(x / y);
@@ -156,8 +156,8 @@ float4 Pixelpart_Blend(float4 colorA, float4 colorB, int blendMode) {
 	return result;
 }
 
-float Pixelpart_SoftParticleFade(Texture2D depthTexture, SamplerState samplerDepthTexture, float4 fragCoord, float transitionSize) {
-	float sceneDepth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(depthTexture, samplerDepthTexture, fragCoord.xy / fragCoord.w), _ZBufferParams);
+float Pixelpart_SoftParticleFade(float4 fragCoord, float transitionSize) {
+	float sceneDepth = LinearEyeDepth(SampleCameraDepth(fragCoord.xy / fragCoord.w), _ZBufferParams);
 	float depthDistance = clamp(sceneDepth - fragCoord.z, 0.0, 1.0);
 
 	return smoothstep(0.0, transitionSize, depthDistance);

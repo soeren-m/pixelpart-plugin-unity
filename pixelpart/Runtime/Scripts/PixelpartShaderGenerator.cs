@@ -421,7 +421,7 @@ namespace Pixelpart
 			#include ""Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl""
 			#include ""Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl""
 			#include ""Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl""
-			#include ""Packages/net.pixelpart/Runtime/Materials/PixelpartCustomMaterialCommon.hlsl""
+			#include ""Packages/net.pixelpart/Runtime/Materials/PixelpartCustomMaterialCommonURP.hlsl""
 
 			struct appdata_t
 			{
@@ -552,7 +552,7 @@ CBUFFER_END
 			#include ""Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl""
 			#include ""Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl""
 			#include ""Packages/com.unity.render-pipelines.universal/ShaderLibrary/DeclareDepthTexture.hlsl""
-			#include ""Packages/net.pixelpart/Runtime/Materials/PixelpartCustomMaterialCommon.hlsl""
+			#include ""Packages/net.pixelpart/Runtime/Materials/PixelpartCustomMaterialCommonURP.hlsl""
 
 			struct appdata_t
 			{
@@ -695,7 +695,7 @@ CBUFFER_END
 			#include ""Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/ShaderPass/FragInputs.hlsl""
 			#include ""Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/ShaderPass/VaryingMesh.hlsl""
 			#include ""Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/ShaderPass/VertMesh.hlsl""
-			#include ""Packages/net.pixelpart/Runtime/Materials/PixelpartCustomMaterialCommon.hlsl""
+			#include ""Packages/net.pixelpart/Runtime/Materials/PixelpartCustomMaterialCommonHDRP.hlsl""
 
 			struct appdata_t
 			{
@@ -805,7 +805,7 @@ CBUFFER_END
 			#include ""Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/ShaderPass/FragInputs.hlsl""
 			#include ""Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/ShaderPass/VaryingMesh.hlsl""
 			#include ""Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/ShaderPass/VertMesh.hlsl""
-			#include ""Packages/net.pixelpart/Runtime/Materials/PixelpartCustomMaterialCommon.hlsl""
+			#include ""Packages/net.pixelpart/Runtime/Materials/PixelpartCustomMaterialCommonHDRP.hlsl""
 
 			struct appdata_t
 			{
@@ -948,7 +948,7 @@ CBUFFER_END
 			#include ""Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/ShaderPass/FragInputs.hlsl""
 			#include ""Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/ShaderPass/VaryingMesh.hlsl""
 			#include ""Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/ShaderPass/VertMesh.hlsl""
-			#include ""Packages/net.pixelpart/Runtime/Materials/PixelpartCustomMaterialCommon.hlsl""
+			#include ""Packages/net.pixelpart/Runtime/Materials/PixelpartCustomMaterialCommonHDRP.hlsl""
 
 			struct appdata_t
 			{
@@ -1063,7 +1063,7 @@ CBUFFER_END
 			#include ""Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/ShaderPass/FragInputs.hlsl""
 			#include ""Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/ShaderPass/VaryingMesh.hlsl""
 			#include ""Packages/com.unity.render-pipelines.high-definition/Runtime/RenderPipeline/ShaderPass/VertMesh.hlsl""
-			#include ""Packages/net.pixelpart/Runtime/Materials/PixelpartCustomMaterialCommon.hlsl""
+			#include ""Packages/net.pixelpart/Runtime/Materials/PixelpartCustomMaterialCommonHDRP.hlsl""
 
 			struct appdata_t
 			{

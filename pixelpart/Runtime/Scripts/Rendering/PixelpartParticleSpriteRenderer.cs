@@ -59,7 +59,7 @@ namespace Pixelpart
             Array.Resize(ref uv1, vertexCount);
             Array.Resize(ref uv2, vertexCount);
 
-            Plugin.PixelpartGetParticleSpriteVertexData(internalEffect,
+            var result = Plugin.PixelpartGetParticleSpriteVertexData(internalEffect,
                 particleEmitterId, particleTypeId,
                 camera.transform.position,
                 camera.transform.right,
@@ -67,6 +67,10 @@ namespace Pixelpart
                 effectScale,
                 triangles, vertices, colors, normals,
                 uv0, uv1, uv2);
+            if (!result)
+            {
+                return;
+            }
 
             particleMaterial.ApplyParameters();
 

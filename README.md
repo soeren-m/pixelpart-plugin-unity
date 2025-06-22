@@ -1,6 +1,6 @@
 # Pixelpart for Unity
 
-This repository contains the official Pixelpart plugin for Unity 2019+. The plugin allows you to play Pixelpart effects directly within the Unity engine, eliminating the need to export effects as sprite sheets or video files beforehand.
+This repository contains the official Pixelpart plugin for Unity 2021.3+. The plugin allows you to play Pixelpart effects directly within the Unity engine, eliminating the need to export effects as sprite sheets or video files beforehand.
 
 ## Installation
 

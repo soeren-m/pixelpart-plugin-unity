@@ -3,7 +3,7 @@
     "version": "1.8.0",
     "description": "HDRP materials for the Pixelpart runtime plugin.",
     "displayName": "Pixelpart HDRP",
-    "unity": "2019.1",
+    "unity": "2021.3",
     "author": {
         "name": "Sören Möllers"
     },

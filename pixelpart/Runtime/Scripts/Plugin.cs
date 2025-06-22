@@ -7,7 +7,7 @@ namespace Pixelpart
     internal static class Plugin
     {
 #if !UNITY_EDITOR && (UNITY_IPHONE || UNITY_WEBGL || UNITY_SWITCH)
-	private const string pluginName = "__Internal";
+        private const string pluginName = "__Internal";
 #else
         private const string pluginName = "pixelpart";
 #endif
@@ -89,8 +89,6 @@ namespace Pixelpart
         public static extern void PixelpartPrepareParticleSpriteVertexData(IntPtr effectRuntime, uint particleEmitterId, uint particleTypeId, out int triangleCount, out int vertexCount);
         [DllImport(pluginName)]
         public static extern void PixelpartPrepareParticleTrailVertexData(IntPtr effectRuntime, uint particleEmitterId, uint particleTypeId, out int triangleCount, out int vertexCount);
-        [DllImport(pluginName)]
-        public static extern void PixelpartPrepareParticleMeshVertexData(IntPtr effectRuntime, uint particleEmitterId, uint particleTypeId, out int triangleCount, out int vertexCount);
         [DllImport(pluginName)]
         public static extern bool PixelpartGetParticleSpriteVertexData(IntPtr effectRuntime, uint particleEmitterId, uint particleTypeId,
             Vector3 cameraPosition, Vector3 viewRight, Vector3 viewUp, Vector3 effectSize,

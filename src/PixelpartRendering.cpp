@@ -257,11 +257,11 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartPrepareParticleTrailVer
 	}
 }
 
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetParticleSpriteVertexData(PixelpartEffectRuntime* effectRuntime, UnityUInt particleEmitterId, UnityUInt particleTypeId,
+UNITY_INTERFACE_EXPORT UnityBool UNITY_INTERFACE_API PixelpartGetParticleSpriteVertexData(PixelpartEffectRuntime* effectRuntime, UnityUInt particleEmitterId, UnityUInt particleTypeId,
 	UnityVector3 cameraPosition, UnityVector3 viewRight, UnityVector3 viewUp, UnityVector3 effectSize,
 	UnityInt* triangles, UnityVector3* vertices, UnityColor* colors, UnityVector3* normals, UnityVector2* uv0, UnityVector4* uv1, UnityVector4* uv2) {
 	if(!effectRuntime) {
-		return;
+		return false;
 	}
 
 	try {
@@ -275,7 +275,7 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetParticleSpriteVertex
 			pixelpart::id_t(particleEmitterId), pixelpart::id_t(particleTypeId));
 
 		if(!particleCollection) {
-			return;
+			return false;
 		}
 
 		pixelpart::ParticleCollection::ReadPtr particles = particleCollection->readPtr();
@@ -529,8 +529,10 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetParticleSpriteVertex
 		}
 	}
 	catch(...) {
-		return;
+		return false;
 	}
+
+    return true;
 }
 
 UNITY_INTERFACE_EXPORT UnityBool UNITY_INTERFACE_API PixelpartGetParticleTrailVertexData(PixelpartEffectRuntime* effectRuntime, UnityUInt particleEmitterId, UnityUInt particleTypeId,

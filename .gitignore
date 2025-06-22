@@ -4,6 +4,7 @@
 /docs/html/*
 /.venv/*
 /.vscode/*
+__pycache__/
 
 # Prerequisites
 *.d

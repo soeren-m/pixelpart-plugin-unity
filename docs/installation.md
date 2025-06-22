@@ -7,7 +7,7 @@
 
 ## Requirements
 
-Unity 2019.1 or higher is required to use the Pixelpart plugin.
+Unity 2021.3 or higher is required to use the Pixelpart plugin.
 
 ## Platform Support
 

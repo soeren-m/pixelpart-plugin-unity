@@ -66,13 +66,17 @@ namespace Pixelpart
             Array.Resize(ref lives, particleCount);
             Array.Resize(ref ids, particleCount);
 
-            Plugin.PixelpartGetParticleMeshInstanceData(internalEffect,
+            var result = Plugin.PixelpartGetParticleMeshInstanceData(internalEffect,
                 particleEmitterId, particleTypeId,
                 camera.transform.position,
                 camera.transform.right,
                 camera.transform.up,
                 effectScale,
                 transforms, colors, velocities, lives, ids);
+            if (!result)
+            {
+                return;
+            }
 
             particleMaterial.ApplyParameters();
 

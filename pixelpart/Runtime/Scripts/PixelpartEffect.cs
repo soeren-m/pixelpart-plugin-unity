@@ -440,6 +440,11 @@ namespace Pixelpart
 
         public void ApplyInputProperties()
         {
+            if (effectRuntime == IntPtr.Zero)
+            {
+                return;
+            }
+
             for (var inputIndex = 0; inputIndex < effectInputNames.Count && inputIndex < effectInputValues.Count; inputIndex++)
             {
                 ApplyInputProperty(inputIndex);

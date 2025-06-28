@@ -5,6 +5,7 @@
 #include "pixelpart-runtime/effect/Trigger.h"
 #include <cstring>
 #include <string>
+#include <vector>
 #include <algorithm>
 
 extern "C" {
@@ -21,14 +22,23 @@ UNITY_INTERFACE_EXPORT UnityInt UNITY_INTERFACE_API PixelpartGetTriggers(Pixelpa
 		return 0;
 	}
 
-	std::string namesString;
-	std::size_t index = 0;
-	for(const auto& entry : effectRuntime->effectAsset.effect().triggers()) {
-		ids[index] = entry.first.value();
-		namesString += entry.second.name();
-		namesString += "|";
+	const pixelpart::TriggerCollection& triggers = effectRuntime->effectAsset.effect().triggers();
 
-		index++;
+	std::vector<pixelpart::id_t> triggerIds;
+	triggerIds.reserve(triggers.size());
+	for(const auto& entry : triggers) {
+		triggerIds.push_back(entry.first);
+	}
+
+	std::sort(triggerIds.begin(), triggerIds.end());
+
+	std::string namesString;
+	for(std::size_t index = 0; index < triggerIds.size(); index++) {
+		const pixelpart::Trigger& trigger = triggers.at(triggerIds[index]);
+
+		ids[index] = triggerIds[index].value();
+		namesString += trigger.name();
+		namesString += "|";
 	}
 
 	if(!namesString.empty()) {

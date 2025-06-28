@@ -6,6 +6,7 @@
 #include "pixelpart-runtime/effect/EffectInput.h"
 #include <cstring>
 #include <string>
+#include <vector>
 #include <algorithm>
 
 extern "C" {
@@ -22,15 +23,24 @@ UNITY_INTERFACE_EXPORT UnityInt UNITY_INTERFACE_API PixelpartGetEffectInputs(Pix
 		return 0;
 	}
 
-	std::string namesString;
-	std::size_t index = 0;
-	for(const auto& entry : effectRuntime->effectAsset.effect().inputs()) {
-		ids[index] = entry.first.value();
-		types[index] = static_cast<UnityInt>(entry.second.value().type());
-		namesString += entry.second.name();
-		namesString += "|";
+	const pixelpart::EffectInputCollection& inputs = effectRuntime->effectAsset.effect().inputs();
 
-		index++;
+	std::vector<pixelpart::id_t> inputIds;
+	inputIds.reserve(inputs.size());
+	for(const auto& entry : inputs) {
+		inputIds.push_back(entry.first);
+	}
+
+	std::sort(inputIds.begin(), inputIds.end());
+
+	std::string namesString;
+	for(std::size_t index = 0; index < inputIds.size(); index++) {
+		const pixelpart::EffectInput& input = inputs.at(inputIds[index]);
+
+		ids[index] = inputIds[index].value();
+		types[index] = static_cast<UnityInt>(input.value().type());
+		namesString += input.name();
+		namesString += "|";
 	}
 
 	if(!namesString.empty()) {

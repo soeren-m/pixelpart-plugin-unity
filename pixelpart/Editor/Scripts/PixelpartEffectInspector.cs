@@ -14,10 +14,16 @@ namespace Pixelpart
 
             ShowAssetSettings();
             ShowPlaybackSettings();
-            ShowInputSettings();
+            var inputsModified = ShowInputSettings();
             ShowRenderingSettings();
 
             serializedObject.ApplyModifiedProperties();
+
+            var effect = (PixelpartEffect)target;
+            if (inputsModified)
+            {
+                effect.ApplyInputProperties();
+            }
         }
 
         private void ShowAssetSettings()
@@ -38,10 +44,8 @@ namespace Pixelpart
             EditorGUILayout.PropertyField(serializedObject.FindProperty("FrameRate"));
         }
 
-        private void ShowInputSettings()
+        private bool ShowInputSettings()
         {
-            var effect = (PixelpartEffect)target;
-
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Inputs", EditorStyles.boldLabel);
 
@@ -49,7 +53,6 @@ namespace Pixelpart
             var inputValuesProperty = serializedObject.FindProperty("effectInputValues");
 
             var inputsModified = false;
-
             for (var inputIndex = 0; inputIndex < inputNamesProperty.arraySize && inputIndex < inputValuesProperty.arraySize; inputIndex++)
             {
                 EditorGUI.BeginChangeCheck();
@@ -63,10 +66,7 @@ namespace Pixelpart
                 }
             }
 
-            if (inputsModified)
-            {
-                effect.ApplyInputProperties();
-            }
+            return inputsModified;
         }
 
         private void ShowRenderingSettings()

@@ -27,7 +27,4 @@ def generate(env):
     # Options for pixelpart-runtime
     env.Append(CPPDEFINES=["PIXELPART_RUNTIME_MULTITHREADING"])
 
-    # Mecessary?
-    #env.Append(LINKFLAGS=["-pthread"])
-
     common.generate(env)

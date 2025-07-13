@@ -6,9 +6,9 @@ namespace Pixelpart
     internal class PixelpartBuiltInMaterialProvider
     {
 #if PIXELPART_USE_URP
-	private const string builtInMaterialPath = "Packages/net.pixelpart.urp/Runtime/Materials/";
+        private const string builtInMaterialPath = "Packages/net.pixelpart.urp/Runtime/Materials/";
 #elif PIXELPART_USE_HDRP
-	private const string builtInMaterialPath = "Packages/net.pixelpart.hdrp/Runtime/Materials/";
+        private const string builtInMaterialPath = "Packages/net.pixelpart.hdrp/Runtime/Materials/";
 #else
         private const string builtInMaterialPath = "Packages/net.pixelpart/Runtime/Materials/";
 #endif

@@ -4,7 +4,7 @@ This repository contains the official Pixelpart plugin for Unity 2021.3+. The pl
 
 ## Installation
 
-The recommonded way to install the plugin is by downloading it from [pixelpart.net](https://pixelpart.net/plugins/). Once you've opened the project where you want to use Pixelpart, install the core package *net.pixelpart.tgz* using the Unity Package Manager. If your project utilizes the *Universal Rendering Pipeline (URP)* or the *High-Definition Rendering Pipeline (HDRP)*, make sure to additionally install the corresponding package: *net.pixelpart.urp.tgz* for URP or *net.pixelpart.hdrp.tgz* for HDRP.
+The recommonded way to install the plugin is by downloading it from [pixelpart.net](https://pixelpart.net/plugins/). Once you've opened the project where you want to use Pixelpart, install the core package *net.pixelpart.core.tgz* using the Unity Package Manager. If your project utilizes the *Universal Rendering Pipeline (URP)* or the *High-Definition Rendering Pipeline (HDRP)*, make sure to additionally install the corresponding package: *net.pixelpart.urp.tgz* for URP or *net.pixelpart.hdrp.tgz* for HDRP.
 
 ## Usage
 

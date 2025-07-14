@@ -10,7 +10,7 @@ namespace Pixelpart
 #elif PIXELPART_USE_HDRP
         private const string builtInMaterialPath = "Packages/net.pixelpart.hdrp/Runtime/Materials/";
 #else
-        private const string builtInMaterialPath = "Packages/net.pixelpart/Runtime/Materials/";
+        private const string builtInMaterialPath = "Packages/net.pixelpart.core/Runtime/Materials/";
 #endif
 
         public static PixelpartBuiltInMaterialProvider Instance

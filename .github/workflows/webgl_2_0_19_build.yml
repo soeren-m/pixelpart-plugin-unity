@@ -35,10 +35,10 @@ jobs:
           ./emsdk/emsdk activate 2.0.19
           source ./emsdk/emsdk_env.sh
           python build.py platform=web
-          cp ./pixelpart/Runtime/Plugins/WebGL/libpixelpart.a ./pixelpart/Runtime/Plugins/WebGL/2.0.19/
+          cp ./net.pixelpart.core/Runtime/Plugins/WebGL/libpixelpart.a ./net.pixelpart.core/Runtime/Plugins/WebGL/2.0.19/
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: pixelpart-webgl-2-0-19
-          path: ./pixelpart/Runtime/Plugins/WebGL/2.0.19
+          path: ./net.pixelpart.core/Runtime/Plugins/WebGL/2.0.19

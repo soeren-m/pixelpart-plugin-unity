@@ -89,26 +89,26 @@ jobs:
 
       - name: Copy binaries
         run: |
-          cp artifacts/windows/x86/pixelpart.dll ./pixelpart/Runtime/Plugins/x86/
-          cp artifacts/windows/x86_64/pixelpart.dll ./pixelpart/Runtime/Plugins/x86_64/
-          cp artifacts/linux/x86/libpixelpart.so ./pixelpart/Runtime/Plugins/x86/
-          cp artifacts/linux/x86_64/libpixelpart.so ./pixelpart/Runtime/Plugins/x86_64/
-          cp artifacts/macos/pixelpart.bundle ./pixelpart/Runtime/Plugins/macOS/
-          cp -r artifacts/webgl-2-0-19/* ./pixelpart/Runtime/Plugins/WebGL/2.0.19/
-          cp -r artifacts/webgl-3-1-8/* ./pixelpart/Runtime/Plugins/WebGL/3.1.8/
-          cp -r artifacts/webgl-3-1-38/* ./pixelpart/Runtime/Plugins/WebGL/3.1.38/
+          cp artifacts/windows/x86/pixelpart.dll ./net.pixelpart.core/Runtime/Plugins/x86/
+          cp artifacts/windows/x86_64/pixelpart.dll ./net.pixelpart.core/Runtime/Plugins/x86_64/
+          cp artifacts/linux/x86/libpixelpart.so ./net.pixelpart.core/Runtime/Plugins/x86/
+          cp artifacts/linux/x86_64/libpixelpart.so ./net.pixelpart.core/Runtime/Plugins/x86_64/
+          cp artifacts/macos/pixelpart.bundle ./net.pixelpart.core/Runtime/Plugins/macOS/
+          cp -r artifacts/webgl-2-0-19/* ./net.pixelpart.core/Runtime/Plugins/WebGL/2.0.19/
+          cp -r artifacts/webgl-3-1-8/* ./net.pixelpart.core/Runtime/Plugins/WebGL/3.1.8/
+          cp -r artifacts/webgl-3-1-38/* ./net.pixelpart.core/Runtime/Plugins/WebGL/3.1.38/
 
       - name: Create Unity packages
         run: |
-          python package.py -o net.pixelpart.tgz -t pixelpart
-          python package.py -o net.pixelpart.urp.tgz -t pixelpart.urp
-          python package.py -o net.pixelpart.hdrp.tgz -t pixelpart.hdrp
+          python package.py -o net.pixelpart.core.tgz -t net.pixelpart.core
+          python package.py -o net.pixelpart.urp.tgz -t net.pixelpart.urp
+          python package.py -o net.pixelpart.hdrp.tgz -t net.pixelpart.hdrp
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: pixelpart-plugin-unity
           path: |
-            net.pixelpart.tgz
+            net.pixelpart.core.tgz
             net.pixelpart.urp.tgz
             net.pixelpart.hdrp.tgz

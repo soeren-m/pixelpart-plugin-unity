@@ -1,5 +1,5 @@
 {
-    "name": "net.pixelpart",
+    "name": "net.pixelpart.core",
     "version": "1.8.0",
     "displayName": "Pixelpart",
     "description": "Runtime plugin for Pixelpart.",

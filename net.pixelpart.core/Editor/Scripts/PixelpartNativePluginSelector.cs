@@ -21,9 +21,9 @@ namespace Pixelpart
         {
             var webglPluginPaths = new string[]
             {
-                "Packages/net.pixelpart/Runtime/Plugins/WebGL/3.1.38/libpixelpart.a",
-                "Packages/net.pixelpart/Runtime/Plugins/WebGL/3.1.8/libpixelpart.a",
-                "Packages/net.pixelpart/Runtime/Plugins/WebGL/2.0.19/libpixelpart.a"
+                "Packages/net.pixelpart.core/Runtime/Plugins/WebGL/3.1.38/libpixelpart.a",
+                "Packages/net.pixelpart.core/Runtime/Plugins/WebGL/3.1.8/libpixelpart.a",
+                "Packages/net.pixelpart.core/Runtime/Plugins/WebGL/2.0.19/libpixelpart.a"
             };
 
             foreach (var pluginPath in webglPluginPaths)

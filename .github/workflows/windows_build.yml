@@ -25,5 +25,5 @@ jobs:
         with:
           name: pixelpart-windows
           path: |
-            ./pixelpart/Runtime/Plugins/x86/pixelpart.dll
-            ./pixelpart/Runtime/Plugins/x86_64/pixelpart.dll
+            ./net.pixelpart.core/Runtime/Plugins/x86/pixelpart.dll
+            ./net.pixelpart.core/Runtime/Plugins/x86_64/pixelpart.dll

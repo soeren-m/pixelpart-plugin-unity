@@ -134,18 +134,18 @@
         "com.unity.modules.imgui": "1.0.0"
       }
     },
-    "net.pixelpart": {
-      "version": "file:C:/Users/moell/Development/pixelpart-plugin-unity/pixelpart",
+    "net.pixelpart.core": {
+      "version": "file:../../../net.pixelpart.core",
       "depth": 0,
       "source": "local",
       "dependencies": {}
     },
     "net.pixelpart.urp": {
-      "version": "file:C:/Users/moell/Development/pixelpart-plugin-unity/pixelpart.urp",
+      "version": "file:../../../net.pixelpart.urp",
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "net.pixelpart": "1.8.0"
+        "net.pixelpart.core": "1.8.0"
       }
     },
     "com.unity.modules.ai": {

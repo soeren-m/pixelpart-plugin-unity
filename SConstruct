@@ -137,7 +137,7 @@ add_sources(sources, "pixelpart-runtime/zlib", ".c")
 env.Append(CPPPATH=["."])
 
 # Library path
-library_path = "pixelpart/Runtime/Plugins/"
+library_path = "net.pixelpart.core/Runtime/Plugins/"
 
 if env["platform"] == "linux":
     if env["arch"] == "x86_64":

@@ -20,7 +20,7 @@ namespace Pixelpart
     public class PixelpartEffect : MonoBehaviour
     {
 #if UNITY_EDITOR
-        private const string gizmoIconPath = "Packages/net.pixelpart/Editor/Resources/Gizmos/PixelpartEffectIcon.png";
+        private const string gizmoIconPath = "Packages/net.pixelpart.core/Editor/Resources/Gizmos/PixelpartEffectIcon.png";
 #endif
 
         public const uint NullId = 0xFFFFFFFF;

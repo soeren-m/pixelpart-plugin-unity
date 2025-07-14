@@ -1,0 +1,10 @@
+{
+    "name": "net.pixelpart",
+    "version": "1.8.0",
+    "description": "Runtime plugin for Pixelpart.",
+    "displayName": "Pixelpart",
+    "unity": "2021.3",
+    "author": {
+        "name": "Sören Möllers"
+    }
+}

@@ -1,0 +1,13 @@
+{
+    "name": "net.pixelpart.urp",
+    "version": "1.8.0",
+    "description": "URP materials for the Pixelpart runtime plugin.",
+    "displayName": "Pixelpart URP",
+    "unity": "2021.3",
+    "author": {
+        "name": "Sören Möllers"
+    },
+    "dependencies": {
+        "net.pixelpart": "1.8.0"
+    }
+}

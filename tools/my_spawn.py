@@ -8,7 +8,6 @@ def configure(env):
     import subprocess
 
     def mySubProcess(cmdline, env):
-        # print "SPAWNED : " + cmdline
         startupinfo = subprocess.STARTUPINFO()
         startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
         proc = subprocess.Popen(
@@ -18,14 +17,15 @@ def configure(env):
             stderr=subprocess.PIPE,
             startupinfo=startupinfo,
             shell=False,
-            env=env,
-        )
+            env=env)
+
         data, err = proc.communicate()
         rv = proc.wait()
         if rv:
             print("=====")
             print(err.decode("utf-8"))
             print("=====")
+
         return rv
 
     def mySpawn(sh, escape, cmd, args, env):

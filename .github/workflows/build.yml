@@ -22,6 +22,14 @@ jobs:
     name: macOS build
     uses: ./.github/workflows/macos_build.yml
 
+  ios-build:
+    name: iOS build
+    uses: ./.github/workflows/ios_build.yml
+
+  android-build:
+    name: Android build
+    uses: ./.github/workflows/android_build.yml
+
   webgl-2-0-19-build:
     name: WebGL Emscripten 2.0.19 build
     uses: ./.github/workflows/webgl_2_0_19_build.yml
@@ -37,7 +45,7 @@ jobs:
   package:
     name: Package plugin
     runs-on: ubuntu-latest
-    needs: [windows-build, linux-build, macos-build, webgl-2-0-19-build, webgl-3-1-8-build, webgl-3-1-38-build]
+    needs: [windows-build, linux-build, macos-build, ios-build, android-build, webgl-2-0-19-build, webgl-3-1-8-build, webgl-3-1-38-build]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -65,6 +73,18 @@ jobs:
         with:
           name: pixelpart-macos
           path: artifacts/macos
+
+      - name: Download iOS artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: pixelpart-ios
+          path: artifacts/ios
+
+      - name: Download Android artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: pixelpart-android
+          path: artifacts/android
 
       - name: Download WebGL 2.0.19 artifacts
         uses: actions/download-artifact@v4
@@ -94,6 +114,11 @@ jobs:
           cp artifacts/linux/x86/libpixelpart.so ./net.pixelpart.core/Runtime/Plugins/x86/
           cp artifacts/linux/x86_64/libpixelpart.so ./net.pixelpart.core/Runtime/Plugins/x86_64/
           cp artifacts/macos/pixelpart.bundle ./net.pixelpart.core/Runtime/Plugins/macOS/
+          cp artifacts/ios/libpixelpart.a ./net.pixelpart.core/Runtime/Plugins/iOS/
+          cp artifacts/android/arm32/libpixelpart.so ./net.pixelpart.core/Runtime/Plugins/Android/arm32/
+          cp artifacts/android/arm64/libpixelpart.so ./net.pixelpart.core/Runtime/Plugins/Android/arm64/
+          cp artifacts/android/x86/libpixelpart.so ./net.pixelpart.core/Runtime/Plugins/Android/x86/
+          cp artifacts/android/x86_64/libpixelpart.so ./net.pixelpart.core/Runtime/Plugins/Android/x86_64/
           cp -r artifacts/webgl-2-0-19/* ./net.pixelpart.core/Runtime/Plugins/WebGL/2.0.19/
           cp -r artifacts/webgl-3-1-8/* ./net.pixelpart.core/Runtime/Plugins/WebGL/3.1.8/
           cp -r artifacts/webgl-3-1-38/* ./net.pixelpart.core/Runtime/Plugins/WebGL/3.1.38/

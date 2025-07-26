@@ -32,10 +32,4 @@ def generate(env):
         env.Append(CCFLAGS=["-isysroot", env["macos_sdk_path"]])
         env.Append(LINKFLAGS=["-isysroot", env["macos_sdk_path"]])
 
-    # zlib fix
-    env.Append(CFLAGS=["-DHAVE_UNISTD_H"])
-
-    # Options for pixelpart-runtime
-    env.Append(CPPDEFINES=["PIXELPART_RUNTIME_MULTITHREADING"])
-
     common.generate(env)

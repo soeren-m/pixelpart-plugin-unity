@@ -21,10 +21,4 @@ def generate(env):
     # Link libgcc and libstdc++ statically
     env.Append(LINKFLAGS=["-static-libgcc", "-static-libstdc++"])
 
-    # zlib fix
-    env.Append(CFLAGS=["-DHAVE_UNISTD_H"])
-
-    # Options for pixelpart-runtime
-    env.Append(CPPDEFINES=["PIXELPART_RUNTIME_MULTITHREADING"])
-
     common.generate(env)

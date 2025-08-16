@@ -24,7 +24,7 @@ namespace Pixelpart
             graphicsResourceProvider = new PixelpartGraphicsResourceProvider();
             graphicsResourceProvider.Load(effectRuntimePtr);
 
-            var runtimeInstanceCount = (int)Plugin.PixelpartGetEffectParticleRuntimeInstanceCount(effectRuntimePtr);
+            var runtimeInstanceCount = Plugin.PixelpartGetEffectParticleRuntimeInstanceCount(effectRuntimePtr);
 
             particleRenderers = new IPixelpartParticleRenderer[runtimeInstanceCount];
             particleRuntimeIds = new PixelpartParticleRuntimeId[runtimeInstanceCount];

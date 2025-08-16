@@ -73,10 +73,14 @@ namespace Pixelpart
                 throw new InvalidOperationException("No data assigned to effect asset");
             }
 
-            var errorBuffer = new byte[1024];
-            var effectRuntime = Plugin.PixelpartLoadEffect(Data, Data.Length, errorBuffer, errorBuffer.Length, out int errorLength);
+            const int particleCapacity = 10000;
+
+            var effectRuntime = Plugin.PixelpartLoadEffect(Data, Data.Length, particleCapacity);
             if (effectRuntime == IntPtr.Zero)
             {
+                var errorBuffer = new byte[2048];
+                var errorLength = Plugin.PixelpartLastError(errorBuffer, errorBuffer.Length);
+
                 throw new InvalidOperationException(Encoding.UTF8.GetString(errorBuffer, 0, errorLength));
             }
 
@@ -120,8 +124,11 @@ namespace Pixelpart
 
                 if (!result)
                 {
+                    var errorBuffer = new byte[2048];
+                    var errorLength = Plugin.PixelpartLastError(errorBuffer, errorBuffer.Length);
+
                     Debug.LogWarning("[Pixelpart] Failed to generate shader for material \"" + materialResourceId + "\": " +
-                        Encoding.UTF8.GetString(shaderMainCodeBuffer, 0, shaderMainCodeLength));
+                        Encoding.UTF8.GetString(errorBuffer, 0, errorLength));
 
                     continue;
                 }

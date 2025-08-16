@@ -12,10 +12,13 @@ namespace Pixelpart
         private const string pluginName = "pixelpart";
 #endif
 
-        // General
+        // Error
         [DllImport(pluginName)]
-        public static extern IntPtr PixelpartLoadEffect(byte[] data, int size,
-            byte[] errorBuffer, int errorBufferSize, out int errorLength);
+        public static extern int PixelpartLastError(byte[] buffer, int bufferSize);
+
+        // EffectRuntime
+        [DllImport(pluginName)]
+        public static extern IntPtr PixelpartLoadEffect(byte[] data, int size, int particleCapacity);
         [DllImport(pluginName)]
         public static extern void PixelpartDeleteEffect(IntPtr effectRuntime);
         [DllImport(pluginName)]
@@ -33,7 +36,7 @@ namespace Pixelpart
         [DllImport(pluginName)]
         public static extern int PixelpartGetEffectParticleTypeCount(IntPtr effectRuntime);
         [DllImport(pluginName)]
-        public static extern uint PixelpartGetEffectParticleRuntimeInstanceCount(IntPtr effectRuntime);
+        public static extern int PixelpartGetEffectParticleRuntimeInstanceCount(IntPtr effectRuntime);
         [DllImport(pluginName)]
         public static extern void PixelpartGetEffectParticleRuntimeInstances(IntPtr effectRuntime,
             [In, Out] Pixelpart.PixelpartParticleRuntimeId[] runtimeIds);

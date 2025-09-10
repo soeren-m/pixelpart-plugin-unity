@@ -127,10 +127,9 @@ sources = []
 add_sources(sources, "src", ".cpp")
 add_sources(sources, "pixelpart-runtime/asset", ".cpp")
 add_sources(sources, "pixelpart-runtime/common", ".cpp")
-add_sources(sources, "pixelpart-runtime/computegraph", ".cpp")
 add_sources(sources, "pixelpart-runtime/effect", ".cpp")
 add_sources(sources, "pixelpart-runtime/engine", ".cpp")
-add_sources(sources, "pixelpart-runtime/shadergraph", ".cpp")
+add_sources(sources, "pixelpart-runtime/vertex", ".cpp")
 add_sources(sources, "pixelpart-runtime/zlib", ".c")
 
 # Includes

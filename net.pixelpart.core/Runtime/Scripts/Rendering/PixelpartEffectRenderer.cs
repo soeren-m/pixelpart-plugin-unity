@@ -11,7 +11,7 @@ namespace Pixelpart
 
         private readonly PixelpartGraphicsResourceProvider graphicsResourceProvider;
 
-        private readonly IPixelpartParticleRenderer[] particleRenderers;
+        private readonly PixelpartParticleRenderer[] particleRenderers;
 
         private readonly PixelpartParticleRuntimeId[] particleRuntimeIds;
 
@@ -26,7 +26,7 @@ namespace Pixelpart
 
             var runtimeInstanceCount = Plugin.PixelpartGetEffectParticleRuntimeInstanceCount(effectRuntimePtr);
 
-            particleRenderers = new IPixelpartParticleRenderer[runtimeInstanceCount];
+            particleRenderers = new PixelpartParticleRenderer[runtimeInstanceCount];
             particleRuntimeIds = new PixelpartParticleRuntimeId[runtimeInstanceCount];
             sortedParticleRuntimeIndices = new int[runtimeInstanceCount];
             Plugin.PixelpartGetEffectParticleRuntimeInstances(effectRuntimePtr, particleRuntimeIds);
@@ -45,8 +45,6 @@ namespace Pixelpart
                 }
 
                 var baseMaterial = particleMaterials[particleTypeIndex];
-
-                var rendererType = (ParticleRendererType)Plugin.PixelpartParticleTypeGetRenderer(effectRuntimePtr, runtimeId.TypeId);
 
                 var materialIdLength = Plugin.PixelpartParticleTypeGetMaterialId(effectRuntimePtr, runtimeId.TypeId, materialIdBuffer, materialIdBuffer.Length);
                 var materialId = System.Text.Encoding.UTF8.GetString(materialIdBuffer, 0, materialIdLength);
@@ -71,27 +69,9 @@ namespace Pixelpart
                     continue;
                 }
 
-                switch (rendererType)
-                {
-                    case ParticleRendererType.Sprite:
-                        particleRenderers[runtimeInstanceIndex] = new PixelpartParticleSpriteRenderer(effectRuntimePtr,
-                            runtimeId.EmitterId, runtimeId.TypeId,
-                            baseMaterial, materialDescriptor, graphicsResourceProvider);
-                        break;
-                    case ParticleRendererType.Trail:
-                        particleRenderers[runtimeInstanceIndex] = new PixelpartParticleTrailRenderer(effectRuntimePtr,
-                            runtimeId.EmitterId, runtimeId.TypeId,
-                            baseMaterial, materialDescriptor, graphicsResourceProvider);
-                        break;
-                    case ParticleRendererType.Mesh:
-                        particleRenderers[runtimeInstanceIndex] = new PixelpartParticleMeshRenderer(effectRuntimePtr,
-                            runtimeId.EmitterId, runtimeId.TypeId,
-                            baseMaterial, materialDescriptor, graphicsResourceProvider);
-                        break;
-                    default:
-                        Debug.LogWarning("[Pixelpart] Particle type with id " + runtimeId.TypeId + " has unknown renderer type");
-                        break;
-                }
+                particleRenderers[runtimeInstanceIndex] = new PixelpartParticleRenderer(effectRuntimePtr,
+                    runtimeId.EmitterId, runtimeId.TypeId,
+                    baseMaterial, materialDescriptor, graphicsResourceProvider);
             }
         }
 
@@ -111,7 +91,7 @@ namespace Pixelpart
                     continue;
                 }
 
-                particleRenderers[index].Render(camera, transform, effectScale, layer);
+                particleRenderers[index].Render(camera, effectScale, layer);
             }
         }
     }

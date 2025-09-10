@@ -7,8 +7,8 @@
 #include "pixelpart-runtime/common/Curve.h"
 #include "pixelpart-runtime/common/Transform.h"
 #include "pixelpart-runtime/effect/Node.h"
-#include "pixelpart-runtime/computegraph/ComputeGraph.h"
-#include "pixelpart-runtime/shadergraph/ShaderGraph.h"
+#include "pixelpart-runtime/effect/ComputeGraph.h"
+#include "pixelpart-runtime/effect/ShaderGraph.h"
 #include "pixelpart-runtime/engine/MultiThreadedEffectEngine.h"
 #include "pixelpart-runtime/engine/SingleThreadedEffectEngine.h"
 #include "pixelpart-runtime/json/json.hpp"
@@ -89,6 +89,49 @@ UNITY_INTERFACE_EXPORT void* UNITY_INTERFACE_API PixelpartLoadEffect(const pixel
 #endif
 
 		effectRuntime->effectAsset.effect().applyInputs();
+
+		pixelpart::VertexFormat vertexBasedVertexFormat({
+				pixelpart::VertexAttribute(pixelpart::VertexAttributeUsage::index, pixelpart::VertexDataGenerationMode::vertex, pixelpart::VertexDataType::type_int32, 0, 0, sizeof(int32_t)),
+				pixelpart::VertexAttribute(pixelpart::VertexAttributeUsage::position3d, pixelpart::VertexDataGenerationMode::element, pixelpart::VertexDataType::type_float, 1, 0, sizeof(float) * 3),
+				pixelpart::VertexAttribute(pixelpart::VertexAttributeUsage::color, pixelpart::VertexDataGenerationMode::element, pixelpart::VertexDataType::type_float, 2, 0, sizeof(float) * 4),
+				pixelpart::VertexAttribute(pixelpart::VertexAttributeUsage::normal, pixelpart::VertexDataGenerationMode::element, pixelpart::VertexDataType::type_float, 3, 0, sizeof(float) * 3),
+				pixelpart::VertexAttribute(pixelpart::VertexAttributeUsage::texture_coord, pixelpart::VertexDataGenerationMode::element, pixelpart::VertexDataType::type_float, 4, 0, sizeof(float) * 2),
+				pixelpart::VertexAttribute(pixelpart::VertexAttributeUsage::velocity3d, pixelpart::VertexDataGenerationMode::element, pixelpart::VertexDataType::type_float, 5, 0, sizeof(float) * 4),
+				pixelpart::VertexAttribute(pixelpart::VertexAttributeUsage::life, pixelpart::VertexDataGenerationMode::element, pixelpart::VertexDataType::type_float, 6, 0, sizeof(float) * 4),
+				pixelpart::VertexAttribute(pixelpart::VertexAttributeUsage::id, pixelpart::VertexDataGenerationMode::element, pixelpart::VertexDataType::type_float, 6, sizeof(float), sizeof(float) * 4)
+			},
+			pixelpart::VertexWindingOrder::cw);
+
+		pixelpart::VertexFormat instancingVertexFormat({
+				pixelpart::VertexAttribute(pixelpart::VertexAttributeUsage::matrix4x4_column_major, pixelpart::VertexDataGenerationMode::instance, pixelpart::VertexDataType::type_float, 0, 0, sizeof(float) * 16),
+				pixelpart::VertexAttribute(pixelpart::VertexAttributeUsage::color, pixelpart::VertexDataGenerationMode::instance, pixelpart::VertexDataType::type_float, 1, 0, sizeof(float) * 4),
+				pixelpart::VertexAttribute(pixelpart::VertexAttributeUsage::velocity3d, pixelpart::VertexDataGenerationMode::instance, pixelpart::VertexDataType::type_float, 2, 0, sizeof(float) * 4),
+				pixelpart::VertexAttribute(pixelpart::VertexAttributeUsage::life, pixelpart::VertexDataGenerationMode::instance, pixelpart::VertexDataType::type_float, 3, 0, sizeof(float)),
+				pixelpart::VertexAttribute(pixelpart::VertexAttributeUsage::id, pixelpart::VertexDataGenerationMode::instance, pixelpart::VertexDataType::type_float, 4, 0, sizeof(float))
+			},
+			pixelpart::VertexWindingOrder::cw);
+
+		for(const pixelpart::ParticleRuntimeId& runtimeId : effectRuntime->effectAsset.effect().particleRuntimeIds()) {
+			const pixelpart::ParticleType& particleType = effectRuntime->effectAsset.effect().particleTypes().at(runtimeId.typeId);
+
+			pixelpart::VertexFormat vertexFormat;
+			switch(particleType.renderer()) {
+				case pixelpart::ParticleRendererType::sprite:
+				case pixelpart::ParticleRendererType::trail:
+					vertexFormat = vertexBasedVertexFormat;
+					break;
+				case pixelpart::ParticleRendererType::mesh:
+					vertexFormat = instancingVertexFormat;
+					break;
+				default:
+					break;
+			}
+
+			effectRuntime->vertexGenerators[runtimeId] = std::make_unique<pixelpart::ParticleVertexGenerator>(
+				effectRuntime->effectAsset.effect(), runtimeId.emitterId, runtimeId.typeId,
+				vertexFormat);
+			effectRuntime->vertexBufferDimensions[runtimeId] = pixelpart::VertexDataBufferDimensions();
+		}
 
 		return effectRuntime;
 	}

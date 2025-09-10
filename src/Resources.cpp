@@ -286,15 +286,15 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetMeshResourceVertexDa
 
 		for(std::size_t i = 0; i < meshFaces.size(); i += 3) {
 			triangles[i + 0] = static_cast<pixelpart_unity::int_t>(meshFaces[i + 0]);
-			triangles[i + 1] = static_cast<pixelpart_unity::int_t>(meshFaces[i + 2]);
-			triangles[i + 2] = static_cast<pixelpart_unity::int_t>(meshFaces[i + 1]);
+			triangles[i + 1] = static_cast<pixelpart_unity::int_t>(meshFaces[i + 1]);
+			triangles[i + 2] = static_cast<pixelpart_unity::int_t>(meshFaces[i + 2]);
 		}
 
 		for(std::size_t i = 0; i < meshPositions.size(); i++) {
 			vertices[i] = pixelpart_unity::vector3_t{
 				meshPositions[i].x,
 				meshPositions[i].y,
-				meshPositions[i].z
+				-meshPositions[i].z
 			};
 		}
 
@@ -302,7 +302,7 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetMeshResourceVertexDa
 			normals[i] = pixelpart_unity::vector3_t{
 				meshNormals[i].x,
 				meshNormals[i].y,
-				meshNormals[i].z
+				-meshNormals[i].z
 			};
 		}
 

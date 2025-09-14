@@ -17,9 +17,11 @@ EnsureSConsVersion(4, 0)
 EnsurePythonVersion(3, 8)
 
 platforms = [
+    "windows",
     "linux",
     "macos",
-    "windows",
+    "ios",
+    "android",
     "web"
 ]
 architectures = [
@@ -69,8 +71,6 @@ opts.Add(EnumVariable(
     allowed_values=architectures,
     map=architecture_aliases))
 
-#opts.Add(BoolVariable(key="threads", help="Enable threading support", default=env.get("threads", True)))
-
 # Add platform options
 for pl in sorted(set(platforms)):
     tl = Tool(pl, toolpath=["tools"])
@@ -83,7 +83,7 @@ Help(opts.GenerateHelpText(env))
 
 unknown = opts.UnknownVariables()
 if unknown:
-    print("WARNING: Unknown SCons variables were passed and will be ignored:")
+    print("Unknown SCons variables were passed and will be ignored:")
     for item in unknown.items():
         print("    " + item[0] + "=" + item[1])
 
@@ -135,27 +135,49 @@ add_sources(sources, "pixelpart-runtime/zlib", ".c")
 # Includes
 env.Append(CPPPATH=["."])
 
+# Disable multi-threading in web build
+if env["platform"] != "web":
+    env.Append(CPPDEFINES=["PIXELPART_RUNTIME_MULTITHREADING"])
+
+# Zlib
+if env["platform"] != "windows":
+    env.Append(CFLAGS=["-DHAVE_UNISTD_H"])
+
 # Library path
 library_path = "net.pixelpart.core/Runtime/Plugins/"
 
-if env["platform"] == "linux":
-    if env["arch"] == "x86_64":
-        library_path += "x86_64/libpixelpart.so"
-    elif env["arch"] == "x86_32":
-        library_path += "x86/libpixelpart.so"
-elif env["platform"] == "windows":
+if env["platform"] == "windows":
     if env["arch"] == "x86_64":
         library_path += "x86_64/pixelpart.dll"
     elif env["arch"] == "x86_32":
         library_path += "x86/pixelpart.dll"
+elif env["platform"] == "linux":
+    if env["arch"] == "x86_64":
+        library_path += "x86_64/libpixelpart.so"
+    elif env["arch"] == "x86_32":
+        library_path += "x86/libpixelpart.so"
 elif env["platform"] == "macos":
     library_path += "macOS/pixelpart.bundle"
+elif env["platform"] == "ios":
+    if env["ios_simulator"]:
+        library_path += "iOS/libpixelpart-simulator.a"
+    else:
+        library_path += "iOS/libpixelpart-phone.a"
+elif env["platform"] == "android":
+    if env["arch"] == "arm64":
+        library_path += "Android/arm64/libpixelpart.so"
+    elif env["arch"] == "arm32":
+        library_path += "Android/arm32/libpixelpart.so"
+    elif env["arch"] == "x86_64":
+        library_path += "Android/x86_64/libpixelpart.so"
+    elif env["arch"] == "x86_32":
+        library_path += "Android/x86/libpixelpart.so"
 elif env["platform"] == "web":
     library_path += "WebGL/libpixelpart.a"
 
 if env["platform"] == "macos":
     library = env.LoadableModule(library_path, source=sources)
-elif env["platform"] == "web":
+elif env["platform"] == "web" or env["platform"] == "ios":
     library = env.StaticLibrary(library_path, source=sources)
 else:
     library = env.SharedLibrary(library_path, source=sources)

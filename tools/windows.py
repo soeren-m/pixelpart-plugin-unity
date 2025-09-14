@@ -15,9 +15,6 @@ def options(opts):
     opts.Add("mingw_prefix", "MinGW prefix", mingw)
 
 def generate(env):
-    # Options for pixelpart-runtime
-    env.Append(CPPDEFINES=["PIXELPART_RUNTIME_MULTITHREADING"])
-
     if not env["use_mingw"] and msvc.exists(env):
         # Architecture
         if env["arch"] == "x86_64":

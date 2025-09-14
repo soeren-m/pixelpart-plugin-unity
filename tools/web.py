@@ -25,7 +25,4 @@ def generate(env):
     env["LIBSUFFIX"] = ".a"
     env["SHLIBSUFFIX"] = ".wasm"
 
-    # zlib fix
-    env.Append(CFLAGS=["-DHAVE_UNISTD_H"])
-
     common.generate(env)

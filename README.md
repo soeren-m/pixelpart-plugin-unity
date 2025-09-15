@@ -1,20 +1,28 @@
 # Pixelpart for Unity
 
-This repository contains the official Pixelpart plugin for Unity 2021.3+. The plugin allows you to play Pixelpart effects directly within the Unity engine, eliminating the need to export effects as sprite sheets or video files beforehand.
+This repository contains the official Pixelpart plugin for Unity 2021.3+. The plugin allows you to play Pixelpart effects directly within the Unity engine.
 
 ## Installation
 
-The recommonded way to install the plugin is by downloading it from [pixelpart.net](https://pixelpart.net/plugins/). Once you've opened the project where you want to use Pixelpart, install the core package *net.pixelpart.core.tgz* using the Unity Package Manager. If your project utilizes the *Universal Rendering Pipeline (URP)* or the *High-Definition Rendering Pipeline (HDRP)*, make sure to additionally install the corresponding package: *net.pixelpart.urp.tgz* for URP or *net.pixelpart.hdrp.tgz* for HDRP.
+### OpenUPM
+
+The plugin is available on OpenUPM as the package *net.pixelpart.core*. See [openupm.com](https://openupm.com/docs/getting-started.html) for instructions on how to install packages from OpenUPM. Projects that use the Universal Rendering Pipeline (URP) or the High-Definition Rendering Pipeline (HDRP) additionally require the packages *net.pixelpart.urp* and *net.pixelpart.hdrp*, respectively.
+
+### Manual Install
+
+You can also manually install the plugin by downloading it from [pixelpart.net](https://pixelpart.net/plugins/). Once you've opened the project where you want to use Pixelpart, install the core package *net.pixelpart.core.tgz* using the Unity Package Manager. If your project utilizes the Universal Rendering Pipeline (URP) or the High-Definition Rendering Pipeline (HDRP), make sure to also install *net.pixelpart.urp.tgz* for URP or *net.pixelpart.hdrp.tgz* for HDRP.
 
 ## Usage
 
-A detailed usage guide can be found [here](https://pixelpart.net/documentation/book/plugins/plugin-unity.html) on the Pixelpart website. The plugin also offers an extensive scripting API available for modifying effects dynamically.
+A detailed usage guide can be found [here](https://pixelpart.net/documentation/unity/) on the Pixelpart website. The plugin also offers an extensive scripting API available for modifying effects dynamically.
 
 ## Supported Platforms
 
-As of today, the prebuilt plugin can be used on the following platforms:
+The plugin can be used on the following platforms:
 
 - Windows
 - Linux
 - macOS
+- iOS
+- Android
 - Web

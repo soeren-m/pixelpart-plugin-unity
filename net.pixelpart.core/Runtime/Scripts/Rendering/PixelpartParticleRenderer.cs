@@ -175,6 +175,7 @@ namespace Pixelpart
 
         private void RenderVertices(int layer)
         {
+            mesh.Clear();
             mesh.SetVertices(vertices, 0, vertices.Length, MeshUpdateFlags.DontNotifyMeshUsers);
             mesh.SetColors(colors, 0, colors.Length, MeshUpdateFlags.DontNotifyMeshUsers);
             mesh.SetNormals(normals, 0, normals.Length, MeshUpdateFlags.DontNotifyMeshUsers);

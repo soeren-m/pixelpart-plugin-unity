@@ -12,10 +12,13 @@ namespace Pixelpart
         private const string pluginName = "pixelpart";
 #endif
 
-        // General
+        // Error
         [DllImport(pluginName)]
-        public static extern IntPtr PixelpartLoadEffect(byte[] data, int size,
-            byte[] errorBuffer, int errorBufferSize, out int errorLength);
+        public static extern int PixelpartLastError(byte[] buffer, int bufferSize);
+
+        // EffectRuntime
+        [DllImport(pluginName)]
+        public static extern IntPtr PixelpartLoadEffect(byte[] data, int size, int particleCapacity);
         [DllImport(pluginName)]
         public static extern void PixelpartDeleteEffect(IntPtr effectRuntime);
         [DllImport(pluginName)]
@@ -33,7 +36,7 @@ namespace Pixelpart
         [DllImport(pluginName)]
         public static extern int PixelpartGetEffectParticleTypeCount(IntPtr effectRuntime);
         [DllImport(pluginName)]
-        public static extern uint PixelpartGetEffectParticleRuntimeInstanceCount(IntPtr effectRuntime);
+        public static extern int PixelpartGetEffectParticleRuntimeInstanceCount(IntPtr effectRuntime);
         [DllImport(pluginName)]
         public static extern void PixelpartGetEffectParticleRuntimeInstances(IntPtr effectRuntime,
             [In, Out] Pixelpart.PixelpartParticleRuntimeId[] runtimeIds);
@@ -86,20 +89,16 @@ namespace Pixelpart
         [DllImport(pluginName)]
         public static extern void PixelpartGetSortedParticleRuntimeInstances(IntPtr effectRuntime, int[] indices);
         [DllImport(pluginName)]
-        public static extern void PixelpartPrepareParticleSpriteVertexData(IntPtr effectRuntime, uint particleEmitterId, uint particleTypeId, out int triangleCount, out int vertexCount);
+        public static extern void PixelpartConstructParticleGeometry(IntPtr effectRuntime, uint particleEmitterId, uint particleTypeId,
+            Vector3 cameraPosition, Vector3 cameraForward, Vector3 cameraRight, Vector3 cameraUp, Vector3 effectScale,
+            int[] bufferSizes);
         [DllImport(pluginName)]
-        public static extern void PixelpartPrepareParticleTrailVertexData(IntPtr effectRuntime, uint particleEmitterId, uint particleTypeId, out int triangleCount, out int vertexCount);
-        [DllImport(pluginName)]
-        public static extern bool PixelpartGetParticleSpriteVertexData(IntPtr effectRuntime, uint particleEmitterId, uint particleTypeId,
-            Vector3 cameraPosition, Vector3 viewRight, Vector3 viewUp, Vector3 effectSize,
+        public static extern bool PixelpartGenerateParticleVertexData(IntPtr effectRuntime, uint particleEmitterId, uint particleTypeId,
+            Vector3 cameraPosition, Vector3 cameraForward, Vector3 cameraRight, Vector3 cameraUp, Vector3 effectScale,
             int[] triangles, [In, Out] Vector3[] vertices, [In, Out] Color[] colors, [In, Out] Vector3[] normals, [In, Out] Vector2[] uv, [In, Out] Vector4[] uv2, [In, Out] Vector4[] uv3);
         [DllImport(pluginName)]
-        public static extern bool PixelpartGetParticleTrailVertexData(IntPtr effectRuntime, uint particleEmitterId, uint particleTypeId,
-            Vector3 cameraPosition, Vector3 viewRight, Vector3 viewUp, Vector3 effectSize,
-            int[] triangles, [In, Out] Vector3[] vertices, [In, Out] Color[] colors, [In, Out] Vector3[] normals, [In, Out] Vector2[] uv, [In, Out] Vector4[] uv2, [In, Out] Vector4[] uv3);
-        [DllImport(pluginName)]
-        public static extern bool PixelpartGetParticleMeshInstanceData(IntPtr effectRuntime, uint particleEmitterId, uint particleTypeId,
-            Vector3 cameraPosition, Vector3 viewRight, Vector3 viewUp, Vector3 effectSize,
+        public static extern bool PixelpartGenerateParticleInstanceData(IntPtr effectRuntime, uint particleEmitterId, uint particleTypeId,
+            Vector3 cameraPosition, Vector3 cameraForward, Vector3 cameraRight, Vector3 cameraUp, Vector3 effectScale,
             [In, Out] Matrix4x4[] transforms, [In, Out] Vector4[] colors, [In, Out] Vector4[] velocities, [In, Out] float[] lives, [In, Out] float[] ids);
 
         // Resources

@@ -305,7 +305,7 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::bool_t UNITY_INTERFACE_API PixelpartNode
 		const pixelpart::Node& node =
 			effectRuntime->effectAsset.effect().sceneGraph().at(pixelpart::id_t(nodeId));
 
-		return node.active(effectRuntime->effectEngine->runtimeContext());
+		return node.active(effectRuntime->effectEngine->context());
 	}
 	catch(const std::exception& e) {
 		pixelpart_unity::lastError = std::string(e.what());
@@ -324,7 +324,7 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::float_t UNITY_INTERFACE_API PixelpartNod
 		const pixelpart::Node& node =
 			effectRuntime->effectAsset.effect().sceneGraph().at(pixelpart::id_t(nodeId));
 
-		return pixelpart_unity::toUnity(node.life(effectRuntime->effectEngine->runtimeContext()));
+		return pixelpart_unity::toUnity(node.life(effectRuntime->effectEngine->context()));
 	}
 	catch(const std::exception& e) {
 		pixelpart_unity::lastError = std::string(e.what());

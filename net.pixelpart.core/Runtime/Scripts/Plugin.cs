@@ -26,7 +26,7 @@ namespace Pixelpart
         [DllImport(pluginName)]
         public static extern void PixelpartAdvanceEffect(IntPtr effectRuntime, float dt, bool loop, float loopTime, float speed, float timeStep);
         [DllImport(pluginName)]
-        public static extern void PixelpartRestartEffect(IntPtr effectRuntime, bool reset);
+        public static extern void PixelpartRestartEffect(IntPtr effectRuntime, bool clear);
         [DllImport(pluginName)]
         public static extern bool PixelpartIsEffect3d(IntPtr effectRuntime);
         [DllImport(pluginName)]
@@ -36,10 +36,10 @@ namespace Pixelpart
         [DllImport(pluginName)]
         public static extern int PixelpartGetEffectParticleTypeCount(IntPtr effectRuntime);
         [DllImport(pluginName)]
-        public static extern int PixelpartGetEffectParticleRuntimeInstanceCount(IntPtr effectRuntime);
+        public static extern int PixelpartGetEffectParticleEmissionPairCount(IntPtr effectRuntime);
         [DllImport(pluginName)]
-        public static extern void PixelpartGetEffectParticleRuntimeInstances(IntPtr effectRuntime,
-            [In, Out] Pixelpart.PixelpartParticleRuntimeId[] runtimeIds);
+        public static extern void PixelpartGetEffectParticleEmissionPairs(IntPtr effectRuntime,
+            [In, Out] Pixelpart.PixelpartParticleEmissionPair[] emissionPairs);
         [DllImport(pluginName)]
         public static extern uint PixelpartGetEffectParticleCount(IntPtr effectRuntime, uint particleEmitterId, uint particleTypeId);
         [DllImport(pluginName)]
@@ -87,7 +87,7 @@ namespace Pixelpart
 
         // Rendering
         [DllImport(pluginName)]
-        public static extern void PixelpartGetSortedParticleRuntimeInstances(IntPtr effectRuntime, int[] indices);
+        public static extern void PixelpartGetSortedParticleEmissionPairs(IntPtr effectRuntime, int[] indices);
         [DllImport(pluginName)]
         public static extern void PixelpartConstructParticleGeometry(IntPtr effectRuntime, uint particleEmitterId, uint particleTypeId,
             Vector3 cameraPosition, Vector3 cameraForward, Vector3 cameraRight, Vector3 cameraUp, Vector3 effectScale,

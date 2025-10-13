@@ -55,7 +55,7 @@ struct matrix4x4_t {
 	float data[16];
 };
 
-struct alignas(8) particleruntimeid_t {
+struct alignas(8) particleemissionpair_t {
 	std::uint32_t emitterId;
 	std::uint32_t typeId;
 };

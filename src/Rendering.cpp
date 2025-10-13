@@ -6,11 +6,13 @@
 #include "pixelpart-runtime/common/Curve.h"
 #include "pixelpart-runtime/common/Id.h"
 #include "pixelpart-runtime/common/ThreadPool.h"
-#include "pixelpart-runtime/effect/ParticleEmitter.h"
 #include "pixelpart-runtime/effect/ParticleType.h"
 #include "pixelpart-runtime/effect/Effect.h"
-#include "pixelpart-runtime/effect/ParticleRuntimeId.h"
+#include "pixelpart-runtime/effect/ParticleEmissionPair.h"
+#include "pixelpart-runtime/effect/EffectRuntimeContext.h"
 #include "pixelpart-runtime/engine/ParticleCollection.h"
+#include "pixelpart-runtime/vertex/VertexDataBufferCollection.h"
+#include "pixelpart-runtime/vertex/SceneContext.h"
 #include <cstdint>
 #include <cstring>
 #include <cmath>
@@ -21,7 +23,7 @@
 #include <algorithm>
 
 extern "C" {
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetSortedParticleRuntimeInstances(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::int_t* indices) {
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetSortedParticleEmissionPairs(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::int_t* indices) {
 	if(!effectRuntime) {
 		pixelpart_unity::lastError = pixelpart_unity::invalidEffectRuntimeError;
 		return;
@@ -29,11 +31,11 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetSortedParticleRuntim
 
 	const pixelpart::Effect& effect = effectRuntime->effectAsset.effect();
 
-	std::vector<pixelpart_unity::int_t> sortedIndices(effect.particleRuntimeIds().size());
+	std::vector<pixelpart_unity::int_t> sortedIndices(effect.particleEmissionPairs().size());
 	std::iota(sortedIndices.begin(), sortedIndices.end(), 0);
 	std::sort(sortedIndices.begin(), sortedIndices.end(), [&effect](pixelpart_unity::int_t i1, pixelpart_unity::int_t i2) {
-		const pixelpart::ParticleType& pt1 = effect.particleTypes().at(effect.particleRuntimeIds()[i1].typeId);
-		const pixelpart::ParticleType& pt2 = effect.particleTypes().at(effect.particleRuntimeIds()[i2].typeId);
+		const pixelpart::ParticleType& pt1 = effect.particleTypes().at(effect.particleEmissionPairs()[i1].typeId);
+		const pixelpart::ParticleType& pt2 = effect.particleTypes().at(effect.particleEmissionPairs()[i2].typeId);
 
 		return pt1.layer() < pt2.layer();
 	});
@@ -54,19 +56,16 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartConstructParticleGeomet
 	}
 
 	try {
-		pixelpart::ParticleRuntimeId runtimeId = pixelpart::ParticleRuntimeId(
+		pixelpart::ParticleEmissionPair emissionPair = pixelpart::ParticleEmissionPair(
 			pixelpart::id_t(particleEmitterId), pixelpart::id_t(particleTypeId));
 
-		const pixelpart::ParticleCollection* particleCollection = effectRuntime->effectEngine->particles(
-			pixelpart::id_t(particleEmitterId), pixelpart::id_t(particleTypeId));
+		const pixelpart::ParticleCollection* particleCollection = effectRuntime->effectEngine->state().particleCollection(
+			emissionPair.emitterId, emissionPair.typeId);
 		if(!particleCollection) {
 			return;
 		}
 
-		pixelpart::ParticleCollection::ReadPtr particles = particleCollection->readPtr();
-		std::uint32_t particleCount = particleCollection->count();
-
-		pixelpart::RuntimeContext runtimeContext = effectRuntime->effectEngine->runtimeContext();
+		pixelpart::EffectRuntimeContext runtimeContext = effectRuntime->effectEngine->context();
 		pixelpart::SceneContext sceneContext;
 		sceneContext.effectScale = pixelpart_unity::fromUnity(effectScale);
 		sceneContext.cameraPosition = pixelpart_unity::fromUnity(cameraPosition);
@@ -74,12 +73,13 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartConstructParticleGeomet
 		sceneContext.cameraRight = pixelpart_unity::fromUnity(cameraRight);
 		sceneContext.cameraUp = pixelpart_unity::fromUnity(cameraUp);
 
-		auto& vertexGenerator = effectRuntime->vertexGenerators.at(runtimeId);
+		auto& vertexGenerator = effectRuntime->vertexGenerators.at(emissionPair);
 		pixelpart::VertexDataBufferDimensions bufferDimensions = vertexGenerator->buildGeometry(
-			particles, particleCount,
+			particleCollection->readPtr(),
+			particleCollection->count(),
 			runtimeContext, sceneContext);
 
-		effectRuntime->vertexBufferDimensions[runtimeId] = bufferDimensions;
+		effectRuntime->vertexBufferDimensions[emissionPair] = bufferDimensions;
 
 		for(std::size_t bufferSize : bufferDimensions) {
 			*bufferSizes = static_cast<pixelpart_unity::int_t>(bufferSize);
@@ -104,21 +104,19 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::bool_t UNITY_INTERFACE_API PixelpartGene
 	}
 
 	try {
-		pixelpart::ParticleRuntimeId runtimeId = pixelpart::ParticleRuntimeId(
+		pixelpart::ParticleEmissionPair emissionPair = pixelpart::ParticleEmissionPair(
 			pixelpart::id_t(particleEmitterId), pixelpart::id_t(particleTypeId));
 
 		const pixelpart::Effect& effect = effectRuntime->effectAsset.effect();
-		const pixelpart::ParticleType& particleType = effect.particleTypes().at(runtimeId.typeId);
+		const pixelpart::ParticleType& particleType = effect.particleTypes().at(emissionPair.typeId);
 
-		const pixelpart::ParticleCollection* particleCollection = effectRuntime->effectEngine->particles(runtimeId.emitterId, runtimeId.typeId);
+		const pixelpart::ParticleCollection* particleCollection =
+			effectRuntime->effectEngine->state().particleCollection(emissionPair.emitterId, emissionPair.typeId);
 		if(!particleCollection) {
 			return false;
 		}
 
-		pixelpart::ParticleCollection::ReadPtr particles = particleCollection->readPtr();
-		std::uint32_t particleCount = particleCollection->count();
-
-		pixelpart::RuntimeContext runtimeContext = effectRuntime->effectEngine->runtimeContext();
+		pixelpart::EffectRuntimeContext runtimeContext = effectRuntime->effectEngine->context();
 		pixelpart::SceneContext sceneContext;
 		sceneContext.effectScale = pixelpart_unity::fromUnity(effectScale);
 		sceneContext.cameraPosition = pixelpart_unity::fromUnity(cameraPosition);
@@ -126,7 +124,7 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::bool_t UNITY_INTERFACE_API PixelpartGene
 		sceneContext.cameraRight = pixelpart_unity::fromUnity(cameraRight);
 		sceneContext.cameraUp = pixelpart_unity::fromUnity(cameraUp);
 
-		auto& vertexGenerator = effectRuntime->vertexGenerators.at(runtimeId);
+		auto& vertexGenerator = effectRuntime->vertexGenerators.at(emissionPair);
 		vertexGenerator->generateVertexData(pixelpart::VertexDataBufferCollection({
 				reinterpret_cast<std::uint8_t*>(triangles),
 				reinterpret_cast<std::uint8_t*>(vertices),
@@ -136,13 +134,14 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::bool_t UNITY_INTERFACE_API PixelpartGene
 				reinterpret_cast<std::uint8_t*>(uv1),
 				reinterpret_cast<std::uint8_t*>(uv2)
 			}),
-			particles, particleCount,
+			particleCollection->readPtr(),
+			particleCollection->count(),
 			runtimeContext, sceneContext);
 
 		if(!effect.is3d()) {
 			float zOffset = -0.001f * static_cast<float>(particleType.layer());
 
-			const auto& vertexBufferDimensions = effectRuntime->vertexBufferDimensions[runtimeId];
+			const auto& vertexBufferDimensions = effectRuntime->vertexBufferDimensions[emissionPair];
 			for(std::size_t index = 0; index < vertexBufferDimensions.at(1); index++) {
 				vertices[index].z += zOffset;
 			}
@@ -170,18 +169,16 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::bool_t UNITY_INTERFACE_API PixelpartGene
 	}
 
 	try {
-		pixelpart::ParticleRuntimeId runtimeId = pixelpart::ParticleRuntimeId(
+		pixelpart::ParticleEmissionPair emissionPair = pixelpart::ParticleEmissionPair(
 			pixelpart::id_t(particleEmitterId), pixelpart::id_t(particleTypeId));
 
-		const pixelpart::ParticleCollection* particleCollection = effectRuntime->effectEngine->particles(runtimeId.emitterId, runtimeId.typeId);
+		const pixelpart::ParticleCollection* particleCollection =
+			effectRuntime->effectEngine->state().particleCollection(emissionPair.emitterId, emissionPair.typeId);
 		if(!particleCollection) {
 			return false;
 		}
 
-		pixelpart::ParticleCollection::ReadPtr particles = particleCollection->readPtr();
-		std::uint32_t particleCount = particleCollection->count();
-
-		pixelpart::RuntimeContext runtimeContext = effectRuntime->effectEngine->runtimeContext();
+		pixelpart::EffectRuntimeContext runtimeContext = effectRuntime->effectEngine->context();
 		pixelpart::SceneContext sceneContext;
 		sceneContext.effectScale = pixelpart_unity::fromUnity(effectScale);
 		sceneContext.cameraPosition = pixelpart_unity::fromUnity(cameraPosition);
@@ -189,7 +186,7 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::bool_t UNITY_INTERFACE_API PixelpartGene
 		sceneContext.cameraRight = pixelpart_unity::fromUnity(cameraRight);
 		sceneContext.cameraUp = pixelpart_unity::fromUnity(cameraUp);
 
-		auto& vertexGenerator = effectRuntime->vertexGenerators.at(runtimeId);
+		auto& vertexGenerator = effectRuntime->vertexGenerators.at(emissionPair);
 		vertexGenerator->generateVertexData(pixelpart::VertexDataBufferCollection({
 				reinterpret_cast<std::uint8_t*>(transforms),
 				reinterpret_cast<std::uint8_t*>(colors),
@@ -197,7 +194,8 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::bool_t UNITY_INTERFACE_API PixelpartGene
 				reinterpret_cast<std::uint8_t*>(lives),
 				reinterpret_cast<std::uint8_t*>(ids)
 			}),
-			particles, particleCount,
+			particleCollection->readPtr(),
+			particleCollection->count(),
 			runtimeContext, sceneContext);
 
 		return true;

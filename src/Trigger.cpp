@@ -72,6 +72,6 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::bool_t UNITY_INTERFACE_API PixelpartIsTr
 		return false;
 	}
 
-	return effectRuntime->effectEngine->runtimeContext().triggerActivated(pixelpart::id_t(triggerId));
+	return effectRuntime->effectEngine->context().triggerActivated(pixelpart::id_t(triggerId));
 }
 }

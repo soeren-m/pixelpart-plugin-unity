@@ -4,7 +4,8 @@
 #include "pixelpart-runtime/common/Types.h"
 #include "pixelpart-runtime/common/Math.h"
 #include "pixelpart-runtime/common/ThreadPool.h"
-#include "pixelpart-runtime/effect/ParticleRuntimeId.h"
+#include "pixelpart-runtime/effect/ParticleEmissionPair.h"
+#include "pixelpart-runtime/effect/ShaderGraphLanguage.h"
 #include "pixelpart-runtime/asset/EffectAsset.h"
 #include "pixelpart-runtime/engine/EffectEngine.h"
 #include "pixelpart-runtime/vertex/ParticleVertexGenerator.h"
@@ -28,9 +29,9 @@ struct EffectRuntime {
 	std::unique_ptr<pixelpart::EffectEngine> effectEngine;
 	pixelpart::float_t simulationTime = 0.0;
 
-	std::unordered_map<pixelpart::ParticleRuntimeId,
+	std::unordered_map<pixelpart::ParticleEmissionPair,
 		std::unique_ptr<pixelpart::ParticleVertexGenerator>> vertexGenerators;
-	std::unordered_map<pixelpart::ParticleRuntimeId,
+	std::unordered_map<pixelpart::ParticleEmissionPair,
 		pixelpart::VertexDataBufferDimensions> vertexBufferDimensions;
 };
 }

@@ -9,8 +9,15 @@
 #include "pixelpart-runtime/effect/Node.h"
 #include "pixelpart-runtime/effect/ComputeGraph.h"
 #include "pixelpart-runtime/effect/ShaderGraph.h"
+#include "pixelpart-runtime/effect/ParticleType.h"
+#include "pixelpart-runtime/effect/EffectRuntimeContext.h"
 #include "pixelpart-runtime/engine/MultiThreadedEffectEngine.h"
 #include "pixelpart-runtime/engine/SingleThreadedEffectEngine.h"
+#include "pixelpart-runtime/engine/DefaultParticleGenerator.h"
+#include "pixelpart-runtime/engine/DefaultParticleModifier.h"
+#include "pixelpart-runtime/engine/ParticleCollection.h"
+#include "pixelpart-runtime/vertex/VertexFormat.h"
+#include "pixelpart-runtime/vertex/VertexAttribute.h"
 #include "pixelpart-runtime/json/json.hpp"
 #include <cstdint>
 #include <cstring>
@@ -81,11 +88,16 @@ UNITY_INTERFACE_EXPORT void* UNITY_INTERFACE_API PixelpartLoadEffect(const pixel
 		particleCapacity = std::max(particleCapacity, 1);
 
 #ifdef PIXELPART_RUNTIME_MULTITHREADING
-		effectRuntime->effectEngine = std::unique_ptr<pixelpart::MultiThreadedEffectEngine>(new pixelpart::MultiThreadedEffectEngine(
-			effectRuntime->effectAsset.effect(), static_cast<std::uint32_t>(particleCapacity), pixelpart_unity::threadPool));
+		effectRuntime->effectEngine = std::make_unique<pixelpart::MultiThreadedEffectEngine>(effectRuntime->effectAsset.effect(),
+			std::make_shared<pixelpart::DefaultParticleGenerator>(),
+			std::make_shared<pixelpart::DefaultParticleModifier>(),
+			pixelpart_unity::threadPool,
+			static_cast<std::uint32_t>(particleCapacity));
 #else
-		effectRuntime->effectEngine = std::unique_ptr<pixelpart::SingleThreadedEffectEngine>(new pixelpart::SingleThreadedEffectEngine(
-			effectRuntime->effectAsset.effect(), static_cast<std::uint32_t>(particleCapacity)));
+		effectRuntime->effectEngine = std::make_unique<pixelpart::SingleThreadedEffectEngine>(effectRuntime->effectAsset.effect(),
+			std::make_shared<pixelpart::DefaultParticleGenerator>(),
+			std::make_shared<pixelpart::DefaultParticleModifier>(),
+			static_cast<std::uint32_t>(particleCapacity));
 #endif
 
 		effectRuntime->effectAsset.effect().applyInputs();
@@ -111,8 +123,8 @@ UNITY_INTERFACE_EXPORT void* UNITY_INTERFACE_API PixelpartLoadEffect(const pixel
 			},
 			pixelpart::VertexWindingOrder::cw);
 
-		for(const pixelpart::ParticleRuntimeId& runtimeId : effectRuntime->effectAsset.effect().particleRuntimeIds()) {
-			const pixelpart::ParticleType& particleType = effectRuntime->effectAsset.effect().particleTypes().at(runtimeId.typeId);
+		for(const pixelpart::ParticleEmissionPair& emissionPair : effectRuntime->effectAsset.effect().particleEmissionPairs()) {
+			const pixelpart::ParticleType& particleType = effectRuntime->effectAsset.effect().particleTypes().at(emissionPair.typeId);
 
 			pixelpart::VertexFormat vertexFormat;
 			switch(particleType.renderer()) {
@@ -127,10 +139,10 @@ UNITY_INTERFACE_EXPORT void* UNITY_INTERFACE_API PixelpartLoadEffect(const pixel
 					break;
 			}
 
-			effectRuntime->vertexGenerators[runtimeId] = std::make_unique<pixelpart::ParticleVertexGenerator>(
-				effectRuntime->effectAsset.effect(), runtimeId.emitterId, runtimeId.typeId,
+			effectRuntime->vertexGenerators[emissionPair] = std::make_unique<pixelpart::ParticleVertexGenerator>(
+				effectRuntime->effectAsset.effect(), emissionPair.emitterId, emissionPair.typeId,
 				vertexFormat);
-			effectRuntime->vertexBufferDimensions[runtimeId] = pixelpart::VertexDataBufferDimensions();
+			effectRuntime->vertexBufferDimensions[emissionPair] = pixelpart::VertexDataBufferDimensions();
 		}
 
 		return effectRuntime;
@@ -197,19 +209,24 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartAdvanceEffect(pixelpart
 		effectRuntime->simulationTime -= pixelpart_unity::fromUnity(timeStep);
 		effectRuntime->effectEngine->advance(pixelpart_unity::fromUnity(timeStep));
 
-		if(loop && effectRuntime->effectEngine->runtimeContext().time() > pixelpart_unity::fromUnity(loopTime)) {
-			effectRuntime->effectEngine->restart(false);
+		if(loop && effectRuntime->effectEngine->context().time() > pixelpart_unity::fromUnity(loopTime)) {
+			effectRuntime->effectEngine->clearParticles();
+			effectRuntime->effectEngine->restart();
 		}
 	}
 }
 
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartRestartEffect(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::bool_t reset) {
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartRestartEffect(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::bool_t clear) {
 	if(!effectRuntime || !effectRuntime->effectEngine) {
 		pixelpart_unity::lastError = pixelpart_unity::invalidEffectRuntimeError;
 		return;
 	}
 
-	effectRuntime->effectEngine->restart(reset);
+	if(clear) {
+		effectRuntime->effectEngine->clearParticles();
+	}
+
+	effectRuntime->effectEngine->restart();
 }
 
 UNITY_INTERFACE_EXPORT pixelpart_unity::bool_t UNITY_INTERFACE_API PixelpartIsEffect3d(pixelpart_unity::EffectRuntime* effectRuntime) {
@@ -227,7 +244,7 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::float_t UNITY_INTERFACE_API PixelpartGet
 		return 0.0f;
 	}
 
-	return pixelpart_unity::toUnity(effectRuntime->effectEngine->runtimeContext().time());
+	return pixelpart_unity::toUnity(effectRuntime->effectEngine->context().time());
 }
 
 UNITY_INTERFACE_EXPORT pixelpart_unity::int_t UNITY_INTERFACE_API PixelpartGetEffectNodeCount(pixelpart_unity::EffectRuntime* effectRuntime) {
@@ -248,28 +265,28 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::int_t UNITY_INTERFACE_API PixelpartGetEf
 	return static_cast<pixelpart_unity::int_t>(effectRuntime->effectAsset.effect().particleTypes().count());
 }
 
-UNITY_INTERFACE_EXPORT pixelpart_unity::int_t UNITY_INTERFACE_API PixelpartGetEffectParticleRuntimeInstanceCount(pixelpart_unity::EffectRuntime* effectRuntime) {
+UNITY_INTERFACE_EXPORT pixelpart_unity::int_t UNITY_INTERFACE_API PixelpartGetEffectParticleEmissionPairCount(pixelpart_unity::EffectRuntime* effectRuntime) {
 	if(!effectRuntime) {
 		pixelpart_unity::lastError = pixelpart_unity::invalidEffectRuntimeError;
 		return 0;
 	}
 
-	return static_cast<pixelpart_unity::int_t>(effectRuntime->effectAsset.effect().particleRuntimeIds().size());
+	return static_cast<pixelpart_unity::int_t>(effectRuntime->effectAsset.effect().particleEmissionPairs().size());
 }
 
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetEffectParticleRuntimeInstances(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::particleruntimeid_t* runtimeIds) {
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetEffectParticleEmissionPairs(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::particleemissionpair_t* emissionPairs) {
 	if(!effectRuntime) {
 		pixelpart_unity::lastError = pixelpart_unity::invalidEffectRuntimeError;
 		return;
 	}
 
-	std::vector<pixelpart::ParticleRuntimeId> runtimeIdVector =
-		effectRuntime->effectAsset.effect().particleRuntimeIds();
+	std::vector<pixelpart::ParticleEmissionPair> emissionPairVector =
+		effectRuntime->effectAsset.effect().particleEmissionPairs();
 
-	for(std::size_t index = 0; index < runtimeIdVector.size(); index++) {
-		runtimeIds[index] = pixelpart_unity::particleruntimeid_t{
-			runtimeIdVector[index].emitterId.value(),
-			runtimeIdVector[index].typeId.value()
+	for(std::size_t index = 0; index < emissionPairVector.size(); index++) {
+		emissionPairs[index] = pixelpart_unity::particleemissionpair_t{
+			emissionPairVector[index].emitterId.value(),
+			emissionPairVector[index].typeId.value()
 		};
 	}
 }
@@ -280,9 +297,11 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::uint_t UNITY_INTERFACE_API PixelpartGetE
 		return 0;
 	}
 
-	return effectRuntime->effectEngine->particleCount(
+	const pixelpart::ParticleCollection* particleCollection = effectRuntime->effectEngine->state().particleCollection(
 		pixelpart::id_t(particleEmitterId),
 		pixelpart::id_t(particleTypeId));
+
+	return particleCollection->count();
 }
 
 UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartSpawnParticles(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::uint_t particleEmitterId, pixelpart_unity::uint_t particleTypeId, pixelpart_unity::int_t count) {
@@ -295,9 +314,10 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartSpawnParticles(pixelpar
 		return;
 	}
 
-	effectRuntime->effectEngine->spawnParticles(
+	effectRuntime->effectEngine->generateParticles(
+		static_cast<std::uint32_t>(count),
 		pixelpart::id_t(particleEmitterId),
 		pixelpart::id_t(particleTypeId),
-		static_cast<std::uint32_t>(count));
+		pixelpart::EffectRuntimeContext());
 }
 }

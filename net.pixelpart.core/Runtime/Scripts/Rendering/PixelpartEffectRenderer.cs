@@ -13,9 +13,9 @@ namespace Pixelpart
 
         private readonly PixelpartParticleRenderer[] particleRenderers;
 
-        private readonly PixelpartParticleRuntimeId[] particleRuntimeIds;
+        private readonly PixelpartParticleEmissionPair[] particleEmissionPairs;
 
-        private readonly int[] sortedParticleRuntimeIndices;
+        private readonly int[] sortedParticleEmissionPairs;
 
         public PixelpartEffectRenderer(IntPtr effectRuntimePtr, IList<Material> particleMaterials, IList<PixelpartMaterialDescriptor> customMaterials)
         {
@@ -24,31 +24,31 @@ namespace Pixelpart
             graphicsResourceProvider = new PixelpartGraphicsResourceProvider();
             graphicsResourceProvider.Load(effectRuntimePtr);
 
-            var runtimeInstanceCount = Plugin.PixelpartGetEffectParticleRuntimeInstanceCount(effectRuntimePtr);
+            var emissionPairCount = Plugin.PixelpartGetEffectParticleEmissionPairCount(effectRuntimePtr);
 
-            particleRenderers = new PixelpartParticleRenderer[runtimeInstanceCount];
-            particleRuntimeIds = new PixelpartParticleRuntimeId[runtimeInstanceCount];
-            sortedParticleRuntimeIndices = new int[runtimeInstanceCount];
-            Plugin.PixelpartGetEffectParticleRuntimeInstances(effectRuntimePtr, particleRuntimeIds);
+            particleRenderers = new PixelpartParticleRenderer[emissionPairCount];
+            particleEmissionPairs = new PixelpartParticleEmissionPair[emissionPairCount];
+            sortedParticleEmissionPairs = new int[emissionPairCount];
+            Plugin.PixelpartGetEffectParticleEmissionPairs(effectRuntimePtr, particleEmissionPairs);
 
             var materialIdBuffer = new byte[2048];
 
-            for (var runtimeInstanceIndex = 0; runtimeInstanceIndex < runtimeInstanceCount; runtimeInstanceIndex++)
+            for (var emissionPairIndex = 0; emissionPairIndex < emissionPairCount; emissionPairIndex++)
             {
-                var runtimeId = particleRuntimeIds[runtimeInstanceIndex];
-                var particleTypeIndex = Plugin.PixelpartParticleTypeGetIndex(effectRuntimePtr, runtimeId.TypeId);
+                var emissionPair = particleEmissionPairs[emissionPairIndex];
+                var particleTypeIndex = Plugin.PixelpartParticleTypeGetIndex(effectRuntimePtr, emissionPair.TypeId);
 
                 if (particleTypeIndex > particleMaterials.Count)
                 {
-                    Debug.LogWarning("[Pixelpart] Failed to find material for particle type with id " + runtimeId.TypeId);
+                    Debug.LogWarning("[Pixelpart] Failed to find material for particle type with id " + emissionPair.TypeId);
                     continue;
                 }
 
                 var baseMaterial = particleMaterials[particleTypeIndex];
 
-                var materialIdLength = Plugin.PixelpartParticleTypeGetMaterialId(effectRuntimePtr, runtimeId.TypeId, materialIdBuffer, materialIdBuffer.Length);
+                var materialIdLength = Plugin.PixelpartParticleTypeGetMaterialId(effectRuntimePtr, emissionPair.TypeId, materialIdBuffer, materialIdBuffer.Length);
                 var materialId = System.Text.Encoding.UTF8.GetString(materialIdBuffer, 0, materialIdLength);
-                var materialBuiltIn = Plugin.PixelpartParticleTypeIsMaterialBuiltIn(effectRuntimePtr, runtimeId.TypeId);
+                var materialBuiltIn = Plugin.PixelpartParticleTypeIsMaterialBuiltIn(effectRuntimePtr, emissionPair.TypeId);
 
                 PixelpartMaterialDescriptor materialDescriptor = null;
                 if (materialBuiltIn)
@@ -69,22 +69,22 @@ namespace Pixelpart
                     continue;
                 }
 
-                particleRenderers[runtimeInstanceIndex] = new PixelpartParticleRenderer(effectRuntimePtr,
-                    runtimeId.EmitterId, runtimeId.TypeId,
+                particleRenderers[emissionPairIndex] = new PixelpartParticleRenderer(effectRuntimePtr,
+                    emissionPair.EmitterId, emissionPair.TypeId,
                     baseMaterial, materialDescriptor, graphicsResourceProvider);
             }
         }
 
         public void Render(Camera camera, Transform transform, Vector3 effectScale, int layer)
         {
-            if (particleRuntimeIds.Length == 0)
+            if (particleEmissionPairs.Length == 0)
             {
                 return;
             }
 
-            Plugin.PixelpartGetSortedParticleRuntimeInstances(effectRuntime, sortedParticleRuntimeIndices);
+            Plugin.PixelpartGetSortedParticleEmissionPairs(effectRuntime, sortedParticleEmissionPairs);
 
-            foreach (var index in sortedParticleRuntimeIndices)
+            foreach (var index in sortedParticleEmissionPairs)
             {
                 if (particleRenderers[index] == null)
                 {

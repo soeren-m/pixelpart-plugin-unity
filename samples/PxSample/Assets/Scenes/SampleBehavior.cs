@@ -1,11 +1,14 @@
-using UnityEngine;
+using System;
 using Pixelpart;
+using UnityEngine;
 
 public class SampleBehavior : MonoBehaviour
 {
+    private PixelpartEffect effect;
+
     public void Awake()
     {
-        var effect = GetComponent<PixelpartEffect>();
+        effect = GetComponent<PixelpartEffect>();
 
         // Print information about particle types
         var particleType = effect.GetParticleTypeAtIndex(0);
@@ -30,9 +33,19 @@ public class SampleBehavior : MonoBehaviour
         }
     }
 
-    public void Update()
+    public void OnEnable()
     {
+        effect.Finished += OnEffectFinished;
+    }
 
+    public void OnDisable()
+    {
+        effect.Finished -= OnEffectFinished;
+    }
+
+    private void OnEffectFinished(object sender, EventArgs e)
+    {
+        Debug.Log("Effect finished");
     }
 
     private static void PrintParticleTypeInfo(PixelpartParticleType particleType)

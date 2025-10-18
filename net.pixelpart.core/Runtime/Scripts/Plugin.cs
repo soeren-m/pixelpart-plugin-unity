@@ -28,9 +28,11 @@ namespace Pixelpart
         [DllImport(pluginName)]
         public static extern void PixelpartRestartEffect(IntPtr effectRuntime, bool clear);
         [DllImport(pluginName)]
-        public static extern bool PixelpartIsEffect3d(IntPtr effectRuntime);
-        [DllImport(pluginName)]
         public static extern float PixelpartGetEffectTime(IntPtr effectRuntime);
+        [DllImport(pluginName)]
+        public static extern bool PixelpartIsEffectFinished(IntPtr effectRuntime);
+        [DllImport(pluginName)]
+        public static extern bool PixelpartIsEffect3d(IntPtr effectRuntime);
         [DllImport(pluginName)]
         public static extern int PixelpartGetEffectNodeCount(IntPtr effectRuntime);
         [DllImport(pluginName)]

@@ -6,10 +6,12 @@
 #include "ShaderLanguageHDRP.h"
 #include "pixelpart-runtime/common/Curve.h"
 #include "pixelpart-runtime/common/Transform.h"
+#include "pixelpart-runtime/effect/Effect.h"
 #include "pixelpart-runtime/effect/Node.h"
+#include "pixelpart-runtime/effect/ParticleType.h"
+#include "pixelpart-runtime/effect/ParticleEmitter.h"
 #include "pixelpart-runtime/effect/ComputeGraph.h"
 #include "pixelpart-runtime/effect/ShaderGraph.h"
-#include "pixelpart-runtime/effect/ParticleType.h"
 #include "pixelpart-runtime/effect/EffectRuntimeContext.h"
 #include "pixelpart-runtime/engine/MultiThreadedEffectEngine.h"
 #include "pixelpart-runtime/engine/SingleThreadedEffectEngine.h"
@@ -229,15 +231,6 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartRestartEffect(pixelpart
 	effectRuntime->effectEngine->restart();
 }
 
-UNITY_INTERFACE_EXPORT pixelpart_unity::bool_t UNITY_INTERFACE_API PixelpartIsEffect3d(pixelpart_unity::EffectRuntime* effectRuntime) {
-	if(!effectRuntime) {
-		pixelpart_unity::lastError = pixelpart_unity::invalidEffectRuntimeError;
-		return false;
-	}
-
-	return effectRuntime->effectAsset.effect().is3d();
-}
-
 UNITY_INTERFACE_EXPORT pixelpart_unity::float_t UNITY_INTERFACE_API PixelpartGetEffectTime(pixelpart_unity::EffectRuntime* effectRuntime) {
 	if(!effectRuntime || !effectRuntime->effectEngine) {
 		pixelpart_unity::lastError = pixelpart_unity::invalidEffectRuntimeError;
@@ -245,6 +238,44 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::float_t UNITY_INTERFACE_API PixelpartGet
 	}
 
 	return pixelpart_unity::toUnity(effectRuntime->effectEngine->context().time());
+}
+
+UNITY_INTERFACE_EXPORT pixelpart_unity::bool_t UNITY_INTERFACE_API PixelpartIsEffectFinished(pixelpart_unity::EffectRuntime* effectRuntime) {
+	if(!effectRuntime || !effectRuntime->effectEngine) {
+		pixelpart_unity::lastError = pixelpart_unity::invalidEffectRuntimeError;
+		return false;
+	}
+
+	const pixelpart::Effect& effect = effectRuntime->effectAsset.effect();
+	pixelpart::float_t time = effectRuntime->effectEngine->context().time();
+
+	for(const auto* particleEmitter : effect.sceneGraph().nodesWithType<pixelpart::ParticleEmitter>()) {
+		if(!particleEmitter->primary()) {
+			continue;
+		}
+
+		if(particleEmitter->active(effectRuntime->effectEngine->context()) || particleEmitter->repeat() ||
+			time < particleEmitter->start() + particleEmitter->duration()) { // TODO: triggers
+			return false;
+		}
+	}
+
+	for(const auto& [emissionPair, particleCollection] : effectRuntime->effectEngine->state().particleCollections()) {
+		if(particleCollection.count() > 0) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+UNITY_INTERFACE_EXPORT pixelpart_unity::bool_t UNITY_INTERFACE_API PixelpartIsEffect3d(pixelpart_unity::EffectRuntime* effectRuntime) {
+	if(!effectRuntime) {
+		pixelpart_unity::lastError = pixelpart_unity::invalidEffectRuntimeError;
+		return false;
+	}
+
+	return effectRuntime->effectAsset.effect().is3d();
 }
 
 UNITY_INTERFACE_EXPORT pixelpart_unity::int_t UNITY_INTERFACE_API PixelpartGetEffectNodeCount(pixelpart_unity::EffectRuntime* effectRuntime) {

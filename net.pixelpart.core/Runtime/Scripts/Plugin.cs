@@ -24,9 +24,13 @@ namespace Pixelpart
         [DllImport(pluginName)]
         public static extern void PixelpartSetEffectTransform(IntPtr effectRuntime, Matrix4x4 transformMatrix, Vector3 scale);
         [DllImport(pluginName)]
-        public static extern void PixelpartAdvanceEffect(IntPtr effectRuntime, float dt, bool loop, float loopTime, float speed, float timeStep);
+        public static extern void PixelpartAdvanceEffect(IntPtr effectRuntime, float dt,
+            bool loop, float loopTime, float speed,
+            float timeStep, int seed, bool randomSeed);
         [DllImport(pluginName)]
         public static extern void PixelpartRestartEffect(IntPtr effectRuntime, bool clear);
+        [DllImport(pluginName)]
+        public static extern void PixelpartReseedEffect(IntPtr effectRuntime, int seed);
         [DllImport(pluginName)]
         public static extern float PixelpartGetEffectTime(IntPtr effectRuntime);
         [DllImport(pluginName)]

@@ -79,6 +79,20 @@ namespace Pixelpart
         public float FrameRate = 60.0f;
 
         /// <summary>
+        /// Seed used to initialize the effect simulation.
+        /// </summary>
+        /// <remarks>
+        /// This seed is used if <see cref="RandomSeed"/> is not enabled.
+        /// </remarks>
+        [Min(0)]
+        public int Seed = 0;
+
+        /// <summary>
+        /// Whether to use a random seed to initialize the effect simulation.
+        /// </summary>
+        public bool RandomSeed = false;
+
+        /// <summary>
         /// Multiplier for the size of the effect.
         /// </summary>
         /// <remarks>
@@ -164,11 +178,9 @@ namespace Pixelpart
             UpdateTransform();
 
             var timeStep = 1.0f / Math.Max(FrameRate, 0.01f);
-            Plugin.PixelpartAdvanceEffect(effectRuntime,
-                Time.deltaTime,
-                Loop, LoopTime,
-                Speed,
-                timeStep);
+            Plugin.PixelpartAdvanceEffect(effectRuntime, Time.deltaTime,
+                Loop, LoopTime, Speed,
+                timeStep, Seed, RandomSeed);
 
             if (!finishedEventInvoked && !Loop && Plugin.PixelpartIsEffectFinished(effectRuntime))
             {
@@ -763,16 +775,20 @@ namespace Pixelpart
 
             finishedEventInvoked = false;
 
+            ApplyInputProperties();
+            UpdateTransform();
+
+            Plugin.PixelpartReseedEffect(effectRuntime, RandomSeed
+                ? (int)(Time.realtimeSinceStartupAsDouble * 1e6)
+                : Seed);
+
             if (WarmupTime > 0.0f)
             {
-                UpdateTransform();
-
                 var timeStep = 1.0f / Math.Max(FrameRate, 0.01f);
-                Plugin.PixelpartAdvanceEffect(effectRuntime,
-                    WarmupTime, false, 0.0f, 1.0f, timeStep);
+                Plugin.PixelpartAdvanceEffect(effectRuntime, WarmupTime,
+                    false, 0.0f, 1.0f,
+                    timeStep, Seed, RandomSeed);
             }
-
-            ApplyInputProperties();
         }
 
         private void DeleteEffect()

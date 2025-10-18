@@ -389,6 +389,8 @@ MonoBehaviour:
   WarmupTime: 0
   Speed: 1
   FrameRate: 60
+  Seed: 0
+  RandomSeed: 0
   EffectScale: 1
   FlipH: 0
   FlipV: 0

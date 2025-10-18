@@ -194,7 +194,9 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartSetEffectTransform(pixe
 	}
 }
 
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartAdvanceEffect(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::float_t dt, pixelpart_unity::bool_t loop, pixelpart_unity::float_t loopTime, pixelpart_unity::float_t speed, pixelpart_unity::float_t timeStep) {
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartAdvanceEffect(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::float_t dt,
+	pixelpart_unity::bool_t loop, pixelpart_unity::float_t loopTime, pixelpart_unity::float_t speed,
+	pixelpart_unity::float_t timeStep, pixelpart_unity::int_t seed, pixelpart_unity::bool_t randomSeed) {
 	if(!effectRuntime || !effectRuntime->effectEngine) {
 		pixelpart_unity::lastError = pixelpart_unity::invalidEffectRuntimeError;
 		return;
@@ -212,8 +214,12 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartAdvanceEffect(pixelpart
 		effectRuntime->effectEngine->advance(pixelpart_unity::fromUnity(timeStep));
 
 		if(loop && effectRuntime->effectEngine->context().time() > pixelpart_unity::fromUnity(loopTime)) {
-			effectRuntime->effectEngine->clearParticles();
 			effectRuntime->effectEngine->restart();
+
+			if(!randomSeed) {
+				effectRuntime->effectEngine->reseed(
+					static_cast<std::uint32_t>(pixelpart_unity::fromUnity(std::max(seed, 0))));
+			}
 		}
 	}
 }
@@ -229,6 +235,16 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartRestartEffect(pixelpart
 	}
 
 	effectRuntime->effectEngine->restart();
+}
+
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartReseedEffect(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::int_t seed) {
+	if(!effectRuntime || !effectRuntime->effectEngine) {
+		pixelpart_unity::lastError = pixelpart_unity::invalidEffectRuntimeError;
+		return;
+	}
+
+	effectRuntime->effectEngine->reseed(
+		static_cast<std::uint32_t>(pixelpart_unity::fromUnity(std::max(seed, 0))));
 }
 
 UNITY_INTERFACE_EXPORT pixelpart_unity::float_t UNITY_INTERFACE_API PixelpartGetEffectTime(pixelpart_unity::EffectRuntime* effectRuntime) {
@@ -255,7 +271,7 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::bool_t UNITY_INTERFACE_API PixelpartIsEf
 		}
 
 		if(particleEmitter->active(effectRuntime->effectEngine->context()) || particleEmitter->repeat() ||
-			time < particleEmitter->start() + particleEmitter->duration()) { // TODO: triggers
+			time < particleEmitter->start() + particleEmitter->duration()) {
 			return false;
 		}
 	}

@@ -24,22 +24,28 @@ namespace Pixelpart
         [DllImport(pluginName)]
         public static extern void PixelpartSetEffectTransform(IntPtr effectRuntime, Matrix4x4 transformMatrix, Vector3 scale);
         [DllImport(pluginName)]
-        public static extern void PixelpartAdvanceEffect(IntPtr effectRuntime, float dt, bool loop, float loopTime, float speed, float timeStep);
+        public static extern void PixelpartAdvanceEffect(IntPtr effectRuntime, float dt,
+            bool loop, float loopTime, float speed,
+            float timeStep, int seed, bool randomSeed);
         [DllImport(pluginName)]
-        public static extern void PixelpartRestartEffect(IntPtr effectRuntime, bool reset);
+        public static extern void PixelpartRestartEffect(IntPtr effectRuntime, bool clear);
         [DllImport(pluginName)]
-        public static extern bool PixelpartIsEffect3d(IntPtr effectRuntime);
+        public static extern void PixelpartReseedEffect(IntPtr effectRuntime, int seed);
         [DllImport(pluginName)]
         public static extern float PixelpartGetEffectTime(IntPtr effectRuntime);
+        [DllImport(pluginName)]
+        public static extern bool PixelpartIsEffectFinished(IntPtr effectRuntime);
+        [DllImport(pluginName)]
+        public static extern bool PixelpartIsEffect3d(IntPtr effectRuntime);
         [DllImport(pluginName)]
         public static extern int PixelpartGetEffectNodeCount(IntPtr effectRuntime);
         [DllImport(pluginName)]
         public static extern int PixelpartGetEffectParticleTypeCount(IntPtr effectRuntime);
         [DllImport(pluginName)]
-        public static extern int PixelpartGetEffectParticleRuntimeInstanceCount(IntPtr effectRuntime);
+        public static extern int PixelpartGetEffectParticleEmissionPairCount(IntPtr effectRuntime);
         [DllImport(pluginName)]
-        public static extern void PixelpartGetEffectParticleRuntimeInstances(IntPtr effectRuntime,
-            [In, Out] Pixelpart.PixelpartParticleRuntimeId[] runtimeIds);
+        public static extern void PixelpartGetEffectParticleEmissionPairs(IntPtr effectRuntime,
+            [In, Out] Pixelpart.PixelpartParticleEmissionPair[] emissionPairs);
         [DllImport(pluginName)]
         public static extern uint PixelpartGetEffectParticleCount(IntPtr effectRuntime, uint particleEmitterId, uint particleTypeId);
         [DllImport(pluginName)]
@@ -87,7 +93,7 @@ namespace Pixelpart
 
         // Rendering
         [DllImport(pluginName)]
-        public static extern void PixelpartGetSortedParticleRuntimeInstances(IntPtr effectRuntime, int[] indices);
+        public static extern void PixelpartGetSortedParticleEmissionPairs(IntPtr effectRuntime, int[] indices);
         [DllImport(pluginName)]
         public static extern void PixelpartConstructParticleGeometry(IntPtr effectRuntime, uint particleEmitterId, uint particleTypeId,
             Vector3 cameraPosition, Vector3 cameraForward, Vector3 cameraRight, Vector3 cameraUp, Vector3 effectScale,

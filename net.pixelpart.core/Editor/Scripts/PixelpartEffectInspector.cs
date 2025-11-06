@@ -42,6 +42,8 @@ namespace Pixelpart
             EditorGUILayout.PropertyField(serializedObject.FindProperty("WarmupTime"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("Speed"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("FrameRate"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("Seed"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("RandomSeed"));
         }
 
         private bool ShowInputSettings()

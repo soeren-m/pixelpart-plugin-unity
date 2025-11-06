@@ -26,6 +26,14 @@ namespace Pixelpart
         public const uint NullId = 0xFFFFFFFF;
 
         /// <summary>
+        /// Event that is invoked when the effect is finished.
+        /// </summary>
+        /// <remarks>
+        /// This event is never invoked for effects with repeating particle emitters.
+        /// </remarks>
+        public event EventHandler Finished;
+
+        /// <summary>
         /// Effect resource that is shown.
         /// </summary>
         public PixelpartEffectAsset EffectAsset = null;
@@ -71,6 +79,20 @@ namespace Pixelpart
         public float FrameRate = 60.0f;
 
         /// <summary>
+        /// Seed used to initialize the effect simulation.
+        /// </summary>
+        /// <remarks>
+        /// This seed is used if <see cref="RandomSeed"/> is not enabled.
+        /// </remarks>
+        [Min(0)]
+        public int Seed = 0;
+
+        /// <summary>
+        /// Whether to use a random seed to initialize the effect simulation.
+        /// </summary>
+        public bool RandomSeed = false;
+
+        /// <summary>
         /// Multiplier for the size of the effect.
         /// </summary>
         /// <remarks>
@@ -99,16 +121,16 @@ namespace Pixelpart
         public List<Material> ParticleMaterials = new List<Material>();
 
         /// <summary>
-        /// Whether the effect is a 3D effect.
-        /// </summary>
-        public bool Is3D => effectRuntime != IntPtr.Zero
-            ? Plugin.PixelpartIsEffect3d(effectRuntime) : false;
-
-        /// <summary>
         /// Time in seconds since the effect has started playing.
         /// </summary>
         public float CurrentTime => effectRuntime != IntPtr.Zero
             ? Plugin.PixelpartGetEffectTime(effectRuntime) : 0.0f;
+
+         /// <summary>
+        /// Whether the effect is a 3D effect.
+        /// </summary>
+        public bool Is3D => effectRuntime != IntPtr.Zero
+            ? Plugin.PixelpartIsEffect3d(effectRuntime) : false;
 
         [SerializeField]
         private List<string> effectInputNames = new List<string>();
@@ -125,6 +147,8 @@ namespace Pixelpart
         private PixelpartTriggerCollection triggerCollection = new PixelpartTriggerCollection();
 
         private PixelpartEffectRenderer effectRenderer = null;
+
+        private bool finishedEventInvoked = false;
 
         /// <summary>
         /// Construct <see cref="PixelpartEffect"/>.
@@ -154,11 +178,15 @@ namespace Pixelpart
             UpdateTransform();
 
             var timeStep = 1.0f / Math.Max(FrameRate, 0.01f);
-            Plugin.PixelpartAdvanceEffect(effectRuntime,
-                Time.deltaTime,
-                Loop, LoopTime,
-                Speed,
-                timeStep);
+            Plugin.PixelpartAdvanceEffect(effectRuntime, Time.deltaTime,
+                Loop, LoopTime, Speed,
+                timeStep, Seed, RandomSeed);
+
+            if (!finishedEventInvoked && !Loop && Plugin.PixelpartIsEffectFinished(effectRuntime))
+            {
+                finishedEventInvoked = true;
+                Finished?.Invoke(this, EventArgs.Empty);
+            }
         }
 
         public void LateUpdate()
@@ -745,16 +773,22 @@ namespace Pixelpart
             triggerCollection = new PixelpartTriggerCollection(effectRuntime);
             effectRenderer = new PixelpartEffectRenderer(effectRuntime, ParticleMaterials, EffectAsset.CustomMaterials);
 
-            if (WarmupTime > 0.0f)
-            {
-                UpdateTransform();
-
-                var timeStep = 1.0f / Math.Max(FrameRate, 0.01f);
-                Plugin.PixelpartAdvanceEffect(effectRuntime,
-                    WarmupTime, false, 0.0f, 1.0f, timeStep);
-            }
+            finishedEventInvoked = false;
 
             ApplyInputProperties();
+            UpdateTransform();
+
+            Plugin.PixelpartReseedEffect(effectRuntime, RandomSeed
+                ? (int)(Time.realtimeSinceStartupAsDouble * 1e6)
+                : Seed);
+
+            if (WarmupTime > 0.0f)
+            {
+                var timeStep = 1.0f / Math.Max(FrameRate, 0.01f);
+                Plugin.PixelpartAdvanceEffect(effectRuntime, WarmupTime,
+                    false, 0.0f, 1.0f,
+                    timeStep, Seed, RandomSeed);
+            }
         }
 
         private void DeleteEffect()

@@ -1,6 +1,6 @@
 {
     "name": "net.pixelpart.core",
-    "version": "1.8.2",
+    "version": "1.8.3",
     "displayName": "Pixelpart",
     "description": "Runtime plugin for Pixelpart.",
     "unity": "2021.3",

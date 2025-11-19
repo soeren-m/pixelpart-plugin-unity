@@ -6,7 +6,7 @@ The recommended way to install the plugin is from OpenUPM, but it can also be in
 
 1. In Unity, open *Edit/Project Settings/Package Manager* and add OpenUPM as a Scoped Registry. See [openupm.com](https://openupm.com/docs/getting-started.html) for further information.
 
-![Effect inspector](./images/openupm-registry.png)
+![Scoped registries](./images/openupm-registry.png)
 
 2. In the Unity Package Manager, click `+`, then `Install package by name...`.
 3. Put *net.pixelpart.core* into the *Name* field and the exact required version of the plugin (e.g. *1.8.1*) into the *Version* field. Then, click `Install`.

@@ -75,23 +75,24 @@ namespace Pixelpart
             }
         }
 
-        public void Render(Camera camera, Transform transform, Vector3 effectScale, int layer)
+        public void Render(Transform transform, Vector3 effectScale, int layer)
         {
             if (particleEmissionPairs.Length == 0)
             {
                 return;
             }
 
-            Plugin.PixelpartGetSortedParticleEmissionPairs(effectRuntime, sortedParticleEmissionPairs);
-
-            foreach (var index in sortedParticleEmissionPairs)
+            foreach (var particleRenderer in particleRenderers)
             {
-                if (particleRenderers[index] == null)
+                if (particleRenderer == null)
                 {
                     continue;
                 }
 
-                particleRenderers[index].Render(camera, effectScale, layer);
+                foreach (var camera in Camera.allCameras)
+                {
+                    particleRenderer.Render(camera, transform, effectScale, layer);
+                }
             }
         }
     }

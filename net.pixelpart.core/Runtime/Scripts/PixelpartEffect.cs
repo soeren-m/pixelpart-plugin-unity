@@ -201,7 +201,7 @@ namespace Pixelpart
                 EffectScale * (FlipV ? -1.0f : +1.0f),
                 EffectScale);
 
-            effectRenderer.Render(Camera.main, transform, scale, gameObject.layer);
+            effectRenderer.Render(transform, scale, gameObject.layer);
         }
 
         public void OnDestroy()

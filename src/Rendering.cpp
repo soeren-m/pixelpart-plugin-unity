@@ -23,26 +23,6 @@
 #include <algorithm>
 
 extern "C" {
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartGetSortedParticleEmissionPairs(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::int_t* indices) {
-	if(!effectRuntime) {
-		pixelpart_unity::lastError = pixelpart_unity::invalidEffectRuntimeError;
-		return;
-	}
-
-	const pixelpart::Effect& effect = effectRuntime->effectAsset.effect();
-
-	std::vector<pixelpart_unity::int_t> sortedIndices(effect.particleEmissionPairs().size());
-	std::iota(sortedIndices.begin(), sortedIndices.end(), 0);
-	std::sort(sortedIndices.begin(), sortedIndices.end(), [&effect](pixelpart_unity::int_t i1, pixelpart_unity::int_t i2) {
-		const pixelpart::ParticleType& pt1 = effect.particleTypes().at(effect.particleEmissionPairs()[i1].typeId);
-		const pixelpart::ParticleType& pt2 = effect.particleTypes().at(effect.particleEmissionPairs()[i2].typeId);
-
-		return pt1.layer() < pt2.layer();
-	});
-
-	std::memcpy(indices, sortedIndices.data(), sortedIndices.size() * sizeof(pixelpart_unity::int_t));
-}
-
 UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartConstructParticleGeometry(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::uint_t particleEmitterId, pixelpart_unity::uint_t particleTypeId,
 	pixelpart_unity::vector3_t cameraPosition, pixelpart_unity::vector3_t cameraForward, pixelpart_unity::vector3_t cameraRight, pixelpart_unity::vector3_t cameraUp, pixelpart_unity::vector3_t effectScale,
 	pixelpart_unity::int_t* bufferSizes) {
@@ -137,15 +117,6 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::bool_t UNITY_INTERFACE_API PixelpartGene
 			particleCollection->readPtr(),
 			particleCollection->count(),
 			runtimeContext, sceneContext);
-
-		if(!effect.is3d()) {
-			float zOffset = -0.001f * static_cast<float>(particleType.layer());
-
-			const auto& vertexBufferDimensions = effectRuntime->vertexBufferDimensions[emissionPair];
-			for(std::size_t index = 0; index < vertexBufferDimensions.at(1); index++) {
-				vertices[index].z += zOffset;
-			}
-		}
 
 		return true;
 	}

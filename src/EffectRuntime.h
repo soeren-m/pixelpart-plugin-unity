@@ -19,10 +19,8 @@ extern pixelpart::ShaderGraphLanguage shaderLanguage;
 extern pixelpart::ShaderGraphLanguage shaderLanguageURP;
 extern pixelpart::ShaderGraphLanguage shaderLanguageHDRP;
 
-extern std::mt19937 rng;
-#ifdef PIXELPART_RUNTIME_MULTITHREADING
 extern std::shared_ptr<pixelpart::ThreadPool> threadPool;
-#endif
+extern std::mt19937 rng;
 
 struct EffectRuntime {
 	pixelpart::EffectAsset effectAsset;

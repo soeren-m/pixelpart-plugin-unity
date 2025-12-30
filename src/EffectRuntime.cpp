@@ -28,15 +28,17 @@
 #include <exception>
 #include <algorithm>
 
+#ifdef PIXELPART_RUNTIME_MULTITHREADING
+#include "pixelpart-runtime/common/StdThreadPool.h"
+#endif
+
 namespace pixelpart_unity {
 pixelpart::ShaderGraphLanguage shaderLanguage = pixelpart::ShaderGraphLanguage();
 pixelpart::ShaderGraphLanguage shaderLanguageURP = pixelpart::ShaderGraphLanguage();
 pixelpart::ShaderGraphLanguage shaderLanguageHDRP = pixelpart::ShaderGraphLanguage();
 
-std::mt19937 rng;
-#ifdef PIXELPART_RUNTIME_MULTITHREADING
 std::shared_ptr<pixelpart::ThreadPool> threadPool;
-#endif
+std::mt19937 rng;
 }
 
 extern "C" {
@@ -50,8 +52,6 @@ UNITY_INTERFACE_EXPORT void* UNITY_INTERFACE_API PixelpartLoadEffect(const pixel
 
 	if(!initialized) {
 		initialized = true;
-
-		std::locale::global(std::locale::classic());
 
 		try {
 			pixelpart::ComputeGraph::nodeFactory.registerBuiltInNodes();
@@ -73,8 +73,7 @@ UNITY_INTERFACE_EXPORT void* UNITY_INTERFACE_API PixelpartLoadEffect(const pixel
 			pixelpart::ShaderGraph::graphLanguage = pixelpart_unity::shaderLanguage;
 
 #ifdef PIXELPART_RUNTIME_MULTITHREADING
-			pixelpart_unity::threadPool = std::shared_ptr<pixelpart::ThreadPool>(
-				new pixelpart::ThreadPool(std::thread::hardware_concurrency()));
+			pixelpart_unity::threadPool = std::make_shared<pixelpart::StdThreadPool>(std::thread::hardware_concurrency());
 #endif
 		}
 		catch(const std::exception& e) {

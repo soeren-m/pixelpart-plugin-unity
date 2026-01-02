@@ -1,6 +1,6 @@
 {
     "name": "net.pixelpart.hdrp",
-    "version": "1.8.3",
+    "version": "1.8.4",
     "displayName": "Pixelpart HDRP",
     "description": "HDRP materials for the Pixelpart runtime plugin.",
     "unity": "2021.3",
@@ -9,6 +9,6 @@
         "name": "Sören Möllers"
     },
     "dependencies": {
-        "net.pixelpart.core": "1.8.3"
+        "net.pixelpart.core": "1.8.4"
     }
 }

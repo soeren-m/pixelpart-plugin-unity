@@ -93,8 +93,6 @@ namespace Pixelpart
 
         // Rendering
         [DllImport(pluginName)]
-        public static extern void PixelpartGetSortedParticleEmissionPairs(IntPtr effectRuntime, int[] indices);
-        [DllImport(pluginName)]
         public static extern void PixelpartConstructParticleGeometry(IntPtr effectRuntime, uint particleEmitterId, uint particleTypeId,
             Vector3 cameraPosition, Vector3 cameraForward, Vector3 cameraRight, Vector3 cameraUp, Vector3 effectScale,
             int[] bufferSizes);

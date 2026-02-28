@@ -495,10 +495,6 @@ namespace Pixelpart
         public static extern void PixelpartAnimatedPropertyFloatSetKeyframeInterpolation(IntPtr property, int method);
         [DllImport(pluginName)]
         public static extern int PixelpartAnimatedPropertyFloatGetKeyframeInterpolation(IntPtr property);
-        [DllImport(pluginName)]
-        public static extern void PixelpartAnimatedPropertyFloatEnableAdaptiveCache(IntPtr property);
-        [DllImport(pluginName)]
-        public static extern void PixelpartAnimatedPropertyFloatEnableFixedCache(IntPtr property, int size);
 
         // AnimatedPropertyFloat2
         [DllImport(pluginName)]
@@ -523,10 +519,6 @@ namespace Pixelpart
         public static extern void PixelpartAnimatedPropertyFloat2SetKeyframeInterpolation(IntPtr property, int method);
         [DllImport(pluginName)]
         public static extern int PixelpartAnimatedPropertyFloat2GetKeyframeInterpolation(IntPtr property);
-        [DllImport(pluginName)]
-        public static extern void PixelpartAnimatedPropertyFloat2EnableAdaptiveCache(IntPtr property);
-        [DllImport(pluginName)]
-        public static extern void PixelpartAnimatedPropertyFloat2EnableFixedCache(IntPtr property, int size);
 
         // AnimatedPropertyFloat3
         [DllImport(pluginName)]
@@ -551,10 +543,6 @@ namespace Pixelpart
         public static extern void PixelpartAnimatedPropertyFloat3SetKeyframeInterpolation(IntPtr property, int method);
         [DllImport(pluginName)]
         public static extern int PixelpartAnimatedPropertyFloat3GetKeyframeInterpolation(IntPtr property);
-        [DllImport(pluginName)]
-        public static extern void PixelpartAnimatedPropertyFloat3EnableAdaptiveCache(IntPtr property);
-        [DllImport(pluginName)]
-        public static extern void PixelpartAnimatedPropertyFloat3EnableFixedCache(IntPtr property, int size);
 
         // AnimatedPropertyFloat4
         [DllImport(pluginName)]
@@ -579,9 +567,5 @@ namespace Pixelpart
         public static extern void PixelpartAnimatedPropertyFloat4SetKeyframeInterpolation(IntPtr property, int method);
         [DllImport(pluginName)]
         public static extern int PixelpartAnimatedPropertyFloat4GetKeyframeInterpolation(IntPtr property);
-        [DllImport(pluginName)]
-        public static extern void PixelpartAnimatedPropertyFloat4EnableAdaptiveCache(IntPtr property);
-        [DllImport(pluginName)]
-        public static extern void PixelpartAnimatedPropertyFloat4EnableFixedCache(IntPtr property, int size);
     }
 }

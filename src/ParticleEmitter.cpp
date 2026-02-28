@@ -1,7 +1,8 @@
 #include "Common.h"
 #include "Error.h"
 #include "EffectRuntime.h"
-#include "pixelpart-runtime/common/Math.h"
+#include "pixelpart-runtime/common/Types.h"
+#include "pixelpart-runtime/math/Geometry.h"
 #include "pixelpart-runtime/effect/AnimatedProperty.h"
 #include "pixelpart-runtime/effect/ParticleEmitter.h"
 #include <string>
@@ -15,7 +16,7 @@ void setParticleEmitterShapePoints(pixelpart::ParticleEmitter& particleEmitter, 
 	pixelpart::float_t length = 0.0;
 
 	for(std::size_t i = 1; i < points.size(); i++) {
-		length += std::max(glm::distance(points[i], points[i - 1]), 0.000001);
+		length += std::max(pixelpart::math::distance(points[i], points[i - 1]), 0.000001);
 		distances[i] = length;
 	}
 

@@ -1,11 +1,12 @@
 #include "EffectRuntime.h"
 #include "Common.h"
 #include "Error.h"
-#include "ShaderLanguage.h"
-#include "ShaderLanguageURP.h"
-#include "ShaderLanguageHDRP.h"
+#include "ShaderGraphSpecification.h"
+#include "ShaderGraphSpecificationURP.h"
+#include "ShaderGraphSpecificationHDRP.h"
 #include "pixelpart-runtime/common/Curve.h"
 #include "pixelpart-runtime/common/Transform.h"
+#include "pixelpart-runtime/math/Common.h"
 #include "pixelpart-runtime/effect/Effect.h"
 #include "pixelpart-runtime/effect/Node.h"
 #include "pixelpart-runtime/effect/ParticleType.h"
@@ -13,6 +14,7 @@
 #include "pixelpart-runtime/effect/ComputeGraph.h"
 #include "pixelpart-runtime/effect/ShaderGraph.h"
 #include "pixelpart-runtime/effect/EffectRuntimeContext.h"
+#include "pixelpart-runtime/engine/EffectRuntimeQuery.h"
 #include "pixelpart-runtime/engine/MultiThreadedEffectEngine.h"
 #include "pixelpart-runtime/engine/SingleThreadedEffectEngine.h"
 #include "pixelpart-runtime/engine/DefaultParticleGenerator.h"
@@ -33,9 +35,9 @@
 #endif
 
 namespace pixelpart_unity {
-pixelpart::ShaderGraphLanguage shaderLanguage = pixelpart::ShaderGraphLanguage();
-pixelpart::ShaderGraphLanguage shaderLanguageURP = pixelpart::ShaderGraphLanguage();
-pixelpart::ShaderGraphLanguage shaderLanguageHDRP = pixelpart::ShaderGraphLanguage();
+pixelpart::ShaderGraphSpecification shaderGraphSpecification = pixelpart::ShaderGraphSpecification();
+pixelpart::ShaderGraphSpecification shaderGraphSpecificationURP = pixelpart::ShaderGraphSpecification();
+pixelpart::ShaderGraphSpecification shaderGraphSpecificationHDRP = pixelpart::ShaderGraphSpecification();
 
 std::shared_ptr<pixelpart::ThreadPool> threadPool;
 std::mt19937 rng;
@@ -54,23 +56,21 @@ UNITY_INTERFACE_EXPORT void* UNITY_INTERFACE_API PixelpartLoadEffect(const pixel
 		initialized = true;
 
 		try {
-			pixelpart::ComputeGraph::nodeFactory.registerBuiltInNodes();
+			nlohmann::ordered_json jsonShaderGraphSpecification = nlohmann::json::parse(
+				PixelpartShaderGraphSpecification_json,
+				PixelpartShaderGraphSpecification_json + PixelpartShaderGraphSpecification_json_size);
+			nlohmann::ordered_json jsonShaderGraphSpecificationURP = nlohmann::json::parse(
+				PixelpartShaderGraphSpecificationURP_json,
+				PixelpartShaderGraphSpecificationURP_json + PixelpartShaderGraphSpecificationURP_json_size);
+			nlohmann::ordered_json jsonShaderGraphSpecificationHDRP = nlohmann::json::parse(
+				PixelpartShaderGraphSpecificationHDRP_json,
+				PixelpartShaderGraphSpecificationHDRP_json + PixelpartShaderGraphSpecificationHDRP_json_size);
 
-			nlohmann::ordered_json jsonShaderLanguage = nlohmann::json::parse(
-				PixelpartShaderLanguage_json,
-				PixelpartShaderLanguage_json + PixelpartShaderLanguage_json_size);
-			nlohmann::ordered_json jsonShaderLanguageURP = nlohmann::json::parse(
-				PixelpartShaderLanguageURP_json,
-				PixelpartShaderLanguageURP_json + PixelpartShaderLanguageURP_json_size);
-			nlohmann::ordered_json jsonShaderLanguageHDRP = nlohmann::json::parse(
-				PixelpartShaderLanguageHDRP_json,
-				PixelpartShaderLanguageHDRP_json + PixelpartShaderLanguageHDRP_json_size);
+			pixelpart_unity::shaderGraphSpecification = jsonShaderGraphSpecification;
+			pixelpart_unity::shaderGraphSpecificationURP = jsonShaderGraphSpecificationURP;
+			pixelpart_unity::shaderGraphSpecificationHDRP = jsonShaderGraphSpecificationHDRP;
 
-			pixelpart_unity::shaderLanguage = jsonShaderLanguage;
-			pixelpart_unity::shaderLanguageURP = jsonShaderLanguageURP;
-			pixelpart_unity::shaderLanguageHDRP = jsonShaderLanguageHDRP;
-
-			pixelpart::ShaderGraph::graphLanguage = pixelpart_unity::shaderLanguage;
+			pixelpart::ShaderGraph::specification = pixelpart_unity::shaderGraphSpecification;
 
 #ifdef PIXELPART_RUNTIME_MULTITHREADING
 			pixelpart_unity::threadPool = std::make_shared<pixelpart::StdThreadPool>(std::thread::hardware_concurrency());
@@ -142,7 +142,7 @@ UNITY_INTERFACE_EXPORT void* UNITY_INTERFACE_API PixelpartLoadEffect(const pixel
 
 			effectRuntime->vertexGenerators[emissionPair] = std::make_unique<pixelpart::ParticleVertexGenerator>(
 				effectRuntime->effectAsset.effect(), emissionPair.emitterId, emissionPair.typeId,
-				vertexFormat);
+				vertexFormat, pixelpart_unity::threadPool);
 			effectRuntime->vertexBufferDimensions[emissionPair] = pixelpart::VertexDataBufferDimensions();
 		}
 
@@ -170,11 +170,11 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartSetEffectTransform(pixe
 		return;
 	}
 
-	glm::mat4 floatTransformMatrix;
+	pixelpart::math::matrix4x4<float> floatTransformMatrix;
 	std::memcpy(&floatTransformMatrix[0][0], transformMatrix.data, sizeof(float) * 16);
 
-	pixelpart::Transform transform(floatTransformMatrix);
-	pixelpart::float3_t cappedEffectScale = glm::max(pixelpart_unity::fromUnity(scale), pixelpart::float3_t(0.0001));
+	pixelpart::Transform transform = pixelpart::Transform(pixelpart::matrix4_t(floatTransformMatrix));
+	pixelpart::float3_t cappedEffectScale = pixelpart::math::max(pixelpart_unity::fromUnity(scale), pixelpart::float3_t(0.0001));
 
 	for(const std::unique_ptr<pixelpart::Node>& node : effectRuntime->effectAsset.effect().sceneGraph().nodes()) {
 		if(node->parentId()) {
@@ -262,26 +262,10 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::bool_t UNITY_INTERFACE_API PixelpartIsEf
 	}
 
 	const pixelpart::Effect& effect = effectRuntime->effectAsset.effect();
-	pixelpart::float_t time = effectRuntime->effectEngine->context().time();
 
-	for(const auto* particleEmitter : effect.sceneGraph().nodesWithType<pixelpart::ParticleEmitter>()) {
-		if(!particleEmitter->primary()) {
-			continue;
-		}
-
-		if(particleEmitter->active(effectRuntime->effectEngine->context()) || particleEmitter->repeat() ||
-			time < particleEmitter->start() + particleEmitter->duration()) {
-			return false;
-		}
-	}
-
-	for(const auto& [emissionPair, particleCollection] : effectRuntime->effectEngine->state().particleCollections()) {
-		if(particleCollection.count() > 0) {
-			return false;
-		}
-	}
-
-	return true;
+	return pixelpart::isEffectSimulationFinished(effect,
+		effectRuntime->effectEngine->state(),
+		effectRuntime->effectEngine->context());
 }
 
 UNITY_INTERFACE_EXPORT pixelpart_unity::bool_t UNITY_INTERFACE_API PixelpartIsEffect3d(pixelpart_unity::EffectRuntime* effectRuntime) {

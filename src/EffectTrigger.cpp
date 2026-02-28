@@ -1,7 +1,8 @@
 #include "Common.h"
 #include "Error.h"
 #include "EffectRuntime.h"
-#include "pixelpart-runtime/effect/Trigger.h"
+#include "pixelpart-runtime/effect/EffectTrigger.h"
+#include "pixelpart-runtime/effect/EffectTriggerCollection.h"
 #include <cstring>
 #include <string>
 #include <vector>
@@ -27,7 +28,7 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::int_t UNITY_INTERFACE_API PixelpartGetTr
 		return 0;
 	}
 
-	const pixelpart::TriggerCollection& triggers = effectRuntime->effectAsset.effect().triggers();
+	const pixelpart::EffectTriggerCollection& triggers = effectRuntime->effectAsset.effect().triggers();
 
 	std::vector<pixelpart::id_t> triggerIds;
 	triggerIds.reserve(triggers.size());
@@ -39,7 +40,7 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::int_t UNITY_INTERFACE_API PixelpartGetTr
 
 	std::string namesString;
 	for(std::size_t index = 0; index < triggerIds.size(); index++) {
-		const pixelpart::Trigger& trigger = triggers.at(triggerIds[index]);
+		const pixelpart::EffectTrigger& trigger = triggers.at(triggerIds[index]);
 
 		ids[index] = triggerIds[index].value();
 		namesString += trigger.name();

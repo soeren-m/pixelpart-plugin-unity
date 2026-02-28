@@ -2,7 +2,6 @@
 #define PIXELPART_UNITY_COMMON_H
 
 #include "pixelpart-runtime/common/Types.h"
-#include "pixelpart-runtime/common/Math.h"
 #include <cstdint>
 
 #if defined(__CYGWIN32__)

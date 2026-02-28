@@ -2,10 +2,9 @@
 #define PIXELPART_UNITY_EFFECT_RUNTIME_H
 
 #include "pixelpart-runtime/common/Types.h"
-#include "pixelpart-runtime/common/Math.h"
 #include "pixelpart-runtime/common/ThreadPool.h"
 #include "pixelpart-runtime/effect/ParticleEmissionPair.h"
-#include "pixelpart-runtime/effect/ShaderGraphLanguage.h"
+#include "pixelpart-runtime/effect/ShaderGraphSpecification.h"
 #include "pixelpart-runtime/asset/EffectAsset.h"
 #include "pixelpart-runtime/engine/EffectEngine.h"
 #include "pixelpart-runtime/vertex/ParticleVertexGenerator.h"
@@ -15,9 +14,9 @@
 #include <random>
 
 namespace pixelpart_unity {
-extern pixelpart::ShaderGraphLanguage shaderLanguage;
-extern pixelpart::ShaderGraphLanguage shaderLanguageURP;
-extern pixelpart::ShaderGraphLanguage shaderLanguageHDRP;
+extern pixelpart::ShaderGraphSpecification shaderGraphSpecification;
+extern pixelpart::ShaderGraphSpecification shaderGraphSpecificationURP;
+extern pixelpart::ShaderGraphSpecification shaderGraphSpecificationHDRP;
 
 extern std::shared_ptr<pixelpart::ThreadPool> threadPool;
 extern std::mt19937 rng;

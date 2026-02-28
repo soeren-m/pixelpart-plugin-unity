@@ -1,7 +1,7 @@
 #include "Common.h"
 #include "Error.h"
 #include "EffectRuntime.h"
-#include "pixelpart-runtime/common/Math.h"
+#include "pixelpart-runtime/common/Types.h"
 #include "pixelpart-runtime/common/Transform.h"
 #include "pixelpart-runtime/common/Curve.h"
 #include "pixelpart-runtime/common/Id.h"

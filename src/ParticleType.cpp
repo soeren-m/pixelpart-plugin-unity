@@ -1,7 +1,7 @@
 #include "Common.h"
 #include "Error.h"
 #include "EffectRuntime.h"
-#include "pixelpart-runtime/common/Math.h"
+#include "pixelpart-runtime/common/Types.h"
 #include "pixelpart-runtime/common/Id.h"
 #include "pixelpart-runtime/effect/StaticProperty.h"
 #include "pixelpart-runtime/effect/AnimatedProperty.h"
@@ -61,12 +61,12 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::int_t UNITY_INTERFACE_API PixelpartParti
 		return -1;
 	}
 
-	std::uint32_t particleTypeIndex = effectRuntime->effectAsset.effect().particleTypes().indexOf(particleTypeId);
-	if(particleTypeIndex == pixelpart::id_t::nullValue) {
+	auto particleTypeIndex = effectRuntime->effectAsset.effect().particleTypes().indexOf(particleTypeId);
+	if(!particleTypeIndex) {
 		return -1;
 	}
 
-	return static_cast<pixelpart_unity::int_t>(particleTypeIndex);
+	return static_cast<pixelpart_unity::int_t>(particleTypeIndex.value());
 }
 
 UNITY_INTERFACE_EXPORT pixelpart_unity::uint_t UNITY_INTERFACE_API PixelpartParticleTypeGetParentId(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::uint_t particleTypeId) {

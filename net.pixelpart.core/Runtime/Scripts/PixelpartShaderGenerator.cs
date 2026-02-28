@@ -50,7 +50,7 @@ namespace Pixelpart
 
             switch (blendMode)
             {
-                case BlendModeType.Normal:
+                case BlendModeType.Alpha:
                     blendOp = "Add";
                     srcBlendMode = "SrcAlpha";
                     dstBlendMode = "OneMinusSrcAlpha";

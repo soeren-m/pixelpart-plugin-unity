@@ -121,19 +121,6 @@ namespace Pixelpart
             Plugin.PixelpartAnimatedPropertyFloatKeyframeIndex(internalProperty, position, epsilon);
 
         /// <summary>
-        /// Enable an adaptive cache, which resizes itself automatically if the number of keyframes increases or decreases a lot.
-        /// </summary>
-        public void EnableAdaptiveCache() =>
-            Plugin.PixelpartAnimatedPropertyFloatEnableAdaptiveCache(internalProperty);
-
-        /// <summary>
-        /// Enable a fixed cache with the given size, which only stores up to <paramref name="size"/> different value.
-        /// </summary>
-        /// <param name="size">Cache size</param>
-        public void EnableFixedCache(int size) =>
-            Plugin.PixelpartAnimatedPropertyFloatEnableFixedCache(internalProperty, size);
-
-        /// <summary>
         /// Return the (interpolated) value of the animation property at time <paramref name="position"/>.
         /// <b>Deprecated</b>, use <see cref="At"/>.
         /// </summary>

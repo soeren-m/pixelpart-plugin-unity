@@ -430,13 +430,13 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::bool_t UNITY_INTERFACE_API PixelpartBuil
 	try {
 		switch(renderPipeline) {
 			case 1:
-				pixelpart::ShaderGraph::graphLanguage = pixelpart_unity::shaderLanguageURP;
+				pixelpart::ShaderGraph::specification = pixelpart_unity::shaderGraphSpecificationURP;
 				break;
 			case 2:
-				pixelpart::ShaderGraph::graphLanguage = pixelpart_unity::shaderLanguageHDRP;
+				pixelpart::ShaderGraph::specification = pixelpart_unity::shaderGraphSpecificationHDRP;
 				break;
 			default:
-				pixelpart::ShaderGraph::graphLanguage = pixelpart_unity::shaderLanguage;
+				pixelpart::ShaderGraph::specification = pixelpart_unity::shaderGraphSpecification;
 				break;
 		}
 
@@ -468,7 +468,7 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::bool_t UNITY_INTERFACE_API PixelpartBuil
 			textureResourceIdsString += buildResult.textureResourceIds[samplerIndex];
 			textureResourceIdsString += ' ';
 
-			samplerNamesString += pixelpart::ShaderGraph::graphLanguage.textureSamplers[samplerIndex];
+			samplerNamesString += pixelpart::ShaderGraph::specification.textureSamplers[samplerIndex];
 			samplerNamesString += ' ';
 		}
 

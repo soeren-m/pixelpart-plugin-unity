@@ -150,44 +150,44 @@ namespace Pixelpart
         public PixelpartBuiltInMaterialProvider()
         {
 #if PIXELPART_USE_URP
-            AddMaterial("SpriteUnlitAlpha", "PixelpartSpriteUnlitAlphaURP", BlendModeType.Normal, LightingModeType.Unlit, spriteUnlitParameterNames);
+            AddMaterial("SpriteUnlitAlpha", "PixelpartSpriteUnlitAlphaURP", BlendModeType.Alpha, LightingModeType.Unlit, spriteUnlitParameterNames);
             AddMaterial("SpriteUnlitAdditive", "PixelpartSpriteUnlitAdditiveURP", BlendModeType.Additive, LightingModeType.Unlit, spriteUnlitParameterNames);
-            AddMaterial("TrailUnlitAlpha", "PixelpartTrailUnlitAlphaURP", BlendModeType.Normal, LightingModeType.Unlit, trailUnlitParameterNames);
+            AddMaterial("TrailUnlitAlpha", "PixelpartTrailUnlitAlphaURP", BlendModeType.Alpha, LightingModeType.Unlit, trailUnlitParameterNames);
             AddMaterial("TrailUnlitAdditive", "PixelpartTrailUnlitAdditiveURP", BlendModeType.Additive, LightingModeType.Unlit, trailUnlitParameterNames);
             AddMaterial("MeshUnlit", "PixelpartMeshUnlitURP", BlendModeType.Off, LightingModeType.Unlit, meshUnlitParameterNames);
-            AddMaterial("MeshUnlitAlpha", "PixelpartMeshUnlitAlphaURP", BlendModeType.Normal, LightingModeType.Unlit, meshUnlitAlphaParameterNames);
-            AddMaterial("SpriteLitAlpha", "PixelpartSpriteLitAlphaURP", BlendModeType.Normal, LightingModeType.Lit, spriteLitParameterNames);
+            AddMaterial("MeshUnlitAlpha", "PixelpartMeshUnlitAlphaURP", BlendModeType.Alpha, LightingModeType.Unlit, meshUnlitAlphaParameterNames);
+            AddMaterial("SpriteLitAlpha", "PixelpartSpriteLitAlphaURP", BlendModeType.Alpha, LightingModeType.Lit, spriteLitParameterNames);
             AddMaterial("SpriteLitAdditive", "PixelpartSpriteLitAdditiveURP", BlendModeType.Additive, LightingModeType.Lit, spriteLitParameterNames);
-            AddMaterial("TrailLitAlpha", "PixelpartTrailLitAlphaURP", BlendModeType.Normal, LightingModeType.Lit, trailLitParameterNames);
+            AddMaterial("TrailLitAlpha", "PixelpartTrailLitAlphaURP", BlendModeType.Alpha, LightingModeType.Lit, trailLitParameterNames);
             AddMaterial("TrailLitAdditive", "PixelpartTrailLitAdditiveURP", BlendModeType.Additive, LightingModeType.Lit, trailLitParameterNames);
             AddMaterial("MeshLit", "PixelpartMeshLitURP", BlendModeType.Off, LightingModeType.Lit, meshLitParameterNames);
-            AddMaterial("MeshLitAlpha", "PixelpartMeshLitAlphaURP", BlendModeType.Normal, LightingModeType.Lit, meshLitAlphaParameterNames);
+            AddMaterial("MeshLitAlpha", "PixelpartMeshLitAlphaURP", BlendModeType.Alpha, LightingModeType.Lit, meshLitAlphaParameterNames);
 #elif PIXELPART_USE_HDRP
-            AddMaterial("SpriteUnlitAlpha", "PixelpartSpriteUnlitAlphaHDRP", BlendModeType.Normal, LightingModeType.Unlit, spriteUnlitParameterNames);
+            AddMaterial("SpriteUnlitAlpha", "PixelpartSpriteUnlitAlphaHDRP", BlendModeType.Alpha, LightingModeType.Unlit, spriteUnlitParameterNames);
             AddMaterial("SpriteUnlitAdditive", "PixelpartSpriteUnlitAdditiveHDRP", BlendModeType.Additive, LightingModeType.Unlit, spriteUnlitParameterNames);
-            AddMaterial("TrailUnlitAlpha", "PixelpartTrailUnlitAlphaHDRP", BlendModeType.Normal, LightingModeType.Unlit, trailUnlitParameterNames);
+            AddMaterial("TrailUnlitAlpha", "PixelpartTrailUnlitAlphaHDRP", BlendModeType.Alpha, LightingModeType.Unlit, trailUnlitParameterNames);
             AddMaterial("TrailUnlitAdditive", "PixelpartTrailUnlitAdditiveHDRP", BlendModeType.Additive, LightingModeType.Unlit, trailUnlitParameterNames);
             AddMaterial("MeshUnlit", "PixelpartMeshUnlitHDRP", BlendModeType.Off, LightingModeType.Unlit, meshUnlitParameterNames);
-            AddMaterial("MeshUnlitAlpha", "PixelpartMeshUnlitAlphaHDRP", BlendModeType.Normal, LightingModeType.Unlit, meshUnlitAlphaParameterNames);
-            AddMaterial("SpriteLitAlpha", "PixelpartSpriteLitAlphaHDRP", BlendModeType.Normal, LightingModeType.Lit, spriteLitParameterNames);
+            AddMaterial("MeshUnlitAlpha", "PixelpartMeshUnlitAlphaHDRP", BlendModeType.Alpha, LightingModeType.Unlit, meshUnlitAlphaParameterNames);
+            AddMaterial("SpriteLitAlpha", "PixelpartSpriteLitAlphaHDRP", BlendModeType.Alpha, LightingModeType.Lit, spriteLitParameterNames);
             AddMaterial("SpriteLitAdditive", "PixelpartSpriteLitAdditiveHDRP", BlendModeType.Additive, LightingModeType.Lit, spriteLitParameterNames);
-            AddMaterial("TrailLitAlpha", "PixelpartTrailLitAlphaHDRP", BlendModeType.Normal, LightingModeType.Lit, trailLitParameterNames);
+            AddMaterial("TrailLitAlpha", "PixelpartTrailLitAlphaHDRP", BlendModeType.Alpha, LightingModeType.Lit, trailLitParameterNames);
             AddMaterial("TrailLitAdditive", "PixelpartTrailLitAdditiveHDRP", BlendModeType.Additive, LightingModeType.Lit, trailLitParameterNames);
             AddMaterial("MeshLit", "PixelpartMeshLitHDRP", BlendModeType.Off, LightingModeType.Lit, meshLitParameterNames);
-            AddMaterial("MeshLitAlpha", "PixelpartMeshLitAlphaHDRP", BlendModeType.Normal, LightingModeType.Lit, meshLitAlphaParameterNames);
+            AddMaterial("MeshLitAlpha", "PixelpartMeshLitAlphaHDRP", BlendModeType.Alpha, LightingModeType.Lit, meshLitAlphaParameterNames);
 #else
-            AddMaterial("SpriteUnlitAlpha", "PixelpartSpriteUnlitAlpha", BlendModeType.Normal, LightingModeType.Unlit, spriteUnlitParameterNames);
+            AddMaterial("SpriteUnlitAlpha", "PixelpartSpriteUnlitAlpha", BlendModeType.Alpha, LightingModeType.Unlit, spriteUnlitParameterNames);
             AddMaterial("SpriteUnlitAdditive", "PixelpartSpriteUnlitAdditive", BlendModeType.Additive, LightingModeType.Unlit, spriteUnlitParameterNames);
-            AddMaterial("TrailUnlitAlpha", "PixelpartTrailUnlitAlpha", BlendModeType.Normal, LightingModeType.Unlit, trailUnlitParameterNames);
+            AddMaterial("TrailUnlitAlpha", "PixelpartTrailUnlitAlpha", BlendModeType.Alpha, LightingModeType.Unlit, trailUnlitParameterNames);
             AddMaterial("TrailUnlitAdditive", "PixelpartTrailUnlitAdditive", BlendModeType.Additive, LightingModeType.Unlit, trailUnlitParameterNames);
             AddMaterial("MeshUnlit", "PixelpartMeshUnlit", BlendModeType.Off, LightingModeType.Unlit, meshUnlitParameterNames);
-            AddMaterial("MeshUnlitAlpha", "PixelpartMeshUnlitAlpha", BlendModeType.Normal, LightingModeType.Unlit, meshUnlitAlphaParameterNames);
-            AddMaterial("SpriteLitAlpha", "PixelpartSpriteLitAlpha", BlendModeType.Normal, LightingModeType.Lit, spriteLitParameterNames);
+            AddMaterial("MeshUnlitAlpha", "PixelpartMeshUnlitAlpha", BlendModeType.Alpha, LightingModeType.Unlit, meshUnlitAlphaParameterNames);
+            AddMaterial("SpriteLitAlpha", "PixelpartSpriteLitAlpha", BlendModeType.Alpha, LightingModeType.Lit, spriteLitParameterNames);
             AddMaterial("SpriteLitAdditive", "PixelpartSpriteLitAdditive", BlendModeType.Additive, LightingModeType.Lit, spriteLitParameterNames);
-            AddMaterial("TrailLitAlpha", "PixelpartTrailLitAlpha", BlendModeType.Normal, LightingModeType.Lit, trailLitParameterNames);
+            AddMaterial("TrailLitAlpha", "PixelpartTrailLitAlpha", BlendModeType.Alpha, LightingModeType.Lit, trailLitParameterNames);
             AddMaterial("TrailLitAdditive", "PixelpartTrailLitAdditive", BlendModeType.Additive, LightingModeType.Lit, trailLitParameterNames);
             AddMaterial("MeshLit", "PixelpartMeshLit", BlendModeType.Off, LightingModeType.Lit, meshLitParameterNames);
-            AddMaterial("MeshLitAlpha", "PixelpartMeshLitAlpha", BlendModeType.Normal, LightingModeType.Lit, meshLitAlphaParameterNames);
+            AddMaterial("MeshLitAlpha", "PixelpartMeshLitAlpha", BlendModeType.Alpha, LightingModeType.Lit, meshLitAlphaParameterNames);
 #endif
         }
 

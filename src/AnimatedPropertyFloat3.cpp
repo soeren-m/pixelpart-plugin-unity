@@ -1,6 +1,6 @@
 #include "Common.h"
 #include "Error.h"
-#include "pixelpart-runtime/common/Math.h"
+#include "pixelpart-runtime/common/Types.h"
 #include "pixelpart-runtime/effect/AnimatedProperty.h"
 #include <cstddef>
 
@@ -96,10 +96,12 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::vector3_t UNITY_INTERFACE_API PixelpartA
 UNITY_INTERFACE_EXPORT pixelpart_unity::int_t UNITY_INTERFACE_API PixelpartAnimatedPropertyFloat3KeyframeIndex(pixelpart::AnimatedProperty<pixelpart::float3_t>* property, pixelpart_unity::float_t position, pixelpart_unity::float_t epsilon) {
 	if(!property) {
 		pixelpart_unity::lastError = pixelpart_unity::invalidPropertyError;
-		return 0;
+		return -1;
 	}
 
-	return static_cast<pixelpart_unity::int_t>(property->keyframeIndex(static_cast<pixelpart::float_t>(position), static_cast<pixelpart::float_t>(epsilon)));
+	auto index = property->keyframeIndex(static_cast<pixelpart::float_t>(position), static_cast<pixelpart::float_t>(epsilon));
+
+	return index ? static_cast<pixelpart_unity::int_t>(index.value()) : -1;
 }
 
 UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartAnimatedPropertyFloat3SetKeyframeInterpolation(pixelpart::AnimatedProperty<pixelpart::float3_t>* property, pixelpart_unity::int_t method) {
@@ -114,27 +116,9 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartAnimatedPropertyFloat3S
 UNITY_INTERFACE_EXPORT pixelpart_unity::int_t UNITY_INTERFACE_API PixelpartAnimatedPropertyFloat3GetKeyframeInterpolation(pixelpart::AnimatedProperty<pixelpart::float3_t>* property) {
 	if(!property) {
 		pixelpart_unity::lastError = pixelpart_unity::invalidPropertyError;
-		return static_cast<pixelpart_unity::int_t>(pixelpart::CurveInterpolation::none);
+		return static_cast<pixelpart_unity::int_t>(pixelpart::CurveInterpolation::step);
 	}
 
 	return static_cast<pixelpart_unity::int_t>(property->keyframeInterpolation());
-}
-
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartAnimatedPropertyFloat3EnableAdaptiveCache(pixelpart::AnimatedProperty<pixelpart::float3_t>* property) {
-	if(!property) {
-		pixelpart_unity::lastError = pixelpart_unity::invalidPropertyError;
-		return;
-	}
-
-	property->enableAdaptiveCache();
-}
-
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartAnimatedPropertyFloat3EnableFixedCache(pixelpart::AnimatedProperty<pixelpart::float3_t>* property, pixelpart_unity::int_t size) {
-	if(!property) {
-		pixelpart_unity::lastError = pixelpart_unity::invalidPropertyError;
-		return;
-	}
-
-	property->enableFixedCache(static_cast<std::size_t>(std::max(size, 1)));
 }
 }

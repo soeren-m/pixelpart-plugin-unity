@@ -8,7 +8,7 @@ namespace Pixelpart
         /// <summary>
         /// Values change abruptly between keyframes.
         /// </summary>
-        Off = 0,
+        Step = 0,
 
         /// <summary>
         /// Values are interpolated linearly.
@@ -39,7 +39,7 @@ namespace Pixelpart
         /// <summary>
         /// Particles are blended together based on their opacity.
         /// </summary>
-        Normal = 1,
+        Alpha = 1,
 
         /// <summary>
         /// Particle colors are added together.

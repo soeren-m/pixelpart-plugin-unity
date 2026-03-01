@@ -38,17 +38,6 @@ namespace Pixelpart
         public PixelpartAnimatedPropertyFloat Tightness { get; }
 
         /// <summary>
-        /// How directly particles follow the vectors in the force field.
-        /// <b>Deprecated</b>, use <see cref="Tightness"/>.
-        /// </summary>
-        /// <remarks>
-        /// If set to 0, the field applies forces to the particles over time.
-        /// If set to 1, particles follow the vectors in the force field directly.
-        /// </remarks>
-        [Obsolete("deprecated, use Tightness")]
-        public PixelpartAnimatedPropertyFloat VectorTightness => Tightness;
-
-        /// <summary>
         /// Construct <see cref="PixelpartVectorField"/>.
         /// </summary>
         /// <param name="effectRuntimePtr">Effect runtime</param>

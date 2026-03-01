@@ -258,13 +258,6 @@ namespace Pixelpart
         public PixelpartStaticPropertyFloat OpacityVariance { get; }
 
         /// <summary>
-        /// How many particles of this type are spawned by emitters.
-        /// <b>Deprecated</b>, use <see cref="Count"/>.
-        /// </summary>
-        [Obsolete("deprecated, use Count")]
-        public PixelpartAnimatedPropertyFloat NumParticles => Count;
-
-        /// <summary>
         /// Construct <see cref="PixelpartParticleType"/>.
         /// </summary>
         /// <param name="effectRuntimePtr">Effect runtime</param>

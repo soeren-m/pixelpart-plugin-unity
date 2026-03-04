@@ -81,15 +81,15 @@ namespace Pixelpart
         [DllImport(pluginName)]
         public static extern Vector4 PixelpartGetEffectInputFloat4(IntPtr effectRuntime, uint inputId);
 
-        // Trigger
+        // EffectTrigger
         [DllImport(pluginName)]
-        public static extern int PixelpartGetTriggerCount(IntPtr effectRuntime);
+        public static extern int PixelpartGetEffectTriggerCount(IntPtr effectRuntime);
         [DllImport(pluginName)]
-        public static extern int PixelpartGetTriggers(IntPtr effectRuntime, uint[] ids, byte[] names, int namesBufferSize);
+        public static extern int PixelpartGetEffectTriggers(IntPtr effectRuntime, uint[] ids, byte[] names, int namesBufferSize);
         [DllImport(pluginName)]
-        public static extern void PixelpartActivateTrigger(IntPtr effectRuntime, uint triggerId);
+        public static extern void PixelpartActivateEffectTrigger(IntPtr effectRuntime, uint triggerId);
         [DllImport(pluginName)]
-        public static extern bool PixelpartIsTriggerActivated(IntPtr effectRuntime, uint triggerId);
+        public static extern bool PixelpartIsEffectTriggerActivated(IntPtr effectRuntime, uint triggerId);
 
         // Rendering
         [DllImport(pluginName)]

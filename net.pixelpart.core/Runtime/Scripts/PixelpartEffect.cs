@@ -144,7 +144,7 @@ namespace Pixelpart
 
         private PixelpartEffectInputCollection effectInputCollection = new PixelpartEffectInputCollection();
 
-        private PixelpartTriggerCollection triggerCollection = new PixelpartTriggerCollection();
+        private PixelpartEffectTriggerCollection effectTriggerCollection = new PixelpartEffectTriggerCollection();
 
         private PixelpartEffectRenderer effectRenderer = null;
 
@@ -485,12 +485,12 @@ namespace Pixelpart
         /// <param name="triggerName">Name of the trigger</param>
         public void ActivateTrigger(string triggerName)
         {
-            if (!triggerCollection.TryGetTriggerId(triggerName, out uint triggerId))
+            if (!effectTriggerCollection.TryGetTriggerId(triggerName, out uint triggerId))
             {
                 return;
             }
 
-            Plugin.PixelpartActivateTrigger(effectRuntime, triggerId);
+            Plugin.PixelpartActivateEffectTrigger(effectRuntime, triggerId);
         }
 
         /// <summary>
@@ -500,12 +500,12 @@ namespace Pixelpart
         /// <returns><c>true</c> if the trigger was activated</returns>
         public bool IsTriggerActivated(string triggerName)
         {
-            if (!triggerCollection.TryGetTriggerId(triggerName, out uint triggerId))
+            if (!effectTriggerCollection.TryGetTriggerId(triggerName, out uint triggerId))
             {
                 return false;
             }
 
-            return Plugin.PixelpartIsTriggerActivated(effectRuntime, triggerId);
+            return Plugin.PixelpartIsEffectTriggerActivated(effectRuntime, triggerId);
         }
 
         /// <summary>
@@ -689,7 +689,7 @@ namespace Pixelpart
             }
 
             effectInputCollection = new PixelpartEffectInputCollection(effectRuntime, effectInputNames, effectInputValues);
-            triggerCollection = new PixelpartTriggerCollection(effectRuntime);
+            effectTriggerCollection = new PixelpartEffectTriggerCollection(effectRuntime);
             effectRenderer = new PixelpartEffectRenderer(effectRuntime, ParticleMaterials, EffectAsset.CustomMaterials);
 
             finishedEventInvoked = false;
@@ -721,7 +721,7 @@ namespace Pixelpart
             effectRuntime = IntPtr.Zero;
 
             effectInputCollection = new PixelpartEffectInputCollection();
-            triggerCollection = new PixelpartTriggerCollection();
+            effectTriggerCollection = new PixelpartEffectTriggerCollection();
             effectRenderer = null;
         }
 

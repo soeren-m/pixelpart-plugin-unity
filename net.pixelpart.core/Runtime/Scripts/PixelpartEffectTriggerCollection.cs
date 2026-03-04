@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Pixelpart
 {
-    internal class PixelpartTriggerCollection
+    internal class PixelpartEffectTriggerCollection
     {
         public IReadOnlyDictionary<string, uint> TriggerIds => new ReadOnlyDictionary<string, uint>(triggerIds);
         private readonly Dictionary<string, uint> triggerIds = new Dictionary<string, uint>();
@@ -14,18 +14,18 @@ namespace Pixelpart
         public IReadOnlyList<string> TriggerNames => new ReadOnlyCollection<string>(triggerNames);
         private readonly List<string> triggerNames = new List<string>();
 
-        public PixelpartTriggerCollection()
+        public PixelpartEffectTriggerCollection()
         {
 
         }
 
-        public PixelpartTriggerCollection(IntPtr effectRuntimePtr)
+        public PixelpartEffectTriggerCollection(IntPtr effectRuntimePtr)
         {
-            var triggerCount = Plugin.PixelpartGetTriggerCount(effectRuntimePtr);
+            var triggerCount = Plugin.PixelpartGetEffectTriggerCount(effectRuntimePtr);
             var triggerIdArray = new uint[triggerCount];
 
             var triggerNamesBuffer = new byte[16384];
-            var triggerNamesLength = Plugin.PixelpartGetTriggers(effectRuntimePtr, triggerIdArray, triggerNamesBuffer, triggerNamesBuffer.Length);
+            var triggerNamesLength = Plugin.PixelpartGetEffectTriggers(effectRuntimePtr, triggerIdArray, triggerNamesBuffer, triggerNamesBuffer.Length);
             var triggerNamesArray = Encoding.UTF8.GetString(triggerNamesBuffer, 0, triggerNamesLength)
                 .Split(new[] { '|' }, 64, StringSplitOptions.RemoveEmptyEntries);
 

@@ -9,7 +9,7 @@
 #include <algorithm>
 
 extern "C" {
-UNITY_INTERFACE_EXPORT pixelpart_unity::int_t UNITY_INTERFACE_API PixelpartGetTriggerCount(pixelpart_unity::EffectRuntime* effectRuntime) {
+UNITY_INTERFACE_EXPORT pixelpart_unity::int_t UNITY_INTERFACE_API PixelpartGetEffectTriggerCount(pixelpart_unity::EffectRuntime* effectRuntime) {
 	if(!effectRuntime) {
 		pixelpart_unity::lastError = pixelpart_unity::invalidEffectRuntimeError;
 		return 0;
@@ -18,7 +18,7 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::int_t UNITY_INTERFACE_API PixelpartGetTr
 	return static_cast<pixelpart_unity::int_t>(effectRuntime->effectAsset.effect().triggers().size());
 }
 
-UNITY_INTERFACE_EXPORT pixelpart_unity::int_t UNITY_INTERFACE_API PixelpartGetTriggers(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::uint_t* ids, pixelpart_unity::char_t* names, pixelpart_unity::int_t namesBufferSize) {
+UNITY_INTERFACE_EXPORT pixelpart_unity::int_t UNITY_INTERFACE_API PixelpartGetEffectTriggers(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::uint_t* ids, pixelpart_unity::char_t* names, pixelpart_unity::int_t namesBufferSize) {
 	if(!effectRuntime) {
 		pixelpart_unity::lastError = pixelpart_unity::invalidEffectRuntimeError;
 		return 0;
@@ -58,7 +58,7 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::int_t UNITY_INTERFACE_API PixelpartGetTr
 	return lengthNames;
 }
 
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartActivateTrigger(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::uint_t triggerId) {
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartActivateEffectTrigger(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::uint_t triggerId) {
 	if(!effectRuntime || !effectRuntime->effectEngine) {
 		pixelpart_unity::lastError = pixelpart_unity::invalidEffectRuntimeError;
 		return;
@@ -67,7 +67,7 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartActivateTrigger(pixelpa
 	effectRuntime->effectEngine->activateTrigger(pixelpart::id_t(triggerId));
 }
 
-UNITY_INTERFACE_EXPORT pixelpart_unity::bool_t UNITY_INTERFACE_API PixelpartIsTriggerActivated(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::uint_t triggerId) {
+UNITY_INTERFACE_EXPORT pixelpart_unity::bool_t UNITY_INTERFACE_API PixelpartIsEffectTriggerActivated(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::uint_t triggerId) {
 	if(!effectRuntime || !effectRuntime->effectEngine) {
 		pixelpart_unity::lastError = pixelpart_unity::invalidEffectRuntimeError;
 		return false;

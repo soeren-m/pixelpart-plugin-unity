@@ -41,8 +41,33 @@ namespace Pixelpart
 
                 inputIds[inputName] = inputId;
                 inputNames.Add(inputName);
-                inputValues.Add(new PixelpartVariantValue(inputType,
-                    Plugin.PixelpartGetEffectInputFloat4(effectRuntimePtr, inputId)));
+
+                var inputValue = new PixelpartVariantValue(PixelpartVariantValue.VariantType.Null, new Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+                switch (inputType)
+                {
+                    case PixelpartVariantValue.VariantType.Bool:
+                        inputValue = new PixelpartVariantValue(Plugin.PixelpartGetEffectInputBool(effectRuntimePtr, inputId));
+                        break;
+                    case PixelpartVariantValue.VariantType.Int:
+                        inputValue = new PixelpartVariantValue(Plugin.PixelpartGetEffectInputInt(effectRuntimePtr, inputId));
+                        break;
+                    case PixelpartVariantValue.VariantType.Float:
+                        inputValue = new PixelpartVariantValue(Plugin.PixelpartGetEffectInputFloat(effectRuntimePtr, inputId));
+                        break;
+                    case PixelpartVariantValue.VariantType.Float2:
+                        inputValue = new PixelpartVariantValue(Plugin.PixelpartGetEffectInputFloat2(effectRuntimePtr, inputId));
+                        break;
+                    case PixelpartVariantValue.VariantType.Float3:
+                        inputValue = new PixelpartVariantValue(Plugin.PixelpartGetEffectInputFloat3(effectRuntimePtr, inputId));
+                        break;
+                    case PixelpartVariantValue.VariantType.Float4:
+                        inputValue = new PixelpartVariantValue(Plugin.PixelpartGetEffectInputFloat4(effectRuntimePtr, inputId));
+                        break;
+                    default:
+                        break;
+                }
+
+                inputValues.Add(inputValue);
             }
         }
 

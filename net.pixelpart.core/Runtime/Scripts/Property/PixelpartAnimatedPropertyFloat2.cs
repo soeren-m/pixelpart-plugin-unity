@@ -16,9 +16,9 @@ namespace Pixelpart
         /// <summary>
         /// Interpolation applied to the animation curve.
         /// </summary>
-        public InterpolationType KeyframeInterpolation
+        public PixelpartInterpolationType KeyframeInterpolation
         {
-            get => (InterpolationType)Plugin.PixelpartAnimatedPropertyFloat2GetKeyframeInterpolation(internalProperty);
+            get => (PixelpartInterpolationType)Plugin.PixelpartAnimatedPropertyFloat2GetKeyframeInterpolation(internalProperty);
             set => Plugin.PixelpartAnimatedPropertyFloat2SetKeyframeInterpolation(internalProperty, (int)value);
         }
 

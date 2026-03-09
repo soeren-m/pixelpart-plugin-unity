@@ -48,12 +48,12 @@ namespace Pixelpart
             particleEmitterId = emitterId;
             particleTypeId = typeId;
 
-            var rendererType = (ParticleRendererType)Plugin.PixelpartParticleTypeGetRenderer(effectRuntimePtr, typeId);
+            var rendererType = (PixelpartParticleType.ParticleRendererType)Plugin.PixelpartParticleTypeGetRenderer(effectRuntimePtr, typeId);
 
             switch (rendererType)
             {
-                case ParticleRendererType.Sprite:
-                case ParticleRendererType.Trail:
+                case PixelpartParticleType.ParticleRendererType.Sprite:
+                case PixelpartParticleType.ParticleRendererType.Trail:
                 {
                     mesh = new Mesh();
                     mesh.MarkDynamic();
@@ -63,7 +63,7 @@ namespace Pixelpart
                     break;
                 }
 
-                case ParticleRendererType.Mesh:
+                case PixelpartParticleType.ParticleRendererType.Mesh:
                 {
                     var meshResourceIdBuffer = new byte[512];
                     var meshResourceIdLength = Plugin.PixelpartParticleTypeGetMeshRendererMeshResourceId(effectRuntimePtr, typeId, meshResourceIdBuffer, meshResourceIdBuffer.Length);
@@ -99,7 +99,7 @@ namespace Pixelpart
                 return;
             }
 
-            var rendererType = (ParticleRendererType)Plugin.PixelpartParticleTypeGetRenderer(effectRuntime, particleTypeId);
+            var rendererType = (PixelpartParticleType.ParticleRendererType)Plugin.PixelpartParticleTypeGetRenderer(effectRuntime, particleTypeId);
             var particleLayer = Plugin.PixelpartParticleTypeGetLayer(effectRuntime, particleTypeId);
 
             Plugin.PixelpartConstructParticleGeometry(effectRuntime, particleEmitterId, particleTypeId,
@@ -114,11 +114,11 @@ namespace Pixelpart
             var vertexGenerationResult = false;
             switch (rendererType)
             {
-                case ParticleRendererType.Sprite:
-                case ParticleRendererType.Trail:
+                case PixelpartParticleType.ParticleRendererType.Sprite:
+                case PixelpartParticleType.ParticleRendererType.Trail:
                     vertexGenerationResult = GenerateVertexData(camera, effectScale);
                     break;
-                case ParticleRendererType.Mesh:
+                case PixelpartParticleType.ParticleRendererType.Mesh:
                     vertexGenerationResult = GenerateInstanceData(camera, effectScale);
                     break;
                 default:
@@ -134,11 +134,11 @@ namespace Pixelpart
 
             switch (rendererType)
             {
-                case ParticleRendererType.Sprite:
-                case ParticleRendererType.Trail:
+                case PixelpartParticleType.ParticleRendererType.Sprite:
+                case PixelpartParticleType.ParticleRendererType.Trail:
                     RenderVertices(camera, effectTransform, layer, particleLayer);
                     break;
-                case ParticleRendererType.Mesh:
+                case PixelpartParticleType.ParticleRendererType.Mesh:
                     RenderInstances(camera, effectTransform, layer, particleLayer);
                     break;
                 default:

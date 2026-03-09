@@ -831,8 +831,8 @@ namespace Pixelpart
                 var particleTypeNameBufferSize = Plugin.PixelpartParticleTypeGetName(effectRuntimePtr, particleTypeId, particleTypeNameBuffer, particleTypeNameBuffer.Length);
                 var particleTypeName = Encoding.UTF8.GetString(particleTypeNameBuffer, 0, particleTypeNameBufferSize);
 
-                var rendererType = (ParticleRendererType)Plugin.PixelpartParticleTypeGetRenderer(effectRuntimePtr, particleTypeId);
-                var needsInstancing = rendererType == ParticleRendererType.Mesh;
+                var rendererType = (PixelpartParticleType.ParticleRendererType)Plugin.PixelpartParticleTypeGetRenderer(effectRuntimePtr, particleTypeId);
+                var needsInstancing = rendererType == PixelpartParticleType.ParticleRendererType.Mesh;
 
                 var materialIdBuffer = new byte[256];
                 var materialIdLength = Plugin.PixelpartParticleTypeGetMaterialId(effectRuntimePtr, particleTypeId, materialIdBuffer, materialIdBuffer.Length);

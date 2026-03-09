@@ -11,9 +11,9 @@ namespace Pixelpart
 
         public bool Instancing;
 
-        public BlendModeType BlendMode;
+        public PixelpartBlendMode BlendMode;
 
-        public LightingModeType LightingMode;
+        public PixelpartLightingMode LightingMode;
 
         public uint[] ParameterIds;
 
@@ -24,7 +24,7 @@ namespace Pixelpart
         public string[] SamplerNames;
 
         public PixelpartMaterialDescriptor(string materialPath, string resourceId,
-            bool instancing, BlendModeType blendMode, LightingModeType lightingMode,
+            bool instancing, PixelpartBlendMode blendMode, PixelpartLightingMode lightingMode,
             uint[] parameterIds, string[] parameterNames,
             string[] textureResourceIds, string[] samplerNames)
         {
@@ -53,7 +53,7 @@ namespace Pixelpart
         }
 
         public static PixelpartMaterialDescriptor CreateDescriptorForBuiltInMaterial(string materialPath, string resourceId,
-            BlendModeType blendMode, LightingModeType lightingMode,
+            PixelpartBlendMode blendMode, PixelpartLightingMode lightingMode,
             uint[] parameterIds, string[] parameterNames)
         {
             return new PixelpartMaterialDescriptor(materialPath, resourceId,
@@ -63,7 +63,7 @@ namespace Pixelpart
         }
 
         public static PixelpartMaterialDescriptor CreateDescriptorForCustomMaterial(string materialPath, string resourceId,
-            bool instancing, BlendModeType blendMode, LightingModeType lightingMode,
+            bool instancing, PixelpartBlendMode blendMode, PixelpartLightingMode lightingMode,
             uint[] parameterIds, string[] parameterNames,
             string[] textureResourceIds, string[] samplerNames)
         {

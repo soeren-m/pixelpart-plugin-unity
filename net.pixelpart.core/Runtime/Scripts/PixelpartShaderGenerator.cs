@@ -5,9 +5,9 @@ namespace Pixelpart
 {
     internal static class PixelpartShaderGenerator
     {
-        public static string GenerateShaderCode(string shaderName, string mainCode, string parameterCode, BlendModeType blendMode, LightingModeType lightingMode, bool instancing)
+        public static string GenerateShaderCode(string shaderName, string mainCode, string parameterCode, PixelpartBlendMode blendMode, PixelpartLightingMode lightingMode, bool instancing)
         {
-            if (lightingMode != LightingModeType.Unlit)
+            if (lightingMode != PixelpartLightingMode.Unlit)
             {
                 Debug.LogError("[Pixelpart] Custom shaders for lit materials are not supported");
                 return string.Empty;
@@ -29,7 +29,7 @@ namespace Pixelpart
             var srcBlendMode = string.Empty;
             var dstBlendMode = string.Empty;
 
-            if (blendMode == BlendModeType.Off)
+            if (blendMode == PixelpartBlendMode.Off)
             {
                 renderType = "Opaque";
                 queue = "Geometry";
@@ -50,17 +50,17 @@ namespace Pixelpart
 
             switch (blendMode)
             {
-                case BlendModeType.Alpha:
+                case PixelpartBlendMode.Alpha:
                     blendOp = "Add";
                     srcBlendMode = "SrcAlpha";
                     dstBlendMode = "OneMinusSrcAlpha";
                     break;
-                case BlendModeType.Additive:
+                case PixelpartBlendMode.Additive:
                     blendOp = "Add";
                     srcBlendMode = "SrcAlpha";
                     dstBlendMode = "One";
                     break;
-                case BlendModeType.Subtractive:
+                case PixelpartBlendMode.Subtractive:
                     blendOp = "ReverseSubtract";
                     srcBlendMode = "SrcAlpha";
                     dstBlendMode = "One";

@@ -91,6 +91,14 @@ namespace Pixelpart
         [DllImport(pluginName)]
         public static extern bool PixelpartIsEffectTriggerActivated(IntPtr effectRuntime, uint triggerId);
 
+        // EffectEvent
+        [DllImport(pluginName)]
+        public static extern int PixelpartGetEffectEventCount(IntPtr effectRuntime);
+        [DllImport(pluginName)]
+        public static extern int PixelpartGetEffectEvents(IntPtr effectRuntime, uint[] ids, byte[] names, int namesBufferSize);
+        [DllImport(pluginName)]
+        public static extern int PixelpartGetInvokedEffectEvents(IntPtr effectRuntime, uint[] eventIds);
+
         // Rendering
         [DllImport(pluginName)]
         public static extern void PixelpartConstructParticleGeometry(IntPtr effectRuntime, uint particleEmitterId, uint particleTypeId,

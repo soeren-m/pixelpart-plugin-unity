@@ -2,6 +2,7 @@
 #define PIXELPART_UNITY_EFFECT_RUNTIME_H
 
 #include "pixelpart-runtime/common/Types.h"
+#include "pixelpart-runtime/common/Id.h"
 #include "pixelpart-runtime/common/ThreadPool.h"
 #include "pixelpart-runtime/effect/ParticleEmissionPair.h"
 #include "pixelpart-runtime/effect/ShaderGraphSpecification.h"
@@ -10,6 +11,7 @@
 #include "pixelpart-runtime/vertex/ParticleVertexGenerator.h"
 #include "pixelpart-runtime/vertex/VertexDataBufferDimensions.h"
 #include <memory>
+#include <vector>
 #include <unordered_map>
 #include <random>
 
@@ -25,6 +27,7 @@ struct EffectRuntime {
 	pixelpart::EffectAsset effectAsset;
 	std::unique_ptr<pixelpart::EffectEngine> effectEngine;
 	pixelpart::float_t simulationTime = 0.0;
+	std::vector<pixelpart::id_t> invokedEventIds;
 
 	std::unordered_map<pixelpart::ParticleEmissionPair,
 		std::unique_ptr<pixelpart::ParticleVertexGenerator>> vertexGenerators;

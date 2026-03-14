@@ -206,11 +206,17 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartAdvanceEffect(pixelpart
 	speed = std::max(speed, 0.0f);
 	timeStep = std::max(timeStep * speed, 0.001f);
 
+	effectRuntime->invokedEventIds.clear();
+
 	effectRuntime->simulationTime += pixelpart_unity::fromUnity(dt) * pixelpart_unity::fromUnity(speed);
 
 	while(effectRuntime->simulationTime > pixelpart_unity::fromUnity(timeStep)) {
 		effectRuntime->simulationTime -= pixelpart_unity::fromUnity(timeStep);
 		effectRuntime->effectEngine->advance(pixelpart_unity::fromUnity(timeStep));
+
+		for(pixelpart::id_t eventId : effectRuntime->effectEngine->context().invokedEvents()) {
+			effectRuntime->invokedEventIds.push_back(eventId);
+		}
 
 		if(loop && effectRuntime->effectEngine->context().time() > pixelpart_unity::fromUnity(loopTime)) {
 			effectRuntime->effectEngine->restart();

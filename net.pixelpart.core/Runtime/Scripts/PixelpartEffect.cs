@@ -34,6 +34,11 @@ namespace Pixelpart
         public event EventHandler Finished;
 
         /// <summary>
+        /// Custom effect event.
+        /// </summary>
+        public event EventHandler<EffectEventArgs> EffectEvent;
+
+        /// <summary>
         /// Effect resource that is shown.
         /// </summary>
         public PixelpartEffectAsset EffectAsset = null;
@@ -146,9 +151,13 @@ namespace Pixelpart
 
         private PixelpartEffectTriggerCollection effectTriggerCollection = new PixelpartEffectTriggerCollection();
 
+        private PixelpartEffectEventCollection effectEventCollection = new PixelpartEffectEventCollection();
+
         private PixelpartEffectRenderer effectRenderer = null;
 
         private bool finishedEventInvoked = false;
+
+        private uint[] invokedEventIds = null;
 
         /// <summary>
         /// Construct <see cref="PixelpartEffect"/>.
@@ -181,6 +190,22 @@ namespace Pixelpart
             Plugin.PixelpartAdvanceEffect(effectRuntime, Time.deltaTime,
                 Loop, LoopTime, Speed,
                 timeStep, Seed, RandomSeed);
+
+            var invokedEventCount = Plugin.PixelpartGetInvokedEffectEvents(effectRuntime, invokedEventIds);
+            for (var eventIndex = 0; eventIndex < invokedEventCount; eventIndex++)
+            {
+                var eventId = invokedEventIds[eventIndex];
+                if (!effectEventCollection.TryGetEventName(eventId, out var eventName))
+                {
+                    continue;
+                }
+
+                EffectEvent?.Invoke(this, new EffectEventArgs
+                {
+                    EventId = eventId,
+                    EventName = eventName
+                });
+            }
 
             if (!finishedEventInvoked && !Loop && Plugin.PixelpartIsEffectFinished(effectRuntime))
             {
@@ -690,9 +715,12 @@ namespace Pixelpart
 
             effectInputCollection = new PixelpartEffectInputCollection(effectRuntime, effectInputNames, effectInputValues);
             effectTriggerCollection = new PixelpartEffectTriggerCollection(effectRuntime);
+            effectEventCollection = new PixelpartEffectEventCollection(effectRuntime);
+
             effectRenderer = new PixelpartEffectRenderer(effectRuntime, ParticleMaterials, EffectAsset.CustomMaterials);
 
             finishedEventInvoked = false;
+            invokedEventIds = new uint[effectEventCollection.EventNames.Count];
 
             ApplyInputProperties();
             UpdateTransform();
@@ -722,7 +750,12 @@ namespace Pixelpart
 
             effectInputCollection = new PixelpartEffectInputCollection();
             effectTriggerCollection = new PixelpartEffectTriggerCollection();
+            effectEventCollection = new PixelpartEffectEventCollection();
+
             effectRenderer = null;
+
+            finishedEventInvoked = false;
+            invokedEventIds = null;
         }
 
         private void UpdateTransform()

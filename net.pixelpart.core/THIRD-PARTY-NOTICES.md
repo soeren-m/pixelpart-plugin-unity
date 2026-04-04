@@ -11,9 +11,3 @@ Component Name: JSON for Modern C++
 License Type: "MIT"
 
 [JSON for Modern C++ License](https://json.nlohmann.me/home/license/)
-
-Component Name: OpenGL Mathematics (GLM)
-
-License Type: "MIT"
-
-[OpenGL Mathematics (GLM) License](https://github.com/g-truc/glm/blob/master/copying.txt)

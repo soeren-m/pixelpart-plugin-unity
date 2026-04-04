@@ -28,6 +28,74 @@ namespace Pixelpart
     /// </remarks>
     public class PixelpartParticleType
     {
+        /// <summary>
+        /// Whether the rotation property represents the exact rotation of particles or their angular velocity.
+        /// </summary>
+        public enum RotationModeType : int
+        {
+            /// <summary>
+            /// Rotation property defines angle of rotation in degrees.
+            /// </summary>
+            Angle = 0,
+
+            /// <summary>
+            /// Rotation property defines angular velocity in degrees/second.
+            /// </summary>
+            Velocity = 1
+        }
+
+        /// <summary>
+        /// Direction to which particles are aligned.
+        /// </summary>
+        public enum AlignmentModeType : int
+        {
+            /// <summary>
+            /// Particles do not align to anything.
+            /// </summary>
+            None = 0,
+
+            /// <summary>
+            /// Particles always face the camera (3D).
+            /// </summary>
+            Camera = 1,
+
+            /// <summary>
+            /// Particles align to their own velocity vector.
+            /// </summary>
+            Motion = 2,
+
+            /// <summary>
+            /// Particles face their emitter.
+            /// </summary>
+            Emission = 3,
+
+            /// <summary>
+            /// Particles copy the rotation of their emitter.
+            /// </summary>
+            Emitter = 4
+        }
+
+        /// <summary>
+        /// Types determining how particles are rendered.
+        /// </summary>
+        public enum ParticleRendererType : int
+        {
+            /// <summary>
+            /// The sprite renderer renders each particle as a separate sprite.
+            /// </summary>
+            Sprite = 0,
+
+            /// <summary>
+            /// The trail renderer generates continuous trails along the path of particles with the same parent particle.
+            /// </summary>
+            Trail = 1,
+
+            /// <summary>
+            /// The mesh renderer renders each particles as a three-dimensional mesh.
+            /// </summary>
+            Mesh = 2
+        }
+
         private readonly IntPtr effectRuntime;
 
         /// <summary>
@@ -256,13 +324,6 @@ namespace Pixelpart
         /// How much the opacity varies between particles.
         /// </summary>
         public PixelpartStaticPropertyFloat OpacityVariance { get; }
-
-        /// <summary>
-        /// How many particles of this type are spawned by emitters.
-        /// <b>Deprecated</b>, use <see cref="Count"/>.
-        /// </summary>
-        [Obsolete("deprecated, use Count")]
-        public PixelpartAnimatedPropertyFloat NumParticles => Count;
 
         /// <summary>
         /// Construct <see cref="PixelpartParticleType"/>.

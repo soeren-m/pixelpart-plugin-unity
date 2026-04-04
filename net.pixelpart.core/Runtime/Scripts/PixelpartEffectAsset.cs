@@ -108,8 +108,8 @@ namespace Pixelpart
                 var nameSize = Plugin.PixelpartGetMaterialResourceId(effectRuntime, materialIndex, nameBuffer, nameBuffer.Length);
                 var materialResourceId = Encoding.UTF8.GetString(nameBuffer, 0, nameSize);
 
-                var blendMode = (BlendModeType)Plugin.PixelpartGetMaterialResourceBlendMode(effectRuntime, materialResourceId);
-                var lightingMode = (LightingModeType)Plugin.PixelpartGetMaterialResourceLightingMode(effectRuntime, materialResourceId);
+                var blendMode = (PixelpartBlendMode)Plugin.PixelpartGetMaterialResourceBlendMode(effectRuntime, materialResourceId);
+                var lightingMode = (PixelpartLightingMode)Plugin.PixelpartGetMaterialResourceLightingMode(effectRuntime, materialResourceId);
 
                 var result = Plugin.PixelpartBuildMaterialShader(effectRuntime, materialResourceId, renderPipelineId,
                     shaderMainCodeBuffer, shaderParameterCodeBuffer,
@@ -172,7 +172,7 @@ namespace Pixelpart
 
 #if UNITY_EDITOR
         private static void GenerateCustomShaderAsset(string materialName, string directory,
-            BlendModeType blendMode, LightingModeType lightingMode, bool instanced,
+            PixelpartBlendMode blendMode, PixelpartLightingMode lightingMode, bool instanced,
             string mainCode, string parameterCode)
         {
             var shaderFilepath = Path.Combine(directory, materialName + ".shader");

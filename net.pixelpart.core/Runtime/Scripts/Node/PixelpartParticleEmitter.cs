@@ -265,16 +265,6 @@ namespace Pixelpart
         public PixelpartAnimatedPropertyFloat Spread { get; }
 
         /// <summary>
-        /// Number of points in the emitter shape.
-        /// <b>Deprecated</b>, use <see cref="ShapePointCount"/>.
-        /// </summary>
-        /// <remarks>
-        /// Only applicable for emitter shape <c>Path</c>.
-        /// </remarks>
-        [Obsolete("deprecated, use ShapePointCount")]
-        public int NumShapePoints => ShapePointCount;
-
-        /// <summary>
         /// Construct <see cref="PixelpartParticleEmitter"/>.
         /// </summary>
         /// <param name="effectRuntimePtr">Effect runtime</param>

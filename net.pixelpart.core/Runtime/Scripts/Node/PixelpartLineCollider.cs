@@ -18,13 +18,6 @@ namespace Pixelpart
         public int PointCount => Plugin.PixelpartLineColliderGetPointCount(effectRuntime, Id);
 
         /// <summary>
-        /// Number of vertices in the line collider.
-        /// <b>Deprecated</b>, use <see cref="PointCount"/>.
-        /// </summary>
-        [Obsolete("deprecated, use PointCount")]
-        public int NumPoints => PointCount;
-
-        /// <summary>
         /// Construct <see cref="PixelpartLineCollider"/>.
         /// </summary>
         /// <param name="effectRuntimePtr">Effect runtime</param>

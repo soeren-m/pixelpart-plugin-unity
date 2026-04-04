@@ -34,6 +34,11 @@ namespace Pixelpart
         public event EventHandler Finished;
 
         /// <summary>
+        /// Custom effect event.
+        /// </summary>
+        public event EventHandler<EffectEventArgs> EffectEvent;
+
+        /// <summary>
         /// Effect resource that is shown.
         /// </summary>
         public PixelpartEffectAsset EffectAsset = null;
@@ -144,11 +149,15 @@ namespace Pixelpart
 
         private PixelpartEffectInputCollection effectInputCollection = new PixelpartEffectInputCollection();
 
-        private PixelpartTriggerCollection triggerCollection = new PixelpartTriggerCollection();
+        private PixelpartEffectTriggerCollection effectTriggerCollection = new PixelpartEffectTriggerCollection();
+
+        private PixelpartEffectEventCollection effectEventCollection = new PixelpartEffectEventCollection();
 
         private PixelpartEffectRenderer effectRenderer = null;
 
         private bool finishedEventInvoked = false;
+
+        private uint[] invokedEventIds = null;
 
         /// <summary>
         /// Construct <see cref="PixelpartEffect"/>.
@@ -181,6 +190,22 @@ namespace Pixelpart
             Plugin.PixelpartAdvanceEffect(effectRuntime, Time.deltaTime,
                 Loop, LoopTime, Speed,
                 timeStep, Seed, RandomSeed);
+
+            var invokedEventCount = Plugin.PixelpartGetInvokedEffectEvents(effectRuntime, invokedEventIds);
+            for (var eventIndex = 0; eventIndex < invokedEventCount; eventIndex++)
+            {
+                var eventId = invokedEventIds[eventIndex];
+                if (!effectEventCollection.TryGetEventName(eventId, out var eventName))
+                {
+                    continue;
+                }
+
+                EffectEvent?.Invoke(this, new EffectEventArgs
+                {
+                    EventId = eventId,
+                    EventName = eventName
+                });
+            }
 
             if (!finishedEventInvoked && !Loop && Plugin.PixelpartIsEffectFinished(effectRuntime))
             {
@@ -485,12 +510,12 @@ namespace Pixelpart
         /// <param name="triggerName">Name of the trigger</param>
         public void ActivateTrigger(string triggerName)
         {
-            if (!triggerCollection.TryGetTriggerId(triggerName, out uint triggerId))
+            if (!effectTriggerCollection.TryGetTriggerId(triggerName, out uint triggerId))
             {
                 return;
             }
 
-            Plugin.PixelpartActivateTrigger(effectRuntime, triggerId);
+            Plugin.PixelpartActivateEffectTrigger(effectRuntime, triggerId);
         }
 
         /// <summary>
@@ -500,12 +525,12 @@ namespace Pixelpart
         /// <returns><c>true</c> if the trigger was activated</returns>
         public bool IsTriggerActivated(string triggerName)
         {
-            if (!triggerCollection.TryGetTriggerId(triggerName, out uint triggerId))
+            if (!effectTriggerCollection.TryGetTriggerId(triggerName, out uint triggerId))
             {
                 return false;
             }
 
-            return Plugin.PixelpartIsTriggerActivated(effectRuntime, triggerId);
+            return Plugin.PixelpartIsEffectTriggerActivated(effectRuntime, triggerId);
         }
 
         /// <summary>
@@ -668,87 +693,6 @@ namespace Pixelpart
             return new PixelpartParticleType(effectRuntime, id);
         }
 
-        /// <summary>
-        /// Return the particle emitter with the given name.
-        /// <b>Deprecated</b>, use <see cref="FindNode"/>.
-        /// </summary>
-        /// <param name="nodeName">Node name</param>
-        /// <returns>Node or <c>null</c> if no node with this name exists</returns>
-        [Obsolete("deprecated, use FindNode")]
-        public PixelpartParticleEmitter FindParticleEmitter(string nodeName) => (PixelpartParticleEmitter)FindNode(nodeName);
-
-        /// <summary>
-        /// Return the force field with the given name.
-        /// <b>Deprecated</b>, use <see cref="FindNode"/>.
-        /// </summary>
-        /// <param name="nodeName">Node name</param>
-        /// <returns>Node or <c>null</c> if no node with this name exists</returns>
-        [Obsolete("deprecated, use FindNode")]
-        public PixelpartForceField FindForceField(string nodeName) => (PixelpartForceField)FindNode(nodeName);
-
-        /// <summary>
-        /// Return the collider with the given name.
-        /// <b>Deprecated</b>, use <see cref="FindNode"/>.
-        /// </summary>
-        /// <param name="nodeName">Node name</param>
-        /// <returns>Node or <c>null</c> if no node with this name exists</returns>
-        [Obsolete("deprecated, use FindNode")]
-        public PixelpartCollider FindCollider(string nodeName) => (PixelpartCollider)FindNode(nodeName);
-
-        /// <summary>
-        /// Return the particle emitter with the given ID.
-        /// <b>Deprecated</b>, use <see cref="GetNode"/>.
-        /// </summary>
-        /// <param name="id">Node ID</param>
-        /// <returns>Node or <c>null</c> if no node with this ID exists</returns>
-        [Obsolete("deprecated, use GetNode")]
-        public PixelpartParticleEmitter GetParticleEmitter(uint id) => (PixelpartParticleEmitter)GetNode(id);
-
-        /// <summary>
-        /// Return the force field with the given ID.
-        /// <b>Deprecated</b>, use <see cref="GetNode"/>.
-        /// </summary>
-        /// <param name="id">Node ID</param>
-        /// <returns>Node or <c>null</c> if no node with this ID exists</returns>
-        [Obsolete("deprecated, use GetNode")]
-        public PixelpartForceField GetForceField(uint id) => (PixelpartForceField)GetNode(id);
-
-        /// <summary>
-        /// Return the collider with the given ID.
-        /// <b>Deprecated</b>, use <see cref="GetNode"/>.
-        /// </summary>
-        /// <param name="id">Node ID</param>
-        /// <returns>Node or <c>null</c> if no node with this ID exists</returns>
-        [Obsolete("deprecated, use GetNode")]
-        public PixelpartCollider GetCollider(uint id) => (PixelpartCollider)GetNode(id);
-
-        /// <summary>
-        /// Return the particle emitter at the given index.
-        /// <b>Deprecated</b>, use <see cref="GetNodeAtIndex"/>.
-        /// </summary>
-        /// <param name="id">Node index, starting from 0</param>
-        /// <returns>Node or <c>null</c> if no node at this index exists</returns>
-        [Obsolete("deprecated, use GetNodeAtIndex")]
-        public PixelpartParticleEmitter GetParticleEmitterAtIndex(int index) => (PixelpartParticleEmitter)GetNodeAtIndex(index);
-
-        /// <summary>
-        /// Return the force field at the given index.
-        /// <b>Deprecated</b>, use <see cref="GetNodeAtIndex"/>.
-        /// </summary>
-        /// <param name="id">Node index, starting from 0</param>
-        /// <returns>Node or <c>null</c> if no node at this index exists</returns>
-        [Obsolete("deprecated, use GetNodeAtIndex")]
-        public PixelpartForceField GetForceFieldAtIndex(int index) => (PixelpartForceField)GetNodeAtIndex(index);
-
-        /// <summary>
-        /// Return the collider at the given index.
-        /// <b>Deprecated</b>, use <see cref="GetNodeAtIndex"/>.
-        /// </summary>
-        /// <param name="id">Node index, starting from 0</param>
-        /// <returns>Node or <c>null</c> if no node at this index exists</returns>
-        [Obsolete("deprecated, use GetNodeAtIndex")]
-        public PixelpartCollider GetColliderAtIndex(int index) => (PixelpartCollider)GetNodeAtIndex(index);
-
         private void InitEffect()
         {
             DeleteEffect();
@@ -770,10 +714,13 @@ namespace Pixelpart
             }
 
             effectInputCollection = new PixelpartEffectInputCollection(effectRuntime, effectInputNames, effectInputValues);
-            triggerCollection = new PixelpartTriggerCollection(effectRuntime);
+            effectTriggerCollection = new PixelpartEffectTriggerCollection(effectRuntime);
+            effectEventCollection = new PixelpartEffectEventCollection(effectRuntime);
+
             effectRenderer = new PixelpartEffectRenderer(effectRuntime, ParticleMaterials, EffectAsset.CustomMaterials);
 
             finishedEventInvoked = false;
+            invokedEventIds = new uint[effectEventCollection.EventNames.Count];
 
             ApplyInputProperties();
             UpdateTransform();
@@ -802,8 +749,13 @@ namespace Pixelpart
             effectRuntime = IntPtr.Zero;
 
             effectInputCollection = new PixelpartEffectInputCollection();
-            triggerCollection = new PixelpartTriggerCollection();
+            effectTriggerCollection = new PixelpartEffectTriggerCollection();
+            effectEventCollection = new PixelpartEffectEventCollection();
+
             effectRenderer = null;
+
+            finishedEventInvoked = false;
+            invokedEventIds = null;
         }
 
         private void UpdateTransform()
@@ -912,8 +864,8 @@ namespace Pixelpart
                 var particleTypeNameBufferSize = Plugin.PixelpartParticleTypeGetName(effectRuntimePtr, particleTypeId, particleTypeNameBuffer, particleTypeNameBuffer.Length);
                 var particleTypeName = Encoding.UTF8.GetString(particleTypeNameBuffer, 0, particleTypeNameBufferSize);
 
-                var rendererType = (ParticleRendererType)Plugin.PixelpartParticleTypeGetRenderer(effectRuntimePtr, particleTypeId);
-                var needsInstancing = rendererType == ParticleRendererType.Mesh;
+                var rendererType = (PixelpartParticleType.ParticleRendererType)Plugin.PixelpartParticleTypeGetRenderer(effectRuntimePtr, particleTypeId);
+                var needsInstancing = rendererType == PixelpartParticleType.ParticleRendererType.Mesh;
 
                 var materialIdBuffer = new byte[256];
                 var materialIdLength = Plugin.PixelpartParticleTypeGetMaterialId(effectRuntimePtr, particleTypeId, materialIdBuffer, materialIdBuffer.Length);

@@ -36,29 +36,5 @@ namespace Pixelpart
         {
             internalProperty = internalPropertyPtr;
         }
-
-        /// <summary>
-        /// Return value with effect inputs taken into account.
-        /// <b>Deprecated</b>, use <see cref="Value"/>.
-        /// </summary>
-        /// <returns>Value with effect inputs taken into account</returns>
-        [Obsolete("deprecated, use Value")]
-        public Vector2 Get() => Value;
-
-        /// <summary>
-        /// Set value without effect inputs taken into account.
-        /// <b>Deprecated</b>, use <see cref="BaseValue"/>.
-        /// </summary>
-        /// <param name="value">Value without effect inputs taken into account</param>
-        [Obsolete("deprecated, use BaseValue")]
-        public void SetValue(Vector2 value) => BaseValue = value;
-
-        /// <summary>
-        /// Return value without effect inputs taken into account.
-        /// <b>Deprecated</b>, use <see cref="BaseValue"/>.
-        /// </summary>
-        /// <returns>Value without effect inputs taken into account</returns>
-        [Obsolete("deprecated, use BaseValue")]
-        public Vector2 GetValue() => BaseValue;
     }
 }

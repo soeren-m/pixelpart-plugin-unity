@@ -81,15 +81,23 @@ namespace Pixelpart
         [DllImport(pluginName)]
         public static extern Vector4 PixelpartGetEffectInputFloat4(IntPtr effectRuntime, uint inputId);
 
-        // Trigger
+        // EffectTrigger
         [DllImport(pluginName)]
-        public static extern int PixelpartGetTriggerCount(IntPtr effectRuntime);
+        public static extern int PixelpartGetEffectTriggerCount(IntPtr effectRuntime);
         [DllImport(pluginName)]
-        public static extern int PixelpartGetTriggers(IntPtr effectRuntime, uint[] ids, byte[] names, int namesBufferSize);
+        public static extern int PixelpartGetEffectTriggers(IntPtr effectRuntime, uint[] ids, byte[] names, int namesBufferSize);
         [DllImport(pluginName)]
-        public static extern void PixelpartActivateTrigger(IntPtr effectRuntime, uint triggerId);
+        public static extern void PixelpartActivateEffectTrigger(IntPtr effectRuntime, uint triggerId);
         [DllImport(pluginName)]
-        public static extern bool PixelpartIsTriggerActivated(IntPtr effectRuntime, uint triggerId);
+        public static extern bool PixelpartIsEffectTriggerActivated(IntPtr effectRuntime, uint triggerId);
+
+        // EffectEvent
+        [DllImport(pluginName)]
+        public static extern int PixelpartGetEffectEventCount(IntPtr effectRuntime);
+        [DllImport(pluginName)]
+        public static extern int PixelpartGetEffectEvents(IntPtr effectRuntime, uint[] ids, byte[] names, int namesBufferSize);
+        [DllImport(pluginName)]
+        public static extern int PixelpartGetInvokedEffectEvents(IntPtr effectRuntime, uint[] eventIds);
 
         // Rendering
         [DllImport(pluginName)]
@@ -495,10 +503,6 @@ namespace Pixelpart
         public static extern void PixelpartAnimatedPropertyFloatSetKeyframeInterpolation(IntPtr property, int method);
         [DllImport(pluginName)]
         public static extern int PixelpartAnimatedPropertyFloatGetKeyframeInterpolation(IntPtr property);
-        [DllImport(pluginName)]
-        public static extern void PixelpartAnimatedPropertyFloatEnableAdaptiveCache(IntPtr property);
-        [DllImport(pluginName)]
-        public static extern void PixelpartAnimatedPropertyFloatEnableFixedCache(IntPtr property, int size);
 
         // AnimatedPropertyFloat2
         [DllImport(pluginName)]
@@ -523,10 +527,6 @@ namespace Pixelpart
         public static extern void PixelpartAnimatedPropertyFloat2SetKeyframeInterpolation(IntPtr property, int method);
         [DllImport(pluginName)]
         public static extern int PixelpartAnimatedPropertyFloat2GetKeyframeInterpolation(IntPtr property);
-        [DllImport(pluginName)]
-        public static extern void PixelpartAnimatedPropertyFloat2EnableAdaptiveCache(IntPtr property);
-        [DllImport(pluginName)]
-        public static extern void PixelpartAnimatedPropertyFloat2EnableFixedCache(IntPtr property, int size);
 
         // AnimatedPropertyFloat3
         [DllImport(pluginName)]
@@ -551,10 +551,6 @@ namespace Pixelpart
         public static extern void PixelpartAnimatedPropertyFloat3SetKeyframeInterpolation(IntPtr property, int method);
         [DllImport(pluginName)]
         public static extern int PixelpartAnimatedPropertyFloat3GetKeyframeInterpolation(IntPtr property);
-        [DllImport(pluginName)]
-        public static extern void PixelpartAnimatedPropertyFloat3EnableAdaptiveCache(IntPtr property);
-        [DllImport(pluginName)]
-        public static extern void PixelpartAnimatedPropertyFloat3EnableFixedCache(IntPtr property, int size);
 
         // AnimatedPropertyFloat4
         [DllImport(pluginName)]
@@ -579,9 +575,5 @@ namespace Pixelpart
         public static extern void PixelpartAnimatedPropertyFloat4SetKeyframeInterpolation(IntPtr property, int method);
         [DllImport(pluginName)]
         public static extern int PixelpartAnimatedPropertyFloat4GetKeyframeInterpolation(IntPtr property);
-        [DllImport(pluginName)]
-        public static extern void PixelpartAnimatedPropertyFloat4EnableAdaptiveCache(IntPtr property);
-        [DllImport(pluginName)]
-        public static extern void PixelpartAnimatedPropertyFloat4EnableFixedCache(IntPtr property, int size);
     }
 }

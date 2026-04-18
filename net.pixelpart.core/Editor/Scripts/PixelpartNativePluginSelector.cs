@@ -10,20 +10,20 @@ namespace Pixelpart
     internal static class PixelpartPluginSwitch
     {
 #if UNITY_2023_2_OR_NEWER
-        static readonly string activeWebGLPluginPath = "WebGL/3.1.38/libpixelpart.a";
+        static readonly string activeWebGLPluginPath = "WebGL/3.1.38/libpixelpartunity.a";
 #elif UNITY_2022_2_OR_NEWER
-        static readonly string activeWebGLPluginPath = "WebGL/3.1.8/libpixelpart.a";
+        static readonly string activeWebGLPluginPath = "WebGL/3.1.8/libpixelpartunity.a";
 #else
-        static readonly string activeWebGLPluginPath = "WebGL/2.0.19/libpixelpart.a";
+        static readonly string activeWebGLPluginPath = "WebGL/2.0.19/libpixelpartunity.a";
 #endif
 
         static PixelpartPluginSwitch()
         {
             var webglPluginPaths = new string[]
             {
-                "Packages/net.pixelpart.core/Runtime/Plugins/WebGL/3.1.38/libpixelpart.a",
-                "Packages/net.pixelpart.core/Runtime/Plugins/WebGL/3.1.8/libpixelpart.a",
-                "Packages/net.pixelpart.core/Runtime/Plugins/WebGL/2.0.19/libpixelpart.a"
+                "Packages/net.pixelpart.core/Runtime/Plugins/WebGL/3.1.38/libpixelpartunity.a",
+                "Packages/net.pixelpart.core/Runtime/Plugins/WebGL/3.1.8/libpixelpartunity.a",
+                "Packages/net.pixelpart.core/Runtime/Plugins/WebGL/2.0.19/libpixelpartunity.a"
             };
 
             foreach (var pluginPath in webglPluginPaths)

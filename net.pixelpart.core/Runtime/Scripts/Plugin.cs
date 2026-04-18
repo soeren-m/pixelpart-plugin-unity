@@ -9,7 +9,7 @@ namespace Pixelpart
 #if !UNITY_EDITOR && (UNITY_IPHONE || UNITY_WEBGL || UNITY_SWITCH)
         private const string pluginName = "__Internal";
 #else
-        private const string pluginName = "pixelpart";
+        private const string pluginName = "pixelpartunity";
 #endif
 
         // Error

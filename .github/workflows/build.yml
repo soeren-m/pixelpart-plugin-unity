@@ -109,16 +109,16 @@ jobs:
 
       - name: Copy binaries
         run: |
-          cp artifacts/windows/x86/pixelpart.dll ./net.pixelpart.core/Runtime/Plugins/x86/
-          cp artifacts/windows/x86_64/pixelpart.dll ./net.pixelpart.core/Runtime/Plugins/x86_64/
-          cp artifacts/linux/x86/libpixelpart.so ./net.pixelpart.core/Runtime/Plugins/x86/
-          cp artifacts/linux/x86_64/libpixelpart.so ./net.pixelpart.core/Runtime/Plugins/x86_64/
-          cp artifacts/macos/pixelpart.bundle ./net.pixelpart.core/Runtime/Plugins/macOS/
-          cp artifacts/ios/libpixelpart.a ./net.pixelpart.core/Runtime/Plugins/iOS/
-          cp artifacts/android/arm32/libpixelpart.so ./net.pixelpart.core/Runtime/Plugins/Android/arm32/
-          cp artifacts/android/arm64/libpixelpart.so ./net.pixelpart.core/Runtime/Plugins/Android/arm64/
-          cp artifacts/android/x86/libpixelpart.so ./net.pixelpart.core/Runtime/Plugins/Android/x86/
-          cp artifacts/android/x86_64/libpixelpart.so ./net.pixelpart.core/Runtime/Plugins/Android/x86_64/
+          cp artifacts/windows/x86/pixelpartunity.dll ./net.pixelpart.core/Runtime/Plugins/x86/
+          cp artifacts/windows/x86_64/pixelpartunity.dll ./net.pixelpart.core/Runtime/Plugins/x86_64/
+          cp artifacts/linux/x86/libpixelpartunity.so ./net.pixelpart.core/Runtime/Plugins/x86/
+          cp artifacts/linux/x86_64/libpixelpartunity.so ./net.pixelpart.core/Runtime/Plugins/x86_64/
+          cp artifacts/macos/pixelpartunity.bundle ./net.pixelpart.core/Runtime/Plugins/macOS/
+          cp artifacts/ios/libpixelpartunity.a ./net.pixelpart.core/Runtime/Plugins/iOS/
+          cp artifacts/android/arm32/libpixelpartunity.so ./net.pixelpart.core/Runtime/Plugins/Android/arm32/
+          cp artifacts/android/arm64/libpixelpartunity.so ./net.pixelpart.core/Runtime/Plugins/Android/arm64/
+          cp artifacts/android/x86/libpixelpartunity.so ./net.pixelpart.core/Runtime/Plugins/Android/x86/
+          cp artifacts/android/x86_64/libpixelpartunity.so ./net.pixelpart.core/Runtime/Plugins/Android/x86_64/
           cp -r artifacts/webgl-2-0-19/* ./net.pixelpart.core/Runtime/Plugins/WebGL/2.0.19/
           cp -r artifacts/webgl-3-1-8/* ./net.pixelpart.core/Runtime/Plugins/WebGL/3.1.8/
           cp -r artifacts/webgl-3-1-38/* ./net.pixelpart.core/Runtime/Plugins/WebGL/3.1.38/

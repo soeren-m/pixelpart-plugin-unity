@@ -148,32 +148,32 @@ library_path = "net.pixelpart.core/Runtime/Plugins/"
 
 if env["platform"] == "windows":
     if env["arch"] == "x86_64":
-        library_path += "x86_64/pixelpart.dll"
+        library_path += "x86_64/pixelpartunity.dll"
     elif env["arch"] == "x86_32":
-        library_path += "x86/pixelpart.dll"
+        library_path += "x86/pixelpartunity.dll"
 elif env["platform"] == "linux":
     if env["arch"] == "x86_64":
-        library_path += "x86_64/libpixelpart.so"
+        library_path += "x86_64/libpixelpartunity.so"
     elif env["arch"] == "x86_32":
-        library_path += "x86/libpixelpart.so"
+        library_path += "x86/libpixelpartunity.so"
 elif env["platform"] == "macos":
-    library_path += "macOS/pixelpart.bundle"
+    library_path += "macOS/pixelpartunity.bundle"
 elif env["platform"] == "ios":
     if env["ios_simulator"]:
-        library_path += "iOS/libpixelpart-simulator.a"
+        library_path += "iOS/libpixelpartunity-simulator.a"
     else:
-        library_path += "iOS/libpixelpart-phone.a"
+        library_path += "iOS/libpixelpartunity-phone.a"
 elif env["platform"] == "android":
     if env["arch"] == "arm64":
-        library_path += "Android/arm64/libpixelpart.so"
+        library_path += "Android/arm64/libpixelpartunity.so"
     elif env["arch"] == "arm32":
-        library_path += "Android/arm32/libpixelpart.so"
+        library_path += "Android/arm32/libpixelpartunity.so"
     elif env["arch"] == "x86_64":
-        library_path += "Android/x86_64/libpixelpart.so"
+        library_path += "Android/x86_64/libpixelpartunity.so"
     elif env["arch"] == "x86_32":
-        library_path += "Android/x86/libpixelpart.so"
+        library_path += "Android/x86/libpixelpartunity.so"
 elif env["platform"] == "web":
-    library_path += "WebGL/libpixelpart.a"
+    library_path += "WebGL/libpixelpartunity.a"
 
 if env["platform"] == "macos":
     library = env.LoadableModule(library_path, source=sources)

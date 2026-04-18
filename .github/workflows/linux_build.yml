@@ -31,5 +31,5 @@ jobs:
         with:
           name: pixelpart-linux
           path: |
-            ./net.pixelpart.core/Runtime/Plugins/x86/libpixelpart.so
-            ./net.pixelpart.core/Runtime/Plugins/x86_64/libpixelpart.so
+            ./net.pixelpart.core/Runtime/Plugins/x86/libpixelpartunity.so
+            ./net.pixelpart.core/Runtime/Plugins/x86_64/libpixelpartunity.so

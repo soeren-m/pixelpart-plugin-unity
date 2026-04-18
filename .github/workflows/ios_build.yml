@@ -25,4 +25,4 @@ jobs:
         with:
           name: pixelpart-ios
           path: |
-            ./net.pixelpart.core/Runtime/Plugins/iOS/libpixelpart.a
+            ./net.pixelpart.core/Runtime/Plugins/iOS/libpixelpartunity.a

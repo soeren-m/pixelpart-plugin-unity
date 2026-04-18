@@ -16,9 +16,9 @@ elif "platform=ios" in sys.argv:
     subprocess.run("scons platform=ios arch=x86_64 ios_simulator=yes", shell=True, check=True)
     subprocess.run("scons platform=ios arch=arm64 ios_simulator=no", shell=True, check=True)
     subprocess.run("lipo -create " +
-        "net.pixelpart.core/Runtime/Plugins/iOS/libpixelpart-phone.a " +
-        "net.pixelpart.core/Runtime/Plugins/iOS/libpixelpart-simulator.a " +
-        "-output net.pixelpart.core/Runtime/Plugins/iOS/libpixelpart.a", shell=True, check=True)
+        "net.pixelpart.core/Runtime/Plugins/iOS/libpixelpartunity-phone.a " +
+        "net.pixelpart.core/Runtime/Plugins/iOS/libpixelpartunity-simulator.a " +
+        "-output net.pixelpart.core/Runtime/Plugins/iOS/libpixelpartunity.a", shell=True, check=True)
 
 elif "platform=android" in sys.argv:
     for arch in ["arm64", "arm32", "x86_64", "x86_32"]:

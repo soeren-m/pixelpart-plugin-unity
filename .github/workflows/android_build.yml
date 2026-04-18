@@ -31,7 +31,7 @@ jobs:
         with:
           name: pixelpart-android
           path: |
-            ./net.pixelpart.core/Runtime/Plugins/Android/arm32/libpixelpart.so
-            ./net.pixelpart.core/Runtime/Plugins/Android/arm64/libpixelpart.so
-            ./net.pixelpart.core/Runtime/Plugins/Android/x86/libpixelpart.so
-            ./net.pixelpart.core/Runtime/Plugins/Android/x86_64/libpixelpart.so
+            ./net.pixelpart.core/Runtime/Plugins/Android/arm32/libpixelpartunity.so
+            ./net.pixelpart.core/Runtime/Plugins/Android/arm64/libpixelpartunity.so
+            ./net.pixelpart.core/Runtime/Plugins/Android/x86/libpixelpartunity.so
+            ./net.pixelpart.core/Runtime/Plugins/Android/x86_64/libpixelpartunity.so

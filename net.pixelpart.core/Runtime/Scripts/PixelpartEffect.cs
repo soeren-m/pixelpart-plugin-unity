@@ -17,10 +17,11 @@ namespace Pixelpart
     /// This class provides methods and properties to change how the effect is simulated and rendered.
     /// </remarks>
     [AddComponentMenu("Pixelpart/Pixelpart Effect")]
+    [Icon("Packages/net.pixelpart.core/Editor/Resources/Icons/PixelpartEffectIcon.png")]
     public class PixelpartEffect : MonoBehaviour
     {
 #if UNITY_EDITOR
-        private const string gizmoIconPath = "Packages/net.pixelpart.core/Editor/Resources/Gizmos/PixelpartEffectIcon.png";
+        private const string gizmoIconPath = "Packages/net.pixelpart.core/Editor/Resources/Gizmos/PixelpartEffectGizmo.png";
 #endif
 
         public const uint NullId = 0xFFFFFFFF;

@@ -11,12 +11,12 @@ using UnityEditor;
 namespace Pixelpart
 {
     /// <summary>
-    /// Node that plays a Pixelpart effect.
+    /// Component that plays a Pixelpart effect.
     /// </summary>
     /// <remarks>
-    /// This class offers methods and properties to change how the effect is simulated and rendered.
+    /// This class provides methods and properties to change how the effect is simulated and rendered.
     /// </remarks>
-    [AddComponentMenu("Pixelpart/Effect")]
+    [AddComponentMenu("Pixelpart/Pixelpart Effect")]
     public class PixelpartEffect : MonoBehaviour
     {
 #if UNITY_EDITOR

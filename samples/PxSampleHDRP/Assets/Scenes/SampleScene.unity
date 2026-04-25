@@ -151,7 +151,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 168218571}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.019999983, y: 1.196, z: 1.8101597}
+  m_LocalPosition: {x: 0.019999983, y: 1.196, z: 1.8101606}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -989,22 +989,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae89953306b284bcc811ae1d93a76850, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EffectAsset: {fileID: -2160559244458954894, guid: 13961e3d369554d49ad518e42076c82c,
+  effectAsset: {fileID: -2160559244458954894, guid: 13961e3d369554d49ad518e42076c82c,
     type: 3}
-  Playing: 1
-  Loop: 0
-  LoopTime: 1
-  WarmupTime: 0
-  Speed: 1
-  FrameRate: 60
-  Seed: 0
-  RandomSeed: 0
-  EffectScale: 1
-  FlipH: 0
-  FlipV: 0
-  ParticleTypeNames:
+  playing: 1
+  loop: 0
+  loopTime: 1
+  warmupTime: 0
+  speed: 1
+  frameRate: 60
+  seed: 0
+  randomSeed: 0
+  effectScale: 1
+  flipH: 0
+  flipV: 0
+  particleTypeNames:
   - Particle
-  ParticleMaterials:
+  particleMaterials:
   - {fileID: 2100000, guid: 49ac2b8f8196b5d4caac4ce12cd952aa, type: 2}
   effectInputNames: []
   effectInputValues: []
@@ -1053,7 +1053,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1037846703}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.019999983, y: 1.196, z: -0.6870395}
+  m_LocalPosition: {x: 0.019999983, y: 1.196, z: -0.68703973}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2272,7 +2272,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2059789766}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.5101595, y: 1.196, z: 1.1760799}
+  m_LocalPosition: {x: 2.5101604, y: 1.196, z: 1.1760803}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

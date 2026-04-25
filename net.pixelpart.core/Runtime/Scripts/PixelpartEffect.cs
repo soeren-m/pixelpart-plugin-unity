@@ -1,8 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -42,17 +43,38 @@ namespace Pixelpart
         /// <summary>
         /// Effect resource that is shown.
         /// </summary>
-        public PixelpartEffectAsset EffectAsset = null;
+        public PixelpartEffectAsset EffectAsset
+        {
+            get => effectAsset;
+            set => effectAsset = value;
+        }
+        [SerializeField]
+        [FormerlySerializedAs("EffectAsset")]
+        private PixelpartEffectAsset effectAsset = null;
 
         /// <summary>
         /// Whether the effect is currently playing or not.
         /// </summary>
-        public bool Playing = true;
+        public bool Playing
+        {
+            get => playing;
+            set => playing = value;
+        }
+        [SerializeField]
+        [FormerlySerializedAs("Playing")]
+        private bool playing = true;
 
         /// <summary>
         /// Whether the effect restarts automatically after time <c>LoopTime</c>.
         /// </summary>
-        public bool Loop = false;
+        public bool Loop
+        {
+            get => loop;
+            set => loop = value;
+        }
+        [SerializeField]
+        [FormerlySerializedAs("Loop")]
+        private bool loop = false;
 
         /// <summary>
         /// Time in seconds after which the effect loops.
@@ -60,8 +82,15 @@ namespace Pixelpart
         /// <remarks>
         /// Only effective if <c>Loop = true</c>.
         /// </remarks>
+        public float LoopTime
+        {
+            get => loopTime;
+            set => loopTime = value;
+        }
+        [SerializeField]
+        [FormerlySerializedAs("LoopTime")]
         [Range(0.0f, 100.0f)]
-        public float LoopTime = 1.0f;
+        private float loopTime = 1.0f;
 
         /// <summary>
         /// Time in seconds the effect is pre-simulated before being rendered.
@@ -69,20 +98,41 @@ namespace Pixelpart
         /// <remarks>
         /// This value impacts performance and should be kept as low as possible.
         /// </remarks>
+        public float WarmupTime
+        {
+            get => warmupTime;
+            set => warmupTime = value;
+        }
+        [SerializeField]
+        [FormerlySerializedAs("WarmupTime")]
         [Range(0.0f, 10.0f)]
-        public float WarmupTime = 0.0f;
+        private float warmupTime = 0.0f;
 
         /// <summary>
         /// How fast the effect is being played.
         /// </summary>
+        public float Speed
+        {
+            get => speed;
+            set => speed = value;
+        }
+        [SerializeField]
+        [FormerlySerializedAs("Speed")]
         [Range(0.0f, 10.0f)]
-        public float Speed = 1.0f;
+        private float speed = 1.0f;
 
         /// <summary>
         /// At which rate the effect is simulated, in frames per second.
         /// </summary>
+        public float FrameRate
+        {
+            get => frameRate;
+            set => frameRate = value;
+        }
+        [SerializeField]
+        [FormerlySerializedAs("FrameRate")]
         [Range(1.0f, 100.0f)]
-        public float FrameRate = 60.0f;
+        private float frameRate = 60.0f;
 
         /// <summary>
         /// Seed used to initialize the effect simulation.
@@ -90,13 +140,27 @@ namespace Pixelpart
         /// <remarks>
         /// This seed is used if <see cref="RandomSeed"/> is not enabled.
         /// </remarks>
+        public int Seed
+        {
+            get => seed;
+            set => seed = value;
+        }
+        [SerializeField]
+        [FormerlySerializedAs("Seed")]
         [Min(0)]
-        public int Seed = 0;
+        private int seed = 0;
 
         /// <summary>
         /// Whether to use a random seed to initialize the effect simulation.
         /// </summary>
-        public bool RandomSeed = false;
+        public bool RandomSeed
+        {
+            get => randomSeed;
+            set => randomSeed = value;
+        }
+        [SerializeField]
+        [FormerlySerializedAs("RandomSeed")]
+        private bool randomSeed = false;
 
         /// <summary>
         /// Multiplier for the size of the effect.
@@ -104,27 +168,38 @@ namespace Pixelpart
         /// <remarks>
         /// Adjust this value if the effect appears too small or too large in the scene.
         /// </remarks>
-        public float EffectScale = 1.0f;
+        public float EffectScale
+        {
+            get => effectScale;
+            set => effectScale = value;
+        }
+        [SerializeField]
+        [FormerlySerializedAs("EffectScale")]
+        private float effectScale = 1.0f;
 
         /// <summary>
         /// Whether the effect is flipped horizontally.
         /// </summary>
-        public bool FlipH = false;
+        public bool FlipH
+        {
+            get => flipH;
+            set => flipH = value;
+        }
+        [SerializeField]
+        [FormerlySerializedAs("FlipH")]
+        private bool flipH = false;
 
         /// <summary>
         /// Whether the effect is flipped vertically.
         /// </summary>
-        public bool FlipV = false;
-
-        /// <summary>
-        /// Names of particle types in the effect.
-        /// </summary>
-        public List<string> ParticleTypeNames = new List<string>();
-
-        /// <summary>
-        /// Material of each particle type in <see cref="ParticleTypeNames"/>.
-        /// </summary>
-        public List<Material> ParticleMaterials = new List<Material>();
+        public bool FlipV
+        {
+            get => flipV;
+            set => flipV = value;
+        }
+        [SerializeField]
+        [FormerlySerializedAs("FlipV")]
+        private bool flipV = false;
 
         /// <summary>
         /// Time in seconds since the effect has started playing.
@@ -132,11 +207,27 @@ namespace Pixelpart
         public float CurrentTime => effectRuntime != IntPtr.Zero
             ? Plugin.PixelpartGetEffectTime(effectRuntime) : 0.0f;
 
-         /// <summary>
+        /// <summary>
         /// Whether the effect is a 3D effect.
         /// </summary>
         public bool Is3D => effectRuntime != IntPtr.Zero
             ? Plugin.PixelpartIsEffect3d(effectRuntime) : false;
+
+        /// <summary>
+        /// Names of particle types in the effect.
+        /// </summary>
+        public List<string> ParticleTypeNames => particleTypeNames;
+        [SerializeField]
+        [FormerlySerializedAs("ParticleTypeNames")]
+        private List<string> particleTypeNames = new List<string>();
+
+        /// <summary>
+        /// Material of each particle type in <see cref="ParticleTypeNames"/>.
+        /// </summary>
+        public List<Material> ParticleMaterials => particleMaterials;
+        [SerializeField]
+        [FormerlySerializedAs("ParticleMaterials")]
+        private List<Material> particleMaterials = new List<Material>();
 
         [SerializeField]
         private List<string> effectInputNames = new List<string>();
@@ -293,6 +384,8 @@ namespace Pixelpart
 
             Plugin.PixelpartSpawnParticles(effectRuntime, particleEmitterId, particleTypeId, count);
         }
+
+        #region Inputs
 
         /// <summary>
         /// Set the effect input <paramref name="inputName"/> to the given value.
@@ -505,6 +598,10 @@ namespace Pixelpart
             }
         }
 
+        #endregion
+
+        #region Triggers
+
         /// <summary>
         /// Activate trigger <paramref name="triggerName"/>.
         /// </summary>
@@ -533,6 +630,10 @@ namespace Pixelpart
 
             return Plugin.PixelpartIsEffectTriggerActivated(effectRuntime, triggerId);
         }
+
+        #endregion
+
+        #region Nodes
 
         /// <summary>
         /// Return the node with the given name.
@@ -623,6 +724,10 @@ namespace Pixelpart
             return node;
         }
 
+        #endregion
+
+        #region Particle types
+
         /// <summary>
         /// Return the particle type with the given name.
         /// </summary>
@@ -693,6 +798,8 @@ namespace Pixelpart
 
             return new PixelpartParticleType(effectRuntime, id);
         }
+
+        #endregion
 
         private void InitEffect()
         {
@@ -831,19 +938,19 @@ namespace Pixelpart
 
             effectInputNames.Clear();
             effectInputValues.Clear();
-            ParticleTypeNames.Clear();
-            ParticleMaterials.Clear();
+            particleTypeNames.Clear();
+            particleMaterials.Clear();
 
             if (EffectAsset == null)
             {
                 return;
             }
 
-            var effectRuntimePtr = IntPtr.Zero;
+            var tempEffectRuntime = IntPtr.Zero;
 
             try
             {
-                effectRuntimePtr = EffectAsset.LoadEffect();
+                tempEffectRuntime = EffectAsset.LoadEffect();
             }
             catch (InvalidOperationException e)
             {
@@ -851,56 +958,61 @@ namespace Pixelpart
                 return;
             }
 
-            var inputCollection = new PixelpartEffectInputCollection(effectRuntimePtr);
-            effectInputNames = new List<string>(inputCollection.InputNames);
-            effectInputValues = new List<PixelpartVariantValue>(inputCollection.InputValues);
-
-            var particleTypeCount = Plugin.PixelpartGetEffectParticleTypeCount(effectRuntimePtr);
-
-            for (var particleTypeIndex = 0; particleTypeIndex < particleTypeCount; particleTypeIndex++)
+            try
             {
-                var particleTypeId = Plugin.PixelpartFindParticleTypeByIndex(effectRuntimePtr, particleTypeIndex);
+                var inputCollection = new PixelpartEffectInputCollection(tempEffectRuntime);
+                effectInputNames = new List<string>(inputCollection.InputNames);
+                effectInputValues = new List<PixelpartVariantValue>(inputCollection.InputValues);
 
-                var particleTypeNameBuffer = new byte[256];
-                var particleTypeNameBufferSize = Plugin.PixelpartParticleTypeGetName(effectRuntimePtr, particleTypeId, particleTypeNameBuffer, particleTypeNameBuffer.Length);
-                var particleTypeName = Encoding.UTF8.GetString(particleTypeNameBuffer, 0, particleTypeNameBufferSize);
+                var particleTypeCount = Plugin.PixelpartGetEffectParticleTypeCount(tempEffectRuntime);
 
-                var rendererType = (PixelpartParticleType.ParticleRendererType)Plugin.PixelpartParticleTypeGetRenderer(effectRuntimePtr, particleTypeId);
-                var needsInstancing = rendererType == PixelpartParticleType.ParticleRendererType.Mesh;
-
-                var materialIdBuffer = new byte[256];
-                var materialIdLength = Plugin.PixelpartParticleTypeGetMaterialId(effectRuntimePtr, particleTypeId, materialIdBuffer, materialIdBuffer.Length);
-                var materialId = Encoding.UTF8.GetString(materialIdBuffer, 0, materialIdLength);
-                var materialPath = string.Empty;
-
-                if (Plugin.PixelpartParticleTypeIsMaterialBuiltIn(effectRuntimePtr, particleTypeId))
+                for (var particleTypeIndex = 0; particleTypeIndex < particleTypeCount; particleTypeIndex++)
                 {
-                    if (PixelpartBuiltInMaterialProvider.Instance.BuiltInMaterials.TryGetValue(materialId, out PixelpartMaterialDescriptor builtInMaterial))
+                    var particleTypeId = Plugin.PixelpartFindParticleTypeByIndex(tempEffectRuntime, particleTypeIndex);
+
+                    var particleTypeNameBuffer = new byte[256];
+                    var particleTypeNameBufferSize = Plugin.PixelpartParticleTypeGetName(tempEffectRuntime, particleTypeId, particleTypeNameBuffer, particleTypeNameBuffer.Length);
+                    var particleTypeName = Encoding.UTF8.GetString(particleTypeNameBuffer, 0, particleTypeNameBufferSize);
+
+                    var rendererType = (PixelpartParticleType.ParticleRendererType)Plugin.PixelpartParticleTypeGetRenderer(tempEffectRuntime, particleTypeId);
+                    var needsInstancing = rendererType == PixelpartParticleType.ParticleRendererType.Mesh;
+
+                    var materialIdBuffer = new byte[256];
+                    var materialIdLength = Plugin.PixelpartParticleTypeGetMaterialId(tempEffectRuntime, particleTypeId, materialIdBuffer, materialIdBuffer.Length);
+                    var materialId = Encoding.UTF8.GetString(materialIdBuffer, 0, materialIdLength);
+                    var materialPath = string.Empty;
+
+                    if (Plugin.PixelpartParticleTypeIsMaterialBuiltIn(tempEffectRuntime, particleTypeId))
                     {
-                        materialPath = builtInMaterial.MaterialPath;
+                        if (PixelpartBuiltInMaterialProvider.Instance.BuiltInMaterials.TryGetValue(materialId, out PixelpartMaterialDescriptor builtInMaterial))
+                        {
+                            materialPath = builtInMaterial.MaterialPath;
+                        }
                     }
-                }
-                else
-                {
-                    var customMaterial =
-                        EffectAsset.CustomMaterials.FirstOrDefault(materialAsset =>
-                            materialAsset.ResourceId == materialId && materialAsset.Instancing == needsInstancing);
+                    else
+                    {
+                        var customMaterial =
+                            EffectAsset.CustomMaterials.FirstOrDefault(materialAsset =>
+                                materialAsset.ResourceId == materialId && materialAsset.Instancing == needsInstancing);
 
-                    materialPath = customMaterial?.MaterialPath ?? string.Empty;
-                }
+                        materialPath = customMaterial?.MaterialPath ?? string.Empty;
+                    }
 
-                var material = AssetDatabase.LoadAssetAtPath<Material>(materialPath);
-                if (material == null)
-                {
-                    Debug.LogWarning(
-                        "[Pixelpart] Failed to find material asset \"" + materialPath + "\" for material \"" + materialId + "\"", this);
-                }
+                    var material = AssetDatabase.LoadAssetAtPath<Material>(materialPath);
+                    if (material == null)
+                    {
+                        Debug.LogWarning(
+                            "[Pixelpart] Failed to find material asset \"" + materialPath + "\" for material \"" + materialId + "\"", this);
+                    }
 
-                ParticleTypeNames.Add(particleTypeName);
-                ParticleMaterials.Add(material);
+                    particleTypeNames.Add(particleTypeName);
+                    particleMaterials.Add(material);
+                }
             }
-
-            Plugin.PixelpartDeleteEffect(effectRuntimePtr);
+            finally
+            {
+                Plugin.PixelpartDeleteEffect(tempEffectRuntime);
+            }
         }
 
         public void OnDrawGizmos()

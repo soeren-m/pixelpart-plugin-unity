@@ -12,42 +12,20 @@ namespace Pixelpart
         {
             serializedObject.Update();
 
-            ShowAssetSettings();
-            ShowPlaybackSettings();
-            var inputsModified = ShowInputSettings();
-            ShowRenderingSettings();
-
-            serializedObject.ApplyModifiedProperties();
-
-            var effect = (PixelpartEffect)target;
-            if (inputsModified)
-            {
-                effect.ApplyInputProperties();
-            }
-        }
-
-        private void ShowAssetSettings()
-        {
             EditorGUILayout.LabelField("Asset", EditorStyles.boldLabel);
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("EffectAsset"));
-        }
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("effectAsset"));
 
-        private void ShowPlaybackSettings()
-        {
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Playback", EditorStyles.boldLabel);
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("Playing"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("Loop"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("LoopTime"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("WarmupTime"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("Speed"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("FrameRate"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("Seed"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("RandomSeed"));
-        }
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("playing"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("loop"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("loopTime"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("warmupTime"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("speed"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("frameRate"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("seed"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("randomSeed"));
 
-        private bool ShowInputSettings()
-        {
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Inputs", EditorStyles.boldLabel);
 
@@ -68,33 +46,36 @@ namespace Pixelpart
                 }
             }
 
-            return inputsModified;
-        }
-
-        private void ShowRenderingSettings()
-        {
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Rendering", EditorStyles.boldLabel);
 
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("EffectScale"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("FlipH"));
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("FlipV"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("effectScale"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("flipH"));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty("flipV"));
 
-            var materialsProperty = serializedObject.FindProperty("ParticleMaterials");
-            var typeNamesProperty = serializedObject.FindProperty("ParticleTypeNames");
+            var materialsProperty = serializedObject.FindProperty("particleMaterials");
+            var typeNamesProperty = serializedObject.FindProperty("particleTypeNames");
 
             particleMaterialsVisible = EditorGUILayout.Foldout(particleMaterialsVisible, materialsProperty.displayName);
             if (particleMaterialsVisible)
             {
                 EditorGUI.indentLevel++;
 
-                for (var materialIndex = 0; materialIndex < materialsProperty.arraySize && materialIndex < typeNamesProperty.arraySize; materialIndex++)
+                for (var materialIndex = 0; materialIndex < materialsProperty.arraySize; materialIndex++)
                 {
                     EditorGUILayout.PropertyField(materialsProperty.GetArrayElementAtIndex(materialIndex),
-                        new GUIContent(typeNamesProperty.GetArrayElementAtIndex(materialIndex).stringValue));
+                        new GUIContent(materialIndex < typeNamesProperty.arraySize ? typeNamesProperty.GetArrayElementAtIndex(materialIndex).stringValue : "Unknown"));
                 }
 
                 EditorGUI.indentLevel--;
+            }
+
+            serializedObject.ApplyModifiedProperties();
+
+            if (inputsModified)
+            {
+                var effect = (PixelpartEffect)target;
+                effect.ApplyInputProperties();
             }
         }
     }

@@ -381,22 +381,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae89953306b284bcc811ae1d93a76850, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EffectAsset: {fileID: -2160559244458954894, guid: e6afa79bb5702394c8288b041339d854,
+  effectAsset: {fileID: -2160559244458954894, guid: e6afa79bb5702394c8288b041339d854,
     type: 3}
-  Playing: 1
-  Loop: 0
-  LoopTime: 1
-  WarmupTime: 0
-  Speed: 1
-  FrameRate: 60
-  Seed: 0
-  RandomSeed: 0
-  EffectScale: 1
-  FlipH: 0
-  FlipV: 0
-  ParticleTypeNames:
+  playing: 1
+  loop: 0
+  loopTime: 1
+  warmupTime: 0
+  speed: 1
+  frameRate: 60
+  seed: 0
+  randomSeed: 0
+  effectScale: 1
+  flipH: 0
+  flipV: 0
+  particleTypeNames:
   - Particle
-  ParticleMaterials:
+  particleMaterials:
   - {fileID: 2100000, guid: 9e4c313ddbce91e49ac6f9edc783ae66, type: 2}
   effectInputNames: []
   effectInputValues: []

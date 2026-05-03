@@ -105,7 +105,7 @@ UNITY_INTERFACE_EXPORT void* UNITY_INTERFACE_API PixelpartLoadEffect(const pixel
 
 		pixelpart::VertexFormat vertexBasedVertexFormat({
 				pixelpart::VertexAttribute(pixelpart::VertexAttributeUsage::index, pixelpart::VertexDataGenerationMode::vertex, pixelpart::VertexDataType::type_int32, 0, 0, sizeof(int32_t)),
-				pixelpart::VertexAttribute(pixelpart::VertexAttributeUsage::position3d, pixelpart::VertexDataGenerationMode::element, pixelpart::VertexDataType::type_float, 1, 0, sizeof(float) * 3),
+				pixelpart::VertexAttribute(effectRuntime->effectAsset.effect().is3d() ? pixelpart::VertexAttributeUsage::position3d : pixelpart::VertexAttributeUsage::position2d, pixelpart::VertexDataGenerationMode::element, pixelpart::VertexDataType::type_float, 1, 0, sizeof(float) * 3),
 				pixelpart::VertexAttribute(pixelpart::VertexAttributeUsage::color, pixelpart::VertexDataGenerationMode::element, pixelpart::VertexDataType::type_float, 2, 0, sizeof(float) * 4),
 				pixelpart::VertexAttribute(pixelpart::VertexAttributeUsage::normal, pixelpart::VertexDataGenerationMode::element, pixelpart::VertexDataType::type_float, 3, 0, sizeof(float) * 3),
 				pixelpart::VertexAttribute(pixelpart::VertexAttributeUsage::texture_coord, pixelpart::VertexDataGenerationMode::element, pixelpart::VertexDataType::type_float, 4, 0, sizeof(float) * 2),

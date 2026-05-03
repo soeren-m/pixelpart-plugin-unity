@@ -118,6 +118,14 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::bool_t UNITY_INTERFACE_API PixelpartGene
 			particleCollection->count(),
 			runtimeContext, sceneContext);
 
+		if(!effect.is3d()) {
+			pixelpart::VertexDataBufferDimensions bufferDimensions = effectRuntime->vertexBufferDimensions[emissionPair];
+
+			for(std::uint32_t index = 0; index < bufferDimensions[1]; index++) {
+				vertices[index].z = 0.0f;
+			}
+		}
+
 		return true;
 	}
 	catch(const std::exception& e) {

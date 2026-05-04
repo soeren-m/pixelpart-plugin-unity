@@ -73,9 +73,7 @@ namespace Pixelpart
                 throw new InvalidOperationException("No data assigned to effect asset");
             }
 
-            const int particleCapacity = 10000;
-
-            var effectRuntime = Plugin.PixelpartLoadEffect(Data, Data.Length, particleCapacity);
+            var effectRuntime = Plugin.PixelpartLoadEffect(Data, Data.Length);
             if (effectRuntime == IntPtr.Zero)
             {
                 var errorBuffer = new byte[2048];

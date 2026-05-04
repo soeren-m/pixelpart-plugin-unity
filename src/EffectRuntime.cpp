@@ -44,7 +44,7 @@ std::mt19937 rng;
 }
 
 extern "C" {
-UNITY_INTERFACE_EXPORT void* UNITY_INTERFACE_API PixelpartLoadEffect(const pixelpart_unity::char_t* data, pixelpart_unity::int_t size, pixelpart_unity::int_t particleCapacity) {
+UNITY_INTERFACE_EXPORT void* UNITY_INTERFACE_API PixelpartLoadEffect(const pixelpart_unity::char_t* data, pixelpart_unity::int_t size) {
 	if(!data || size <= 0) {
 		pixelpart_unity::lastError = pixelpart_unity::invalidArgumentError;
 		return nullptr;
@@ -86,19 +86,15 @@ UNITY_INTERFACE_EXPORT void* UNITY_INTERFACE_API PixelpartLoadEffect(const pixel
 		pixelpart_unity::EffectRuntime* effectRuntime = new pixelpart_unity::EffectRuntime();
 		effectRuntime->effectAsset = pixelpart::deserializeEffectAsset(data, static_cast<std::size_t>(size));
 
-		particleCapacity = std::max(particleCapacity, 1);
-
 #ifdef PIXELPART_RUNTIME_MULTITHREADING
 		effectRuntime->effectEngine = std::make_unique<pixelpart::MultiThreadedEffectEngine>(effectRuntime->effectAsset.effect(),
 			std::make_shared<pixelpart::DefaultParticleGenerator>(),
 			std::make_shared<pixelpart::DefaultParticleModifier>(),
-			pixelpart_unity::threadPool,
-			static_cast<std::uint32_t>(particleCapacity));
+			pixelpart_unity::threadPool);
 #else
 		effectRuntime->effectEngine = std::make_unique<pixelpart::SingleThreadedEffectEngine>(effectRuntime->effectAsset.effect(),
 			std::make_shared<pixelpart::DefaultParticleGenerator>(),
-			std::make_shared<pixelpart::DefaultParticleModifier>(),
-			static_cast<std::uint32_t>(particleCapacity));
+			std::make_shared<pixelpart::DefaultParticleModifier>());
 #endif
 
 		effectRuntime->effectAsset.effect().applyInputs();

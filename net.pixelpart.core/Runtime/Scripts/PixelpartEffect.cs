@@ -19,6 +19,7 @@ namespace Pixelpart
     /// </remarks>
     [AddComponentMenu("Pixelpart/Pixelpart Effect")]
     [Icon("Packages/net.pixelpart.core/Editor/Resources/Icons/PixelpartEffectIcon.png")]
+    [ExecuteAlways]
     public class PixelpartEffect : MonoBehaviour
     {
 #if UNITY_EDITOR
@@ -261,10 +262,41 @@ namespace Pixelpart
 
         public void Awake()
         {
+            if (!Application.IsPlaying(gameObject))
+            {
+                return;
+            }
+
             InitEffect();
         }
 
         public void Update()
+        {
+            if (!Application.IsPlaying(gameObject))
+            {
+                return;
+            }
+
+            AdvanceEffect(Time.deltaTime);
+        }
+
+        public void LateUpdate()
+        {
+            if (!Application.IsPlaying(gameObject))
+            {
+                return;
+            }
+
+            UpdateEffectMesh(Camera.main);
+            RenderEffect(null);
+        }
+
+        public void OnDestroy()
+        {
+            DeleteEffect();
+        }
+
+        public void AdvanceEffect(float dt)
         {
             if (EffectAsset != cachedEffectAsset)
             {
@@ -276,10 +308,10 @@ namespace Pixelpart
                 return;
             }
 
-            UpdateTransform();
+            ApplyTransform();
 
             var timeStep = 1.0f / Math.Max(FrameRate, 0.01f);
-            Plugin.PixelpartAdvanceEffect(effectRuntime, Time.deltaTime,
+            Plugin.PixelpartAdvanceEffect(effectRuntime, dt,
                 Loop, LoopTime, Speed,
                 timeStep, Seed, RandomSeed);
 
@@ -306,24 +338,19 @@ namespace Pixelpart
             }
         }
 
-        public void LateUpdate()
+        public void UpdateEffectMesh(Camera camera)
         {
-            if (effectRuntime == IntPtr.Zero || effectRenderer == null)
-            {
-                return;
-            }
-
             var scale = new Vector3(
                 EffectScale * (FlipH ? -1.0f : +1.0f),
                 EffectScale * (FlipV ? -1.0f : +1.0f),
                 EffectScale);
 
-            effectRenderer.Render(transform, scale, gameObject.layer);
+            effectRenderer?.UpdateMesh(camera, transform, scale);
         }
 
-        public void OnDestroy()
+        public void RenderEffect(Camera camera)
         {
-            DeleteEffect();
+            effectRenderer?.Render(camera, transform, gameObject.layer);
         }
 
         /// <summary>
@@ -831,7 +858,7 @@ namespace Pixelpart
             invokedEventIds = new uint[effectEventCollection.EventNames.Count];
 
             ApplyInputProperties();
-            UpdateTransform();
+            ApplyTransform();
 
             Plugin.PixelpartReseedEffect(effectRuntime, RandomSeed
                 ? (int)(Time.realtimeSinceStartupAsDouble * 1e6)
@@ -866,7 +893,7 @@ namespace Pixelpart
             invokedEventIds = null;
         }
 
-        private void UpdateTransform()
+        private void ApplyTransform()
         {
             var scale = new Vector3(
                 EffectScale * (FlipH ? -1.0f : +1.0f),

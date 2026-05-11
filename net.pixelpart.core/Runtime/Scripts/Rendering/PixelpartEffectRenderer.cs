@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UnityEngine;
 
 namespace Pixelpart
@@ -11,7 +12,7 @@ namespace Pixelpart
 
         private readonly PixelpartGraphicsResourceProvider graphicsResourceProvider;
 
-        private readonly PixelpartParticleRenderer[] particleRenderers;
+        private readonly PixelpartParticleMesh[] particleMeshes;
 
         private readonly PixelpartParticleEmissionPair[] particleEmissionPairs;
 
@@ -26,7 +27,7 @@ namespace Pixelpart
 
             var emissionPairCount = Plugin.PixelpartGetEffectParticleEmissionPairCount(effectRuntimePtr);
 
-            particleRenderers = new PixelpartParticleRenderer[emissionPairCount];
+            particleMeshes = new PixelpartParticleMesh[emissionPairCount];
             particleEmissionPairs = new PixelpartParticleEmissionPair[emissionPairCount];
             sortedParticleEmissionPairs = new int[emissionPairCount];
             Plugin.PixelpartGetEffectParticleEmissionPairs(effectRuntimePtr, particleEmissionPairs);
@@ -47,7 +48,7 @@ namespace Pixelpart
                 var baseMaterial = particleMaterials[particleTypeIndex];
 
                 var materialIdLength = Plugin.PixelpartParticleTypeGetMaterialId(effectRuntimePtr, emissionPair.TypeId, materialIdBuffer, materialIdBuffer.Length);
-                var materialId = System.Text.Encoding.UTF8.GetString(materialIdBuffer, 0, materialIdLength);
+                var materialId = Encoding.UTF8.GetString(materialIdBuffer, 0, materialIdLength);
                 var materialBuiltIn = Plugin.PixelpartParticleTypeIsMaterialBuiltIn(effectRuntimePtr, emissionPair.TypeId);
 
                 PixelpartMaterialDescriptor materialDescriptor = null;
@@ -69,29 +70,58 @@ namespace Pixelpart
                     continue;
                 }
 
-                particleRenderers[emissionPairIndex] = new PixelpartParticleRenderer(effectRuntimePtr,
-                    emissionPair.EmitterId, emissionPair.TypeId,
-                    baseMaterial, materialDescriptor, graphicsResourceProvider);
+                var rendererType = (PixelpartParticleType.ParticleRendererType)Plugin.PixelpartParticleTypeGetRenderer(effectRuntimePtr, emissionPair.TypeId);
+
+                try
+                {
+                    switch (rendererType)
+                    {
+                        case PixelpartParticleType.ParticleRendererType.Sprite:
+                        case PixelpartParticleType.ParticleRendererType.Trail:
+                            particleMeshes[emissionPairIndex] = new PixelpartSpriteParticleMesh(effectRuntimePtr,
+                                emissionPair.EmitterId, emissionPair.TypeId,
+                                baseMaterial, materialDescriptor, graphicsResourceProvider);
+                            break;
+                        case PixelpartParticleType.ParticleRendererType.Mesh:
+                            particleMeshes[emissionPairIndex] = new PixelpartMeshParticleMesh(effectRuntimePtr,
+                                emissionPair.EmitterId, emissionPair.TypeId,
+                                baseMaterial, materialDescriptor, graphicsResourceProvider);
+                            break;
+                        default:
+                            Debug.LogWarning("[Pixelpart] Unknown particle renderer type");
+                            break;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogWarning("[Pixelpart] Exception while creating particle mesh: " + e.Message);
+                    particleMeshes[emissionPairIndex] = null;
+                }
             }
         }
 
-        public void Render(Transform transform, Vector3 effectScale, int layer)
+        public void UpdateMesh(Camera camera, Transform transform, Vector3 scale)
         {
-            if (particleEmissionPairs.Length == 0)
+            foreach (var particleMesh in particleMeshes)
             {
-                return;
+                particleMesh?.Update(camera, transform, scale);
             }
+        }
 
-            foreach (var particleRenderer in particleRenderers)
+        public void Render(Camera camera, Transform transform, int layer)
+        {
+            foreach (var particleMesh in particleMeshes)
             {
-                if (particleRenderer == null)
+                if (camera != null)
                 {
-                    continue;
+                    particleMesh?.Render(camera, transform, layer);
                 }
-
-                foreach (var camera in Camera.allCameras)
+                else
                 {
-                    particleRenderer.Render(camera, transform, effectScale, layer);
+                    foreach (var cam in Camera.allCameras)
+                    {
+                        particleMesh?.Render(cam, transform, layer);
+                    }
                 }
             }
         }

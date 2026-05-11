@@ -6,7 +6,32 @@ namespace Pixelpart
     [CustomEditor(typeof(PixelpartEffect))]
     public class PixelpartEffectInspector : Editor
     {
+        private PixelpartEffect effect = null;
+
+        private double prevUpdateTime = 0.0;
+
         private bool particleMaterialsVisible = true;
+
+        public void OnEnable()
+        {
+            effect = (PixelpartEffect)target;
+
+            if (!Application.isPlaying)
+            {
+                prevUpdateTime = EditorApplication.timeSinceStartup;
+
+                EditorApplication.update -= OnUpdate;
+                EditorApplication.update += OnUpdate;
+            }
+        }
+
+        public void OnDisable()
+        {
+            if (!Application.isPlaying)
+            {
+                EditorApplication.update -= OnUpdate;
+            }
+        }
 
         public override void OnInspectorGUI()
         {
@@ -74,9 +99,75 @@ namespace Pixelpart
 
             if (inputsModified)
             {
-                var effect = (PixelpartEffect)target;
                 effect.ApplyInputProperties();
             }
+        }
+
+        private void OnSceneGUI()
+        {
+            const int boxWidth = 180;
+            const int boxHeight = 60;
+            const int boxPadding = 10;
+            const int boxMargin = 10;
+
+            var sceneView = SceneView.currentDrawingSceneView;
+
+            var boxRect = new Rect(
+                sceneView.camera.pixelRect.width - boxWidth - boxMargin,
+                sceneView.camera.pixelRect.height - boxHeight - boxMargin,
+                boxWidth,
+                boxHeight);
+            var areaRect = new Rect(
+                sceneView.camera.pixelRect.width - boxWidth - boxMargin + boxPadding,
+                sceneView.camera.pixelRect.height - boxHeight - boxMargin + boxPadding,
+                boxWidth - boxPadding * 2,
+                boxHeight - boxPadding * 2);
+
+            Handles.BeginGUI();
+            GUI.Box(boxRect, "Pixelpart Effect");
+            GUILayout.BeginArea(areaRect);
+
+            GUILayout.Space(20);
+
+            GUILayout.BeginHorizontal();
+            EditorGUI.BeginDisabledGroup(effect?.EffectAsset == null);
+            if (GUILayout.Button("Restart"))
+            {
+                effect?.RestartEffect();
+            }
+            EditorGUI.EndDisabledGroup();
+            GUILayout.EndHorizontal();
+
+            GUILayout.EndArea();
+            Handles.EndGUI();
+
+            if (Event.current.type == EventType.Repaint)
+            {
+                effect.RenderEffect(Camera.current);
+            }
+        }
+
+        private void OnUpdate()
+        {
+            var currentTime = EditorApplication.timeSinceStartup;
+            var deltaTime = (float)(currentTime - prevUpdateTime);
+            prevUpdateTime = currentTime;
+
+            effect.AdvanceEffect(deltaTime);
+
+            effect.UpdateEffectMesh(Camera.main);
+            effect.RenderEffect(Camera.main);
+
+            RepaintPreview();
+        }
+
+        private void RepaintPreview()
+        {
+            SceneView.RepaintAll();
+
+            var editorWindowAssembly = typeof(EditorWindow).Assembly;
+            var gameView = EditorWindow.GetWindow(editorWindowAssembly.GetType("UnityEditor.GameView"), false, null, false);
+            gameView?.Repaint();
         }
     }
 }

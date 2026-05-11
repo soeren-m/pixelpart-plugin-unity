@@ -59,15 +59,6 @@ namespace Pixelpart
                     }
                 }
             }
-        }
-
-        public void ApplyParameters()
-        {
-            var effectTime = Plugin.PixelpartGetEffectTime(effectRuntime);
-            var objectTime = Plugin.PixelpartNodeGetLocalTime(effectRuntime, particleEmitterId);
-
-            Material.SetFloat("_EffectTime", effectTime);
-            Material.SetFloat("_ObjectTime", objectTime);
 
             var parameterCount = Plugin.PixelpartParticleTypeGetMaterialParameterCount(effectRuntime, particleTypeId);
 
@@ -78,6 +69,12 @@ namespace Pixelpart
             {
                 ApplyParameter(parameterId);
             }
+        }
+
+        public void ApplyRuntimeParameters()
+        {
+            Material.SetFloat("_EffectTime", Plugin.PixelpartGetEffectTime(effectRuntime));
+            Material.SetFloat("_ObjectTime", Plugin.PixelpartNodeGetLocalTime(effectRuntime, particleEmitterId));
         }
 
         private void ApplyParameter(uint parameterId)

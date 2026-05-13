@@ -52,13 +52,13 @@ namespace Pixelpart
                 return;
             }
 
-            Array.Resize(ref triangles, bufferSizes[0]);
-            Array.Resize(ref vertices, bufferSizes[1]);
-            Array.Resize(ref colors, bufferSizes[2]);
-            Array.Resize(ref normals, bufferSizes[3]);
-            Array.Resize(ref uv0, bufferSizes[4]);
-            Array.Resize(ref uv1, bufferSizes[5]);
-            Array.Resize(ref uv2, bufferSizes[6]);
+            PixelpartArrayUtil.EnsureMinSize(ref triangles, bufferSizes[0]);
+            PixelpartArrayUtil.EnsureMinSize(ref vertices, bufferSizes[1]);
+            PixelpartArrayUtil.EnsureMinSize(ref colors, bufferSizes[2]);
+            PixelpartArrayUtil.EnsureMinSize(ref normals, bufferSizes[3]);
+            PixelpartArrayUtil.EnsureMinSize(ref uv0, bufferSizes[4]);
+            PixelpartArrayUtil.EnsureMinSize(ref uv1, bufferSizes[5]);
+            PixelpartArrayUtil.EnsureMinSize(ref uv2, bufferSizes[6]);
 
             var generationResult = Plugin.PixelpartGenerateParticleVertexData(effectRuntime, particleEmitterId, particleTypeId,
                 camera.transform.position, camera.transform.forward, camera.transform.right, camera.transform.up, scale,
@@ -70,13 +70,13 @@ namespace Pixelpart
             }
 
             mesh.Clear();
-            mesh.SetVertices(vertices, 0, vertices.Length, MeshUpdateFlags.DontNotifyMeshUsers);
-            mesh.SetColors(colors, 0, colors.Length, MeshUpdateFlags.DontNotifyMeshUsers);
-            mesh.SetNormals(normals, 0, normals.Length, MeshUpdateFlags.DontNotifyMeshUsers);
-            mesh.SetUVs(0, uv0, 0, uv0.Length, MeshUpdateFlags.DontNotifyMeshUsers);
-            mesh.SetUVs(1, uv1, 0, uv1.Length, MeshUpdateFlags.DontNotifyMeshUsers);
-            mesh.SetUVs(2, uv2, 0, uv2.Length, MeshUpdateFlags.DontNotifyMeshUsers);
-            mesh.SetTriangles(triangles, 0, false);
+            mesh.SetVertices(vertices, 0, bufferSizes[1], MeshUpdateFlags.DontNotifyMeshUsers);
+            mesh.SetColors(colors, 0, bufferSizes[2], MeshUpdateFlags.DontNotifyMeshUsers);
+            mesh.SetNormals(normals, 0, bufferSizes[3], MeshUpdateFlags.DontNotifyMeshUsers);
+            mesh.SetUVs(0, uv0, 0, bufferSizes[4], MeshUpdateFlags.DontNotifyMeshUsers);
+            mesh.SetUVs(1, uv1, 0, bufferSizes[5], MeshUpdateFlags.DontNotifyMeshUsers);
+            mesh.SetUVs(2, uv2, 0, bufferSizes[6], MeshUpdateFlags.DontNotifyMeshUsers);
+            mesh.SetTriangles(triangles, 0, bufferSizes[0], 0, false, 0);
 
             var maxRelativeToTransform = mesh.bounds.max - transform.position;
             var minRelativeToTransform = mesh.bounds.min - transform.position;

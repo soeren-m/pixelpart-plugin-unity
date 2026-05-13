@@ -30,10 +30,10 @@ namespace Pixelpart
         private float[] instanceLives = new float[1];
         private float[] instanceIds = new float[1];
 
-        private readonly Vector4[] drawCallColors = new Vector4[maxInstancesPerDrawCall];
-        private readonly Vector4[] drawCallVelocities = new Vector4[maxInstancesPerDrawCall];
-        private readonly float[] drawCallLives = new float[maxInstancesPerDrawCall];
-        private readonly float[] drawCallIds = new float[maxInstancesPerDrawCall];
+        private readonly Vector4[] batchColors = new Vector4[maxInstancesPerDrawCall];
+        private readonly Vector4[] batchVelocities = new Vector4[maxInstancesPerDrawCall];
+        private readonly float[] batchLives = new float[maxInstancesPerDrawCall];
+        private readonly float[] batchIds = new float[maxInstancesPerDrawCall];
 
         public PixelpartMeshParticleMesh(IntPtr effectRuntimePtr, uint emitterId, uint typeId,
             Material baseMaterial, PixelpartMaterialDescriptor materialDescriptor,
@@ -67,11 +67,11 @@ namespace Pixelpart
                 return;
             }
 
-            Array.Resize(ref instanceTransforms, bufferSizes[0]);
-            Array.Resize(ref instanceColors, bufferSizes[1]);
-            Array.Resize(ref instanceVelocities, bufferSizes[2]);
-            Array.Resize(ref instanceLives, bufferSizes[3]);
-            Array.Resize(ref instanceIds, bufferSizes[4]);
+            PixelpartArrayUtil.EnsureMinSize(ref instanceTransforms, bufferSizes[0]);
+            PixelpartArrayUtil.EnsureMinSize(ref instanceColors, bufferSizes[1]);
+            PixelpartArrayUtil.EnsureMinSize(ref instanceVelocities, bufferSizes[2]);
+            PixelpartArrayUtil.EnsureMinSize(ref instanceLives, bufferSizes[3]);
+            PixelpartArrayUtil.EnsureMinSize(ref instanceIds, bufferSizes[4]);
 
             Plugin.PixelpartGenerateParticleInstanceData(effectRuntime, particleEmitterId, particleTypeId,
                 camera.transform.position, camera.transform.forward, camera.transform.right, camera.transform.up, scale,
@@ -80,7 +80,8 @@ namespace Pixelpart
 
         public void Render(Camera camera, Transform transform, int layer)
         {
-            if (bufferSizes.Any(size => size <= 0))
+            var instanceCount = bufferSizes[0];
+            if (instanceCount <= 0)
             {
                 return;
             }
@@ -95,8 +96,9 @@ namespace Pixelpart
             particleMaterial.ApplyRuntimeParameters();
 
             var extents = new Vector3(0.1f, 0.1f, 0.1f);
-            foreach (var instanceTransform in instanceTransforms)
+            for (var index = 0; index < instanceCount; index++)
             {
+                var instanceTransform = instanceTransforms[index];
                 var scale = Mathf.Max(
                     instanceTransform.lossyScale.x,
                     instanceTransform.lossyScale.y,
@@ -108,22 +110,22 @@ namespace Pixelpart
             var bounds = new Bounds(transform.position, extents * 2.0f);
             var adjustedBounds = AdjustBoundsForParticleLayer(bounds, camera, particleLayer);
 
-            var drawCallCount = (instanceTransforms.Length - 1) / maxInstancesPerDrawCall + 1;
+            var batchCount = (instanceCount - 1) / maxInstancesPerDrawCall + 1;
 
-            for (var drawCallIndex = 0; drawCallIndex < drawCallCount; drawCallIndex++)
+            for (var batchIndex = 0; batchIndex < batchCount; batchIndex++)
             {
-                var instanceStartIndex = drawCallIndex * maxInstancesPerDrawCall;
-                var instanceCount = Math.Min(instanceTransforms.Length - instanceStartIndex, maxInstancesPerDrawCall);
+                var batchStartIndex = batchIndex * maxInstancesPerDrawCall;
+                var batchSize = Math.Min(instanceCount - batchStartIndex, maxInstancesPerDrawCall);
 
-                Array.Copy(instanceColors, instanceStartIndex, drawCallColors, 0, instanceCount);
-                Array.Copy(instanceVelocities, instanceStartIndex, drawCallVelocities, 0, instanceCount);
-                Array.Copy(instanceLives, instanceStartIndex, drawCallLives, 0, instanceCount);
-                Array.Copy(instanceIds, instanceStartIndex, drawCallIds, 0, instanceCount);
+                Array.Copy(instanceColors, batchStartIndex, batchColors, 0, batchSize);
+                Array.Copy(instanceVelocities, batchStartIndex, batchVelocities, 0, batchSize);
+                Array.Copy(instanceLives, batchStartIndex, batchLives, 0, batchSize);
+                Array.Copy(instanceIds, batchStartIndex, batchIds, 0, batchSize);
 
-                materialPropertyBlock.SetVectorArray("_Color", drawCallColors);
-                materialPropertyBlock.SetVectorArray("_Velocity", drawCallVelocities);
-                materialPropertyBlock.SetFloatArray("_Life", drawCallLives);
-                materialPropertyBlock.SetFloatArray("_ObjectId", drawCallIds);
+                materialPropertyBlock.SetVectorArray("_Color", batchColors);
+                materialPropertyBlock.SetVectorArray("_Velocity", batchVelocities);
+                materialPropertyBlock.SetFloatArray("_Life", batchLives);
+                materialPropertyBlock.SetFloatArray("_ObjectId", batchIds);
 
                 var renderParams = new RenderParams(particleMaterial.Material)
                 {
@@ -135,7 +137,7 @@ namespace Pixelpart
                     worldBounds = adjustedBounds
                 };
 
-                Graphics.RenderMeshInstanced(renderParams, mesh, 0, instanceTransforms, instanceCount, instanceStartIndex);
+                Graphics.RenderMeshInstanced(renderParams, mesh, 0, instanceTransforms, batchSize, batchStartIndex);
             }
         }
 

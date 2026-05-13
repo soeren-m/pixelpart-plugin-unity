@@ -15,7 +15,7 @@ namespace Pixelpart
         /// <returns>Created node</returns>
         public static PixelpartNode CreateNode(IntPtr effectRuntime, uint nodeId)
         {
-            var nodeTypeIndex = Plugin.PixelpartNodeGetType(effectRuntime, nodeId);
+            var nodeTypeIndex = PixelpartPlugin.PixelpartNodeGetType(effectRuntime, nodeId);
             if (nodeTypeIndex < 0)
             {
                 return null;

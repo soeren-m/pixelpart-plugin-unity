@@ -7,7 +7,7 @@ using UnityEditor;
 namespace Pixelpart
 {
     [InitializeOnLoad]
-    internal static class PixelpartPluginSwitch
+    internal static class PixelpartNativePluginSelector
     {
 #if UNITY_2023_2_OR_NEWER
         static readonly string activeWebGLPluginPath = "WebGL/3.1.38/libpixelpartunity.a";
@@ -17,7 +17,7 @@ namespace Pixelpart
         static readonly string activeWebGLPluginPath = "WebGL/2.0.19/libpixelpartunity.a";
 #endif
 
-        static PixelpartPluginSwitch()
+        static PixelpartNativePluginSelector()
         {
             var webglPluginPaths = new string[]
             {

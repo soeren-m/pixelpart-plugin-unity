@@ -33,11 +33,11 @@ namespace Pixelpart
         public PixelpartCollider(IntPtr effectRuntimePtr, uint id) : base(effectRuntimePtr, id)
         {
             KillOnContact = new PixelpartStaticPropertyBool(
-                Plugin.PixelpartColliderGetKillOnContact(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartColliderGetKillOnContact(effectRuntimePtr, id));
             Bounce = new PixelpartAnimatedPropertyFloat(
-                Plugin.PixelpartColliderGetBounce(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartColliderGetBounce(effectRuntimePtr, id));
             Friction = new PixelpartAnimatedPropertyFloat(
-                Plugin.PixelpartColliderGetFriction(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartColliderGetFriction(effectRuntimePtr, id));
         }
     }
 }

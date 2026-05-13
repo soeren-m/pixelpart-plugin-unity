@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Pixelpart
 {
-    internal static class Plugin
+    internal static class PixelpartPlugin
     {
 #if !UNITY_EDITOR && (UNITY_IPHONE || UNITY_WEBGL || UNITY_SWITCH)
         private const string pluginName = "__Internal";

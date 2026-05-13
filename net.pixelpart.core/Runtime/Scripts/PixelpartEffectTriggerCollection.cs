@@ -21,11 +21,11 @@ namespace Pixelpart
 
         public PixelpartEffectTriggerCollection(IntPtr effectRuntimePtr)
         {
-            var triggerCount = Plugin.PixelpartGetEffectTriggerCount(effectRuntimePtr);
+            var triggerCount = PixelpartPlugin.PixelpartGetEffectTriggerCount(effectRuntimePtr);
             var triggerIdArray = new uint[triggerCount];
 
             var triggerNamesBuffer = new byte[16384];
-            var triggerNamesLength = Plugin.PixelpartGetEffectTriggers(effectRuntimePtr, triggerIdArray, triggerNamesBuffer, triggerNamesBuffer.Length);
+            var triggerNamesLength = PixelpartPlugin.PixelpartGetEffectTriggers(effectRuntimePtr, triggerIdArray, triggerNamesBuffer, triggerNamesBuffer.Length);
             var triggerNamesArray = Encoding.UTF8.GetString(triggerNamesBuffer, 0, triggerNamesLength)
                 .Split(new[] { '|' }, 64, StringSplitOptions.RemoveEmptyEntries);
 

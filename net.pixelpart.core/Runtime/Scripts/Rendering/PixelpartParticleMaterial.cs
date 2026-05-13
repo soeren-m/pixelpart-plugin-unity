@@ -60,10 +60,10 @@ namespace Pixelpart
                 }
             }
 
-            var parameterCount = Plugin.PixelpartParticleTypeGetMaterialParameterCount(effectRuntime, particleTypeId);
+            var parameterCount = PixelpartPlugin.PixelpartParticleTypeGetMaterialParameterCount(effectRuntime, particleTypeId);
 
             var parameterIds = new uint[parameterCount];
-            Plugin.PixelpartParticleTypeGetMaterialParameterIds(effectRuntime, particleTypeId, parameterIds);
+            PixelpartPlugin.PixelpartParticleTypeGetMaterialParameterIds(effectRuntime, particleTypeId, parameterIds);
 
             foreach (var parameterId in parameterIds)
             {
@@ -73,8 +73,8 @@ namespace Pixelpart
 
         public void ApplyRuntimeParameters()
         {
-            Material.SetFloat("_EffectTime", Plugin.PixelpartGetEffectTime(effectRuntime));
-            Material.SetFloat("_ObjectTime", Plugin.PixelpartNodeGetLocalTime(effectRuntime, particleEmitterId));
+            Material.SetFloat("_EffectTime", PixelpartPlugin.PixelpartGetEffectTime(effectRuntime));
+            Material.SetFloat("_ObjectTime", PixelpartPlugin.PixelpartNodeGetLocalTime(effectRuntime, particleEmitterId));
         }
 
         private void ApplyParameter(uint parameterId)
@@ -85,19 +85,19 @@ namespace Pixelpart
                 return;
             }
 
-            var parameterType = (MaterialParameterType)Plugin.PixelpartParticleTypeGetMaterialParameterType(effectRuntime, particleTypeId, parameterId);
+            var parameterType = (MaterialParameterType)PixelpartPlugin.PixelpartParticleTypeGetMaterialParameterType(effectRuntime, particleTypeId, parameterId);
 
             switch (parameterType)
             {
                 case MaterialParameterType.Int:
                 case MaterialParameterType.Enum:
                     Material.SetInt(parameterName,
-                        Plugin.PixelpartParticleTypeGetMaterialParameterValueInt(effectRuntime, particleTypeId, parameterId));
+                        PixelpartPlugin.PixelpartParticleTypeGetMaterialParameterValueInt(effectRuntime, particleTypeId, parameterId));
                     break;
 
                 case MaterialParameterType.Float:
                     Material.SetFloat(parameterName,
-                        Plugin.PixelpartParticleTypeGetMaterialParameterValueFloat(effectRuntime, particleTypeId, parameterId));
+                        PixelpartPlugin.PixelpartParticleTypeGetMaterialParameterValueFloat(effectRuntime, particleTypeId, parameterId));
                     break;
 
                 case MaterialParameterType.Float2:
@@ -105,18 +105,18 @@ namespace Pixelpart
                 case MaterialParameterType.Float4:
                 case MaterialParameterType.Color:
                     Material.SetVector(parameterName,
-                        Plugin.PixelpartParticleTypeGetMaterialParameterValueFloat4(effectRuntime, particleTypeId, parameterId));
+                        PixelpartPlugin.PixelpartParticleTypeGetMaterialParameterValueFloat4(effectRuntime, particleTypeId, parameterId));
                     break;
 
                 case MaterialParameterType.Bool:
                     Material.SetInt(parameterName,
-                        Plugin.PixelpartParticleTypeGetMaterialParameterValueBool(effectRuntime, particleTypeId, parameterId) ? 1 : 0);
+                        PixelpartPlugin.PixelpartParticleTypeGetMaterialParameterValueBool(effectRuntime, particleTypeId, parameterId) ? 1 : 0);
                     break;
 
                 case MaterialParameterType.ResourceImage:
                 {
                     var resourceIdBuffer = new byte[256];
-                    var resourceIdLength = Plugin.PixelpartParticleTypeGetMaterialParameterValueResourceId(effectRuntime, particleTypeId, parameterId, resourceIdBuffer, resourceIdBuffer.Length);
+                    var resourceIdLength = PixelpartPlugin.PixelpartParticleTypeGetMaterialParameterValueResourceId(effectRuntime, particleTypeId, parameterId, resourceIdBuffer, resourceIdBuffer.Length);
                     var imageResourceId = System.Text.Encoding.UTF8.GetString(resourceIdBuffer, 0, resourceIdLength);
 
                     if (graphicsResourceProvider.Textures.TryGetValue(imageResourceId, out Texture2D texture))

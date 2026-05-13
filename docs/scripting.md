@@ -60,7 +60,7 @@ public void Awake()
     effect.EffectEvent += OnEffectEvent;
 }
 
-private void OnEffectEvent(object sender, EffectEventArgs e)
+private void OnEffectEvent(object sender, PixelpartEffectEventArgs e)
 {
     if (e.EventName == "MyEvent")
     {

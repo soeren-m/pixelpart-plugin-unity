@@ -18,14 +18,14 @@ namespace Pixelpart
         /// </summary>
         public PixelpartInterpolationType KeyframeInterpolation
         {
-            get => (PixelpartInterpolationType)Plugin.PixelpartAnimatedPropertyFloat3GetKeyframeInterpolation(internalProperty);
-            set => Plugin.PixelpartAnimatedPropertyFloat3SetKeyframeInterpolation(internalProperty, (int)value);
+            get => (PixelpartInterpolationType)PixelpartPlugin.PixelpartAnimatedPropertyFloat3GetKeyframeInterpolation(internalProperty);
+            set => PixelpartPlugin.PixelpartAnimatedPropertyFloat3SetKeyframeInterpolation(internalProperty, (int)value);
         }
 
         /// <summary>
         /// Number of keyframes.
         /// </summary>
-        public int KeyframeCount => Plugin.PixelpartAnimatedPropertyFloat3KeyframeCount(internalProperty);
+        public int KeyframeCount => PixelpartPlugin.PixelpartAnimatedPropertyFloat3KeyframeCount(internalProperty);
 
         private readonly IntPtr internalProperty;
 
@@ -44,7 +44,7 @@ namespace Pixelpart
         /// <param name="position">Time between 0 and 1</param>
         /// <returns>Value of the property</returns>
         public Vector3 At(float position) =>
-            Plugin.PixelpartAnimatedPropertyFloat3At(internalProperty, position);
+            PixelpartPlugin.PixelpartAnimatedPropertyFloat3At(internalProperty, position);
 
         /// <summary>
         /// Add a keyframe at time <paramref name="position"/> with value <paramref name="value"/>.
@@ -52,14 +52,14 @@ namespace Pixelpart
         /// <param name="position">Time between 0 and 1</param>
         /// <param name="value">Value of the property at the given time</param>
         public void AddKeyframe(float position, Vector3 value) =>
-            Plugin.PixelpartAnimatedPropertyFloat3AddKeyframe(internalProperty, position, value);
+            PixelpartPlugin.PixelpartAnimatedPropertyFloat3AddKeyframe(internalProperty, position, value);
 
         /// <summary>
         /// Remove the keyframe with the given index from the animation.
         /// </summary>
         /// <param name="index">Index to remove</param>
         public void RemoveKeyframe(int index) =>
-            Plugin.PixelpartAnimatedPropertyFloat3RemoveKeyframe(internalProperty, index);
+            PixelpartPlugin.PixelpartAnimatedPropertyFloat3RemoveKeyframe(internalProperty, index);
 
         /// <summary>
         /// Change the value of the keyframe with the given index.
@@ -67,7 +67,7 @@ namespace Pixelpart
         /// <param name="index">Keyframe index</param>
         /// <param name="value">New value</param>
         public void SetKeyframeValue(int index, Vector3 value) =>
-            Plugin.PixelpartAnimatedPropertyFloat3SetKeyframeValue(internalProperty, index, value);
+            PixelpartPlugin.PixelpartAnimatedPropertyFloat3SetKeyframeValue(internalProperty, index, value);
 
         /// <summary>
         /// Move the time of the keyframe with the given index to <paramref name="position"/>.
@@ -75,13 +75,13 @@ namespace Pixelpart
         /// <param name="index">Keyframe index</param>
         /// <param name="position">New time between 0 and 1</param>
         public void SetKeyframePosition(int index, float position) =>
-            Plugin.PixelpartAnimatedPropertyFloat3SetKeyframePosition(internalProperty, index, position);
+            PixelpartPlugin.PixelpartAnimatedPropertyFloat3SetKeyframePosition(internalProperty, index, position);
 
         /// <summary>
         /// Remove all keyframes from the animation.
         /// </summary>
         public void ClearKeyframes() =>
-            Plugin.PixelpartAnimatedPropertyFloat3ClearKeyframes(internalProperty);
+            PixelpartPlugin.PixelpartAnimatedPropertyFloat3ClearKeyframes(internalProperty);
 
         /// <summary>
         /// Return the value of the keyframe with the given index.
@@ -89,7 +89,7 @@ namespace Pixelpart
         /// <param name="index">Keyframe index</param>
         /// <returns>Keyframe value</returns>
         public Vector3 GetKeyframeValue(int index) =>
-            Plugin.PixelpartAnimatedPropertyFloat3KeyframeValue(internalProperty, index);
+            PixelpartPlugin.PixelpartAnimatedPropertyFloat3KeyframeValue(internalProperty, index);
 
         /// <summary>
         /// Return the index of the keyframe closest to time <paramref name="position"/>.
@@ -98,6 +98,6 @@ namespace Pixelpart
         /// <param name="epsilon">Maximum differerence in time to consider to keyframes at the same time</param>
         /// <returns>Keyframe index</returns>
         public int GetKeyframeIndex(float position, float epsilon) =>
-            Plugin.PixelpartAnimatedPropertyFloat3KeyframeIndex(internalProperty, position, epsilon);
+            PixelpartPlugin.PixelpartAnimatedPropertyFloat3KeyframeIndex(internalProperty, position, epsilon);
     }
 }

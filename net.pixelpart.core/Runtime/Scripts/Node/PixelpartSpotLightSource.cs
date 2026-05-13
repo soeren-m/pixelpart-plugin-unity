@@ -28,9 +28,9 @@ namespace Pixelpart
         public PixelpartSpotLightSource(IntPtr effectRuntimePtr, uint id) : base(effectRuntimePtr, id)
         {
             SpotAngle = new PixelpartAnimatedPropertyFloat(
-                Plugin.PixelpartSpotLightSourceGetSpotAngle(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartSpotLightSourceGetSpotAngle(effectRuntimePtr, id));
             SpotAngleAttenuation = new PixelpartAnimatedPropertyFloat(
-                Plugin.PixelpartSpotLightSourceGetSpotAngleAttenuation(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartSpotLightSourceGetSpotAngleAttenuation(effectRuntimePtr, id));
         }
     }
 }

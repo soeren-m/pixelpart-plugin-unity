@@ -49,7 +49,7 @@ namespace Pixelpart
                 var effectRuntime = LoadEffect();
                 CreateCustomMaterialAssetDescriptors(effectRuntime, path);
 
-                Plugin.PixelpartDeleteEffect(effectRuntime);
+                PixelpartPlugin.PixelpartDeleteEffect(effectRuntime);
             }
             catch (InvalidOperationException e)
             {
@@ -73,11 +73,11 @@ namespace Pixelpart
                 throw new InvalidOperationException("No data assigned to effect asset");
             }
 
-            var effectRuntime = Plugin.PixelpartLoadEffect(Data, Data.Length);
+            var effectRuntime = PixelpartPlugin.PixelpartLoadEffect(Data, Data.Length);
             if (effectRuntime == IntPtr.Zero)
             {
                 var errorBuffer = new byte[2048];
-                var errorLength = Plugin.PixelpartLastError(errorBuffer, errorBuffer.Length);
+                var errorLength = PixelpartPlugin.PixelpartLastError(errorBuffer, errorBuffer.Length);
 
                 throw new InvalidOperationException(Encoding.UTF8.GetString(errorBuffer, 0, errorLength));
             }
@@ -98,18 +98,18 @@ namespace Pixelpart
             var shaderTextureResourceIdsBuffer = new byte[16384];
             var shaderSamplerNamesBuffer = new byte[16384];
 
-            var materialCount = Plugin.PixelpartGetMaterialResourceCount(effectRuntime);
+            var materialCount = PixelpartPlugin.PixelpartGetMaterialResourceCount(effectRuntime);
             CustomMaterials = new PixelpartMaterialDescriptor[materialCount * 2];
 
             for (var materialIndex = 0; materialIndex < materialCount; materialIndex++)
             {
-                var nameSize = Plugin.PixelpartGetMaterialResourceId(effectRuntime, materialIndex, nameBuffer, nameBuffer.Length);
+                var nameSize = PixelpartPlugin.PixelpartGetMaterialResourceId(effectRuntime, materialIndex, nameBuffer, nameBuffer.Length);
                 var materialResourceId = Encoding.UTF8.GetString(nameBuffer, 0, nameSize);
 
-                var blendMode = (PixelpartBlendMode)Plugin.PixelpartGetMaterialResourceBlendMode(effectRuntime, materialResourceId);
-                var lightingMode = (PixelpartLightingMode)Plugin.PixelpartGetMaterialResourceLightingMode(effectRuntime, materialResourceId);
+                var blendMode = (PixelpartBlendMode)PixelpartPlugin.PixelpartGetMaterialResourceBlendMode(effectRuntime, materialResourceId);
+                var lightingMode = (PixelpartLightingMode)PixelpartPlugin.PixelpartGetMaterialResourceLightingMode(effectRuntime, materialResourceId);
 
-                var result = Plugin.PixelpartBuildMaterialShader(effectRuntime, materialResourceId, renderPipelineId,
+                var result = PixelpartPlugin.PixelpartBuildMaterialShader(effectRuntime, materialResourceId, renderPipelineId,
                     shaderMainCodeBuffer, shaderParameterCodeBuffer,
                     shaderParameterNamesBuffer, shaderParameterIdsBuffer,
                     shaderTextureResourceIdsBuffer, shaderSamplerNamesBuffer,
@@ -123,7 +123,7 @@ namespace Pixelpart
                 if (!result)
                 {
                     var errorBuffer = new byte[2048];
-                    var errorLength = Plugin.PixelpartLastError(errorBuffer, errorBuffer.Length);
+                    var errorLength = PixelpartPlugin.PixelpartLastError(errorBuffer, errorBuffer.Length);
 
                     Debug.LogWarning("[Pixelpart] Failed to generate shader for material \"" + materialResourceId + "\": " +
                         Encoding.UTF8.GetString(errorBuffer, 0, errorLength));

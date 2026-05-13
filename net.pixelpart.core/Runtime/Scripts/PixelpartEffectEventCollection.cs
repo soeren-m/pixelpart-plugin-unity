@@ -18,11 +18,11 @@ namespace Pixelpart
 
         public PixelpartEffectEventCollection(IntPtr effectRuntimePtr)
         {
-            var eventCount = Plugin.PixelpartGetEffectEventCount(effectRuntimePtr);
+            var eventCount = PixelpartPlugin.PixelpartGetEffectEventCount(effectRuntimePtr);
             var eventIdArray = new uint[eventCount];
 
             var eventNamesBuffer = new byte[16384];
-            var eventNamesLength = Plugin.PixelpartGetEffectEvents(effectRuntimePtr, eventIdArray, eventNamesBuffer, eventNamesBuffer.Length);
+            var eventNamesLength = PixelpartPlugin.PixelpartGetEffectEvents(effectRuntimePtr, eventIdArray, eventNamesBuffer, eventNamesBuffer.Length);
             var eventNamesArray = Encoding.UTF8.GetString(eventNamesBuffer, 0, eventNamesLength)
                 .Split(new[] { '|' }, 64, StringSplitOptions.RemoveEmptyEntries);
 

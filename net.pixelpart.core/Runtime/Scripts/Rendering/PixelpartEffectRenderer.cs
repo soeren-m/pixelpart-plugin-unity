@@ -25,19 +25,19 @@ namespace Pixelpart
             graphicsResourceProvider = new PixelpartGraphicsResourceProvider();
             graphicsResourceProvider.Load(effectRuntimePtr);
 
-            var emissionPairCount = Plugin.PixelpartGetEffectParticleEmissionPairCount(effectRuntimePtr);
+            var emissionPairCount = PixelpartPlugin.PixelpartGetEffectParticleEmissionPairCount(effectRuntimePtr);
 
             particleMeshes = new PixelpartParticleMesh[emissionPairCount];
             particleEmissionPairs = new PixelpartParticleEmissionPair[emissionPairCount];
             sortedParticleEmissionPairs = new int[emissionPairCount];
-            Plugin.PixelpartGetEffectParticleEmissionPairs(effectRuntimePtr, particleEmissionPairs);
+            PixelpartPlugin.PixelpartGetEffectParticleEmissionPairs(effectRuntimePtr, particleEmissionPairs);
 
             var materialIdBuffer = new byte[2048];
 
             for (var emissionPairIndex = 0; emissionPairIndex < emissionPairCount; emissionPairIndex++)
             {
                 var emissionPair = particleEmissionPairs[emissionPairIndex];
-                var particleTypeIndex = Plugin.PixelpartParticleTypeGetIndex(effectRuntimePtr, emissionPair.TypeId);
+                var particleTypeIndex = PixelpartPlugin.PixelpartParticleTypeGetIndex(effectRuntimePtr, emissionPair.TypeId);
 
                 if (particleTypeIndex > particleMaterials.Count)
                 {
@@ -47,9 +47,9 @@ namespace Pixelpart
 
                 var baseMaterial = particleMaterials[particleTypeIndex];
 
-                var materialIdLength = Plugin.PixelpartParticleTypeGetMaterialId(effectRuntimePtr, emissionPair.TypeId, materialIdBuffer, materialIdBuffer.Length);
+                var materialIdLength = PixelpartPlugin.PixelpartParticleTypeGetMaterialId(effectRuntimePtr, emissionPair.TypeId, materialIdBuffer, materialIdBuffer.Length);
                 var materialId = Encoding.UTF8.GetString(materialIdBuffer, 0, materialIdLength);
-                var materialBuiltIn = Plugin.PixelpartParticleTypeIsMaterialBuiltIn(effectRuntimePtr, emissionPair.TypeId);
+                var materialBuiltIn = PixelpartPlugin.PixelpartParticleTypeIsMaterialBuiltIn(effectRuntimePtr, emissionPair.TypeId);
 
                 PixelpartMaterialDescriptor materialDescriptor = null;
                 if (materialBuiltIn)
@@ -70,7 +70,7 @@ namespace Pixelpart
                     continue;
                 }
 
-                var rendererType = (PixelpartParticleType.ParticleRendererType)Plugin.PixelpartParticleTypeGetRenderer(effectRuntimePtr, emissionPair.TypeId);
+                var rendererType = (PixelpartParticleType.ParticleRendererType)PixelpartPlugin.PixelpartParticleTypeGetRenderer(effectRuntimePtr, emissionPair.TypeId);
 
                 try
                 {

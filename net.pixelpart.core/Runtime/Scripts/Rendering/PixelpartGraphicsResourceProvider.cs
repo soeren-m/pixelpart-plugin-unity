@@ -31,21 +31,21 @@ namespace Pixelpart
 
             var resourceIdBuffer = new byte[2048];
 
-            var imageResourceCount = Plugin.PixelpartGetImageResourceCount(effectRuntime);
+            var imageResourceCount = PixelpartPlugin.PixelpartGetImageResourceCount(effectRuntime);
 
             for (var resourceIndex = 0; resourceIndex < imageResourceCount; resourceIndex++)
             {
-                var resourceIdLength = Plugin.PixelpartGetImageResourceId(effectRuntime, resourceIndex, resourceIdBuffer, resourceIdBuffer.Length);
+                var resourceIdLength = PixelpartPlugin.PixelpartGetImageResourceId(effectRuntime, resourceIndex, resourceIdBuffer, resourceIdBuffer.Length);
                 var resourceId = Encoding.UTF8.GetString(resourceIdBuffer, 0, resourceIdLength);
 
-                var imageWidth = Plugin.PixelpartGetImageResourceWidth(effectRuntime, resourceId);
-                var imageHeight = Plugin.PixelpartGetImageResourceHeight(effectRuntime, resourceId);
-                var imageChannels = Plugin.PixelpartGetImageResourceChannels(effectRuntime, resourceId);
-                var imageColorSpace = (ColorSpace)Plugin.PixelpartGetImageResourceColorSpace(effectRuntime, resourceId);
-                var imageDataSize = Plugin.PixelpartGetImageResourceDataSize(effectRuntime, resourceId);
+                var imageWidth = PixelpartPlugin.PixelpartGetImageResourceWidth(effectRuntime, resourceId);
+                var imageHeight = PixelpartPlugin.PixelpartGetImageResourceHeight(effectRuntime, resourceId);
+                var imageChannels = PixelpartPlugin.PixelpartGetImageResourceChannels(effectRuntime, resourceId);
+                var imageColorSpace = (ColorSpace)PixelpartPlugin.PixelpartGetImageResourceColorSpace(effectRuntime, resourceId);
+                var imageDataSize = PixelpartPlugin.PixelpartGetImageResourceDataSize(effectRuntime, resourceId);
 
                 var imageData = new byte[imageDataSize];
-                Plugin.PixelpartGetImageResourceData(effectRuntime, resourceId, imageData);
+                PixelpartPlugin.PixelpartGetImageResourceData(effectRuntime, resourceId, imageData);
 
                 var texture = new Texture2D(
                     imageWidth, imageHeight,
@@ -59,21 +59,21 @@ namespace Pixelpart
                 textures[resourceId] = texture;
             }
 
-            var meshResourceCount = Plugin.PixelpartGetMeshResourceCount(effectRuntime);
+            var meshResourceCount = PixelpartPlugin.PixelpartGetMeshResourceCount(effectRuntime);
 
             for (var resourceIndex = 0; resourceIndex < meshResourceCount; resourceIndex++)
             {
-                var resourceIdLength = Plugin.PixelpartGetMeshResourceId(effectRuntime, resourceIndex, resourceIdBuffer, resourceIdBuffer.Length);
+                var resourceIdLength = PixelpartPlugin.PixelpartGetMeshResourceId(effectRuntime, resourceIndex, resourceIdBuffer, resourceIdBuffer.Length);
                 var resourceId = Encoding.UTF8.GetString(resourceIdBuffer, 0, resourceIdLength);
 
-                var indexCount = Plugin.PixelpartGetMeshResourceIndexCount(effectRuntime, resourceId);
-                var vertexCount = Plugin.PixelpartGetMeshResourceVertexCount(effectRuntime, resourceId);
+                var indexCount = PixelpartPlugin.PixelpartGetMeshResourceIndexCount(effectRuntime, resourceId);
+                var vertexCount = PixelpartPlugin.PixelpartGetMeshResourceVertexCount(effectRuntime, resourceId);
 
                 var triangles = new int[indexCount];
                 var vertices = new Vector3[vertexCount];
                 var normals = new Vector3[vertexCount];
                 var uv = new Vector2[vertexCount];
-                Plugin.PixelpartGetMeshResourceVertexData(effectRuntime, resourceId, triangles, vertices, normals, uv);
+                PixelpartPlugin.PixelpartGetMeshResourceVertexData(effectRuntime, resourceId, triangles, vertices, normals, uv);
 
                 var mesh = new Mesh();
                 mesh.vertices = vertices;

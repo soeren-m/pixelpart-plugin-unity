@@ -5,7 +5,7 @@ namespace Pixelpart
     /// <summary>
     /// Event args for effect events
     /// </summary>
-    public class EffectEventArgs : EventArgs
+    public class PixelpartEffectEventArgs : EventArgs
     {
         /// <summary>
         /// Id of invoked effect event

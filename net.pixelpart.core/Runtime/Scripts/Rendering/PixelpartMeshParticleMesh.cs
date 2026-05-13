@@ -47,7 +47,7 @@ namespace Pixelpart
                 baseMaterial, materialDescriptor, resourceProvider);
 
             var meshResourceIdBuffer = new byte[512];
-            var meshResourceIdLength = Plugin.PixelpartParticleTypeGetMeshRendererMeshResourceId(effectRuntimePtr, typeId, meshResourceIdBuffer, meshResourceIdBuffer.Length);
+            var meshResourceIdLength = PixelpartPlugin.PixelpartParticleTypeGetMeshRendererMeshResourceId(effectRuntimePtr, typeId, meshResourceIdBuffer, meshResourceIdBuffer.Length);
             var meshResourceId = Encoding.UTF8.GetString(meshResourceIdBuffer, 0, meshResourceIdLength);
 
             if (!resourceProvider.Meshes.TryGetValue(meshResourceId, out mesh))
@@ -58,7 +58,7 @@ namespace Pixelpart
 
         public void Update(Camera camera, Transform transform, Vector3 scale)
         {
-            Plugin.PixelpartConstructParticleGeometry(effectRuntime, particleEmitterId, particleTypeId,
+            PixelpartPlugin.PixelpartConstructParticleGeometry(effectRuntime, particleEmitterId, particleTypeId,
                 camera.transform.position, camera.transform.forward, camera.transform.right, camera.transform.up, scale,
                 bufferSizes);
 
@@ -73,7 +73,7 @@ namespace Pixelpart
             PixelpartArrayUtil.EnsureMinSize(ref instanceLives, bufferSizes[3]);
             PixelpartArrayUtil.EnsureMinSize(ref instanceIds, bufferSizes[4]);
 
-            Plugin.PixelpartGenerateParticleInstanceData(effectRuntime, particleEmitterId, particleTypeId,
+            PixelpartPlugin.PixelpartGenerateParticleInstanceData(effectRuntime, particleEmitterId, particleTypeId,
                 camera.transform.position, camera.transform.forward, camera.transform.right, camera.transform.up, scale,
                 instanceTransforms, instanceColors, instanceVelocities, instanceLives, instanceIds);
         }
@@ -86,8 +86,8 @@ namespace Pixelpart
                 return;
             }
 
-            var visible = Plugin.PixelpartParticleTypeIsVisible(effectRuntime, particleTypeId);
-            var particleLayer = Plugin.PixelpartParticleTypeGetLayer(effectRuntime, particleTypeId);
+            var visible = PixelpartPlugin.PixelpartParticleTypeIsVisible(effectRuntime, particleTypeId);
+            var particleLayer = PixelpartPlugin.PixelpartParticleTypeGetLayer(effectRuntime, particleTypeId);
             if (!visible)
             {
                 return;

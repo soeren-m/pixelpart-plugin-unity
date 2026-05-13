@@ -43,7 +43,7 @@ namespace Pixelpart
 
         public void Update(Camera camera, Transform transform, Vector3 scale)
         {
-            Plugin.PixelpartConstructParticleGeometry(effectRuntime, particleEmitterId, particleTypeId,
+            PixelpartPlugin.PixelpartConstructParticleGeometry(effectRuntime, particleEmitterId, particleTypeId,
                 camera.transform.position, camera.transform.forward, camera.transform.right, camera.transform.up, scale,
                 bufferSizes);
 
@@ -60,7 +60,7 @@ namespace Pixelpart
             PixelpartArrayUtil.EnsureMinSize(ref uv1, bufferSizes[5]);
             PixelpartArrayUtil.EnsureMinSize(ref uv2, bufferSizes[6]);
 
-            var generationResult = Plugin.PixelpartGenerateParticleVertexData(effectRuntime, particleEmitterId, particleTypeId,
+            var generationResult = PixelpartPlugin.PixelpartGenerateParticleVertexData(effectRuntime, particleEmitterId, particleTypeId,
                 camera.transform.position, camera.transform.forward, camera.transform.right, camera.transform.up, scale,
                 triangles, vertices, colors, normals, uv0, uv1, uv2);
 
@@ -95,8 +95,8 @@ namespace Pixelpart
                 return;
             }
 
-            var visible = Plugin.PixelpartParticleTypeIsVisible(effectRuntime, particleTypeId);
-            var particleLayer = Plugin.PixelpartParticleTypeGetLayer(effectRuntime, particleTypeId);
+            var visible = PixelpartPlugin.PixelpartParticleTypeIsVisible(effectRuntime, particleTypeId);
+            var particleLayer = PixelpartPlugin.PixelpartParticleTypeGetLayer(effectRuntime, particleTypeId);
             if (!visible)
             {
                 return;

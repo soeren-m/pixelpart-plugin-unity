@@ -38,8 +38,8 @@ namespace Pixelpart
         /// </summary>
         public bool NoiseAnimated
         {
-            get => Plugin.PixelpartNoiseFieldIsNoiseAnimated(effectRuntime, Id);
-            set => Plugin.PixelpartNoiseFieldSetNoiseAnimated(effectRuntime, Id, value);
+            get => PixelpartPlugin.PixelpartNoiseFieldIsNoiseAnimated(effectRuntime, Id);
+            set => PixelpartPlugin.PixelpartNoiseFieldSetNoiseAnimated(effectRuntime, Id, value);
         }
 
         /// <summary>
@@ -60,17 +60,17 @@ namespace Pixelpart
         public PixelpartNoiseField(IntPtr effectRuntimePtr, uint id) : base(effectRuntimePtr, id)
         {
             NoiseOctaves = new PixelpartStaticPropertyInt(
-                Plugin.PixelpartNoiseFieldGetNoiseOctaves(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartNoiseFieldGetNoiseOctaves(effectRuntimePtr, id));
             NoiseFrequency = new PixelpartAnimatedPropertyFloat(
-                Plugin.PixelpartNoiseFieldGetNoiseFrequency(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartNoiseFieldGetNoiseFrequency(effectRuntimePtr, id));
             NoisePersistence = new PixelpartAnimatedPropertyFloat(
-                Plugin.PixelpartNoiseFieldGetNoisePersistence(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartNoiseFieldGetNoisePersistence(effectRuntimePtr, id));
             NoiseLacunarity = new PixelpartAnimatedPropertyFloat(
-                Plugin.PixelpartNoiseFieldGetNoiseLacunarity(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartNoiseFieldGetNoiseLacunarity(effectRuntimePtr, id));
             NoiseAnimationTimeScale = new PixelpartStaticPropertyFloat(
-                Plugin.PixelpartNoiseFieldGetNoiseAnimationTimeScale(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartNoiseFieldGetNoiseAnimationTimeScale(effectRuntimePtr, id));
             NoiseAnimationTimeBase = new PixelpartStaticPropertyFloat(
-                Plugin.PixelpartNoiseFieldGetNoiseAnimationTimeBase(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartNoiseFieldGetNoiseAnimationTimeBase(effectRuntimePtr, id));
         }
     }
 }

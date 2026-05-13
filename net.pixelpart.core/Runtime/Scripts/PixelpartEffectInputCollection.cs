@@ -24,12 +24,12 @@ namespace Pixelpart
 
         public PixelpartEffectInputCollection(IntPtr effectRuntimePtr)
         {
-            var inputCount = Plugin.PixelpartGetEffectInputCount(effectRuntimePtr);
+            var inputCount = PixelpartPlugin.PixelpartGetEffectInputCount(effectRuntimePtr);
             var inputIdArray = new uint[inputCount];
             var inputTypeArray = new int[inputCount];
 
             var inputNamesBuffer = new byte[16384];
-            var inputNamesLength = Plugin.PixelpartGetEffectInputs(effectRuntimePtr, inputIdArray, inputTypeArray, inputNamesBuffer, inputNamesBuffer.Length);
+            var inputNamesLength = PixelpartPlugin.PixelpartGetEffectInputs(effectRuntimePtr, inputIdArray, inputTypeArray, inputNamesBuffer, inputNamesBuffer.Length);
             var inputNamesArray = Encoding.UTF8.GetString(inputNamesBuffer, 0, inputNamesLength)
                 .Split(new[] { '|' }, 64, StringSplitOptions.RemoveEmptyEntries);
 
@@ -46,22 +46,22 @@ namespace Pixelpart
                 switch (inputType)
                 {
                     case PixelpartVariantValue.VariantType.Bool:
-                        inputValue = new PixelpartVariantValue(Plugin.PixelpartGetEffectInputBool(effectRuntimePtr, inputId));
+                        inputValue = new PixelpartVariantValue(PixelpartPlugin.PixelpartGetEffectInputBool(effectRuntimePtr, inputId));
                         break;
                     case PixelpartVariantValue.VariantType.Int:
-                        inputValue = new PixelpartVariantValue(Plugin.PixelpartGetEffectInputInt(effectRuntimePtr, inputId));
+                        inputValue = new PixelpartVariantValue(PixelpartPlugin.PixelpartGetEffectInputInt(effectRuntimePtr, inputId));
                         break;
                     case PixelpartVariantValue.VariantType.Float:
-                        inputValue = new PixelpartVariantValue(Plugin.PixelpartGetEffectInputFloat(effectRuntimePtr, inputId));
+                        inputValue = new PixelpartVariantValue(PixelpartPlugin.PixelpartGetEffectInputFloat(effectRuntimePtr, inputId));
                         break;
                     case PixelpartVariantValue.VariantType.Float2:
-                        inputValue = new PixelpartVariantValue(Plugin.PixelpartGetEffectInputFloat2(effectRuntimePtr, inputId));
+                        inputValue = new PixelpartVariantValue(PixelpartPlugin.PixelpartGetEffectInputFloat2(effectRuntimePtr, inputId));
                         break;
                     case PixelpartVariantValue.VariantType.Float3:
-                        inputValue = new PixelpartVariantValue(Plugin.PixelpartGetEffectInputFloat3(effectRuntimePtr, inputId));
+                        inputValue = new PixelpartVariantValue(PixelpartPlugin.PixelpartGetEffectInputFloat3(effectRuntimePtr, inputId));
                         break;
                     case PixelpartVariantValue.VariantType.Float4:
-                        inputValue = new PixelpartVariantValue(Plugin.PixelpartGetEffectInputFloat4(effectRuntimePtr, inputId));
+                        inputValue = new PixelpartVariantValue(PixelpartPlugin.PixelpartGetEffectInputFloat4(effectRuntimePtr, inputId));
                         break;
                     default:
                         break;
@@ -73,12 +73,12 @@ namespace Pixelpart
 
         public PixelpartEffectInputCollection(IntPtr effectRuntimePtr, IList<string> names, IList<PixelpartVariantValue> values)
         {
-            var inputCount = Plugin.PixelpartGetEffectInputCount(effectRuntimePtr);
+            var inputCount = PixelpartPlugin.PixelpartGetEffectInputCount(effectRuntimePtr);
             var inputIdArray = new uint[inputCount];
             var inputTypeArray = new int[inputCount];
 
             var inputNamesBuffer = new byte[16384];
-            _ = Plugin.PixelpartGetEffectInputs(effectRuntimePtr, inputIdArray, inputTypeArray, inputNamesBuffer, inputNamesBuffer.Length);
+            _ = PixelpartPlugin.PixelpartGetEffectInputs(effectRuntimePtr, inputIdArray, inputTypeArray, inputNamesBuffer, inputNamesBuffer.Length);
 
             for (var inputIndex = 0; inputIndex < inputCount; inputIndex++)
             {

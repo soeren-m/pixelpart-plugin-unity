@@ -39,7 +39,7 @@ namespace Pixelpart
         /// <summary>
         /// Custom effect event.
         /// </summary>
-        public event EventHandler<EffectEventArgs> EffectEvent;
+        public event EventHandler<PixelpartEffectEventArgs> EffectEvent;
 
         /// <summary>
         /// Effect resource that is shown.
@@ -206,13 +206,13 @@ namespace Pixelpart
         /// Time in seconds since the effect has started playing.
         /// </summary>
         public float CurrentTime => effectRuntime != IntPtr.Zero
-            ? Plugin.PixelpartGetEffectTime(effectRuntime) : 0.0f;
+            ? PixelpartPlugin.PixelpartGetEffectTime(effectRuntime) : 0.0f;
 
         /// <summary>
         /// Whether the effect is a 3D effect.
         /// </summary>
         public bool Is3D => effectRuntime != IntPtr.Zero
-            ? Plugin.PixelpartIsEffect3d(effectRuntime) : false;
+            ? PixelpartPlugin.PixelpartIsEffect3d(effectRuntime) : false;
 
         /// <summary>
         /// Names of particle types in the effect.
@@ -311,11 +311,11 @@ namespace Pixelpart
             ApplyTransform();
 
             var timeStep = 1.0f / Math.Max(FrameRate, 0.01f);
-            Plugin.PixelpartAdvanceEffect(effectRuntime, dt,
+            PixelpartPlugin.PixelpartAdvanceEffect(effectRuntime, dt,
                 Loop, LoopTime, Speed,
                 timeStep, Seed, RandomSeed);
 
-            var invokedEventCount = Plugin.PixelpartGetInvokedEffectEvents(effectRuntime, invokedEventIds);
+            var invokedEventCount = PixelpartPlugin.PixelpartGetInvokedEffectEvents(effectRuntime, invokedEventIds);
             for (var eventIndex = 0; eventIndex < invokedEventCount; eventIndex++)
             {
                 var eventId = invokedEventIds[eventIndex];
@@ -324,14 +324,14 @@ namespace Pixelpart
                     continue;
                 }
 
-                EffectEvent?.Invoke(this, new EffectEventArgs
+                EffectEvent?.Invoke(this, new PixelpartEffectEventArgs
                 {
                     EventId = eventId,
                     EventName = eventName
                 });
             }
 
-            if (!finishedEventInvoked && !Loop && Plugin.PixelpartIsEffectFinished(effectRuntime))
+            if (!finishedEventInvoked && !Loop && PixelpartPlugin.PixelpartIsEffectFinished(effectRuntime))
             {
                 finishedEventInvoked = true;
                 Finished?.Invoke(this, EventArgs.Empty);
@@ -364,7 +364,7 @@ namespace Pixelpart
                 return;
             }
 
-            Plugin.PixelpartRestartEffect(effectRuntime, true);
+            PixelpartPlugin.PixelpartRestartEffect(effectRuntime, true);
         }
 
         /// <summary>
@@ -378,7 +378,7 @@ namespace Pixelpart
                 return;
             }
 
-            Plugin.PixelpartRestartEffect(effectRuntime, false);
+            PixelpartPlugin.PixelpartRestartEffect(effectRuntime, false);
         }
 
         /// <summary>
@@ -395,21 +395,21 @@ namespace Pixelpart
                 return;
             }
 
-            var particleEmitterId = Plugin.PixelpartFindNode(effectRuntime, particleEmitterName);
+            var particleEmitterId = PixelpartPlugin.PixelpartFindNode(effectRuntime, particleEmitterName);
             if (particleEmitterId == NullId)
             {
                 Debug.LogWarning("[Pixelpart] Unknown particle emitter \"" + particleEmitterName + "\"", this);
                 return;
             }
 
-            var particleTypeId = Plugin.PixelpartFindParticleType(effectRuntime, particleTypeName);
+            var particleTypeId = PixelpartPlugin.PixelpartFindParticleType(effectRuntime, particleTypeName);
             if (particleTypeId == NullId)
             {
                 Debug.LogWarning("[Pixelpart] Unknown particle type \"" + particleTypeName + "\"", this);
                 return;
             }
 
-            Plugin.PixelpartSpawnParticles(effectRuntime, particleEmitterId, particleTypeId, count);
+            PixelpartPlugin.PixelpartSpawnParticles(effectRuntime, particleEmitterId, particleTypeId, count);
         }
 
         #region Inputs
@@ -427,7 +427,7 @@ namespace Pixelpart
                 return;
             }
 
-            Plugin.PixelpartSetEffectInputBool(effectRuntime, inputId, value);
+            PixelpartPlugin.PixelpartSetEffectInputBool(effectRuntime, inputId, value);
             SetInputPropertyValue(inputName, new PixelpartVariantValue(value));
         }
 
@@ -444,7 +444,7 @@ namespace Pixelpart
                 return;
             }
 
-            Plugin.PixelpartSetEffectInputInt(effectRuntime, inputId, value);
+            PixelpartPlugin.PixelpartSetEffectInputInt(effectRuntime, inputId, value);
             SetInputPropertyValue(inputName, new PixelpartVariantValue(value));
         }
 
@@ -461,7 +461,7 @@ namespace Pixelpart
                 return;
             }
 
-            Plugin.PixelpartSetEffectInputFloat(effectRuntime, inputId, value);
+            PixelpartPlugin.PixelpartSetEffectInputFloat(effectRuntime, inputId, value);
             SetInputPropertyValue(inputName, new PixelpartVariantValue(value));
         }
 
@@ -478,7 +478,7 @@ namespace Pixelpart
                 return;
             }
 
-            Plugin.PixelpartSetEffectInputFloat2(effectRuntime, inputId, value);
+            PixelpartPlugin.PixelpartSetEffectInputFloat2(effectRuntime, inputId, value);
             SetInputPropertyValue(inputName, new PixelpartVariantValue(value));
         }
 
@@ -495,7 +495,7 @@ namespace Pixelpart
                 return;
             }
 
-            Plugin.PixelpartSetEffectInputFloat3(effectRuntime, inputId, value);
+            PixelpartPlugin.PixelpartSetEffectInputFloat3(effectRuntime, inputId, value);
             SetInputPropertyValue(inputName, new PixelpartVariantValue(value));
         }
 
@@ -512,7 +512,7 @@ namespace Pixelpart
                 return;
             }
 
-            Plugin.PixelpartSetEffectInputFloat4(effectRuntime, inputId, value);
+            PixelpartPlugin.PixelpartSetEffectInputFloat4(effectRuntime, inputId, value);
             SetInputPropertyValue(inputName, new PixelpartVariantValue(value));
         }
 
@@ -529,7 +529,7 @@ namespace Pixelpart
                 return false;
             }
 
-            return Plugin.PixelpartGetEffectInputBool(effectRuntime, inputId);
+            return PixelpartPlugin.PixelpartGetEffectInputBool(effectRuntime, inputId);
         }
 
         /// <summary>
@@ -545,7 +545,7 @@ namespace Pixelpart
                 return 0;
             }
 
-            return Plugin.PixelpartGetEffectInputInt(effectRuntime, inputId);
+            return PixelpartPlugin.PixelpartGetEffectInputInt(effectRuntime, inputId);
         }
 
         /// <summary>
@@ -561,7 +561,7 @@ namespace Pixelpart
                 return 0.0f;
             }
 
-            return Plugin.PixelpartGetEffectInputFloat(effectRuntime, inputId);
+            return PixelpartPlugin.PixelpartGetEffectInputFloat(effectRuntime, inputId);
         }
 
         /// <summary>
@@ -577,7 +577,7 @@ namespace Pixelpart
                 return new Vector2(0.0f, 0.0f);
             }
 
-            return Plugin.PixelpartGetEffectInputFloat2(effectRuntime, inputId);
+            return PixelpartPlugin.PixelpartGetEffectInputFloat2(effectRuntime, inputId);
         }
 
         /// <summary>
@@ -593,7 +593,7 @@ namespace Pixelpart
                 return new Vector3(0.0f, 0.0f, 0.0f);
             }
 
-            return Plugin.PixelpartGetEffectInputFloat3(effectRuntime, inputId);
+            return PixelpartPlugin.PixelpartGetEffectInputFloat3(effectRuntime, inputId);
         }
 
         /// <summary>
@@ -609,7 +609,7 @@ namespace Pixelpart
                 return new Vector4(0.0f, 0.0f, 0.0f, 0.0f);
             }
 
-            return Plugin.PixelpartGetEffectInputFloat4(effectRuntime, inputId);
+            return PixelpartPlugin.PixelpartGetEffectInputFloat4(effectRuntime, inputId);
         }
 
         public void ApplyInputProperties()
@@ -640,7 +640,7 @@ namespace Pixelpart
                 return;
             }
 
-            Plugin.PixelpartActivateEffectTrigger(effectRuntime, triggerId);
+            PixelpartPlugin.PixelpartActivateEffectTrigger(effectRuntime, triggerId);
         }
 
         /// <summary>
@@ -655,7 +655,7 @@ namespace Pixelpart
                 return false;
             }
 
-            return Plugin.PixelpartIsEffectTriggerActivated(effectRuntime, triggerId);
+            return PixelpartPlugin.PixelpartIsEffectTriggerActivated(effectRuntime, triggerId);
         }
 
         #endregion
@@ -675,8 +675,8 @@ namespace Pixelpart
                 return null;
             }
 
-            var id = Plugin.PixelpartFindNode(effectRuntime, nodeName);
-            if (!Plugin.PixelpartNodeExists(effectRuntime, id))
+            var id = PixelpartPlugin.PixelpartFindNode(effectRuntime, nodeName);
+            if (!PixelpartPlugin.PixelpartNodeExists(effectRuntime, id))
             {
                 return null;
             }
@@ -703,7 +703,7 @@ namespace Pixelpart
                 return null;
             }
 
-            if (!Plugin.PixelpartNodeExists(effectRuntime, id))
+            if (!PixelpartPlugin.PixelpartNodeExists(effectRuntime, id))
             {
                 return null;
             }
@@ -736,7 +736,7 @@ namespace Pixelpart
                 return null;
             }
 
-            var id = Plugin.PixelpartFindNodeByIndex(effectRuntime, index);
+            var id = PixelpartPlugin.PixelpartFindNodeByIndex(effectRuntime, index);
             if (id == NullId)
             {
                 return null;
@@ -768,7 +768,7 @@ namespace Pixelpart
                 return null;
             }
 
-            var id = Plugin.PixelpartFindParticleType(effectRuntime, particleTypeName);
+            var id = PixelpartPlugin.PixelpartFindParticleType(effectRuntime, particleTypeName);
             if (id == NullId)
             {
                 return null;
@@ -790,7 +790,7 @@ namespace Pixelpart
                 return null;
             }
 
-            if (!Plugin.PixelpartParticleTypeExists(effectRuntime, id))
+            if (!PixelpartPlugin.PixelpartParticleTypeExists(effectRuntime, id))
             {
                 return null;
             }
@@ -817,7 +817,7 @@ namespace Pixelpart
                 return null;
             }
 
-            var id = Plugin.PixelpartFindParticleTypeByIndex(effectRuntime, index);
+            var id = PixelpartPlugin.PixelpartFindParticleTypeByIndex(effectRuntime, index);
             if (id == NullId)
             {
                 return null;
@@ -860,14 +860,14 @@ namespace Pixelpart
             ApplyInputProperties();
             ApplyTransform();
 
-            Plugin.PixelpartReseedEffect(effectRuntime, RandomSeed
+            PixelpartPlugin.PixelpartReseedEffect(effectRuntime, RandomSeed
                 ? (int)(Time.realtimeSinceStartupAsDouble * 1e6)
                 : Seed);
 
             if (WarmupTime > 0.0f)
             {
                 var timeStep = 1.0f / Math.Max(FrameRate, 0.01f);
-                Plugin.PixelpartAdvanceEffect(effectRuntime, WarmupTime,
+                PixelpartPlugin.PixelpartAdvanceEffect(effectRuntime, WarmupTime,
                     false, 0.0f, 1.0f,
                     timeStep, Seed, RandomSeed);
             }
@@ -880,7 +880,7 @@ namespace Pixelpart
                 return;
             }
 
-            Plugin.PixelpartDeleteEffect(effectRuntime);
+            PixelpartPlugin.PixelpartDeleteEffect(effectRuntime);
             effectRuntime = IntPtr.Zero;
 
             effectInputCollection = new PixelpartEffectInputCollection();
@@ -900,7 +900,7 @@ namespace Pixelpart
                 EffectScale * (FlipV ? -1.0f : +1.0f),
                 EffectScale);
 
-            Plugin.PixelpartSetEffectTransform(effectRuntime,
+            PixelpartPlugin.PixelpartSetEffectTransform(effectRuntime,
                 transform.localToWorldMatrix, scale);
         }
 
@@ -927,22 +927,22 @@ namespace Pixelpart
             switch (value.type)
             {
                 case PixelpartVariantValue.VariantType.Bool:
-                    Plugin.PixelpartSetEffectInputBool(effectRuntime, inputId, value.x > 0.5f);
+                    PixelpartPlugin.PixelpartSetEffectInputBool(effectRuntime, inputId, value.x > 0.5f);
                     break;
                 case PixelpartVariantValue.VariantType.Int:
-                    Plugin.PixelpartSetEffectInputInt(effectRuntime, inputId, (int)value.x);
+                    PixelpartPlugin.PixelpartSetEffectInputInt(effectRuntime, inputId, (int)value.x);
                     break;
                 case PixelpartVariantValue.VariantType.Float:
-                    Plugin.PixelpartSetEffectInputFloat(effectRuntime, inputId, value.x);
+                    PixelpartPlugin.PixelpartSetEffectInputFloat(effectRuntime, inputId, value.x);
                     break;
                 case PixelpartVariantValue.VariantType.Float2:
-                    Plugin.PixelpartSetEffectInputFloat2(effectRuntime, inputId, new Vector2(value.x, value.y));
+                    PixelpartPlugin.PixelpartSetEffectInputFloat2(effectRuntime, inputId, new Vector2(value.x, value.y));
                     break;
                 case PixelpartVariantValue.VariantType.Float3:
-                    Plugin.PixelpartSetEffectInputFloat3(effectRuntime, inputId, new Vector3(value.x, value.y, value.z));
+                    PixelpartPlugin.PixelpartSetEffectInputFloat3(effectRuntime, inputId, new Vector3(value.x, value.y, value.z));
                     break;
                 case PixelpartVariantValue.VariantType.Float4:
-                    Plugin.PixelpartSetEffectInputFloat4(effectRuntime, inputId, new Vector4(value.x, value.y, value.z, value.w));
+                    PixelpartPlugin.PixelpartSetEffectInputFloat4(effectRuntime, inputId, new Vector4(value.x, value.y, value.z, value.w));
                     break;
                 default:
                     break;
@@ -991,25 +991,25 @@ namespace Pixelpart
                 effectInputNames = new List<string>(inputCollection.InputNames);
                 effectInputValues = new List<PixelpartVariantValue>(inputCollection.InputValues);
 
-                var particleTypeCount = Plugin.PixelpartGetEffectParticleTypeCount(tempEffectRuntime);
+                var particleTypeCount = PixelpartPlugin.PixelpartGetEffectParticleTypeCount(tempEffectRuntime);
 
                 for (var particleTypeIndex = 0; particleTypeIndex < particleTypeCount; particleTypeIndex++)
                 {
-                    var particleTypeId = Plugin.PixelpartFindParticleTypeByIndex(tempEffectRuntime, particleTypeIndex);
+                    var particleTypeId = PixelpartPlugin.PixelpartFindParticleTypeByIndex(tempEffectRuntime, particleTypeIndex);
 
                     var particleTypeNameBuffer = new byte[256];
-                    var particleTypeNameBufferSize = Plugin.PixelpartParticleTypeGetName(tempEffectRuntime, particleTypeId, particleTypeNameBuffer, particleTypeNameBuffer.Length);
+                    var particleTypeNameBufferSize = PixelpartPlugin.PixelpartParticleTypeGetName(tempEffectRuntime, particleTypeId, particleTypeNameBuffer, particleTypeNameBuffer.Length);
                     var particleTypeName = Encoding.UTF8.GetString(particleTypeNameBuffer, 0, particleTypeNameBufferSize);
 
-                    var rendererType = (PixelpartParticleType.ParticleRendererType)Plugin.PixelpartParticleTypeGetRenderer(tempEffectRuntime, particleTypeId);
+                    var rendererType = (PixelpartParticleType.ParticleRendererType)PixelpartPlugin.PixelpartParticleTypeGetRenderer(tempEffectRuntime, particleTypeId);
                     var needsInstancing = rendererType == PixelpartParticleType.ParticleRendererType.Mesh;
 
                     var materialIdBuffer = new byte[256];
-                    var materialIdLength = Plugin.PixelpartParticleTypeGetMaterialId(tempEffectRuntime, particleTypeId, materialIdBuffer, materialIdBuffer.Length);
+                    var materialIdLength = PixelpartPlugin.PixelpartParticleTypeGetMaterialId(tempEffectRuntime, particleTypeId, materialIdBuffer, materialIdBuffer.Length);
                     var materialId = Encoding.UTF8.GetString(materialIdBuffer, 0, materialIdLength);
                     var materialPath = string.Empty;
 
-                    if (Plugin.PixelpartParticleTypeIsMaterialBuiltIn(tempEffectRuntime, particleTypeId))
+                    if (PixelpartPlugin.PixelpartParticleTypeIsMaterialBuiltIn(tempEffectRuntime, particleTypeId))
                     {
                         if (PixelpartBuiltInMaterialProvider.Instance.BuiltInMaterials.TryGetValue(materialId, out PixelpartMaterialDescriptor builtInMaterial))
                         {
@@ -1038,7 +1038,7 @@ namespace Pixelpart
             }
             finally
             {
-                Plugin.PixelpartDeleteEffect(tempEffectRuntime);
+                PixelpartPlugin.PixelpartDeleteEffect(tempEffectRuntime);
             }
         }
 

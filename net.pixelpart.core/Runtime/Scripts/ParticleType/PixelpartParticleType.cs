@@ -106,7 +106,7 @@ namespace Pixelpart
         /// <summary>
         /// ID of the parent particle type.
         /// </summary>
-        public uint ParentId => Plugin.PixelpartParticleTypeGetParentId(effectRuntime, Id);
+        public uint ParentId => PixelpartPlugin.PixelpartParticleTypeGetParentId(effectRuntime, Id);
 
         /// <summary>
         /// Name of the particle type.
@@ -116,7 +116,7 @@ namespace Pixelpart
             get
             {
                 var buffer = new byte[256];
-                var size = Plugin.PixelpartParticleTypeGetName(effectRuntime, Id, buffer, buffer.Length);
+                var size = PixelpartPlugin.PixelpartParticleTypeGetName(effectRuntime, Id, buffer, buffer.Length);
 
                 return Encoding.UTF8.GetString(buffer, 0, size);
             }
@@ -127,8 +127,8 @@ namespace Pixelpart
         /// </summary>
         public bool PositionRelative
         {
-            get => Plugin.PixelpartParticleTypeIsPositionRelative(effectRuntime, Id);
-            set => Plugin.PixelpartParticleTypeSetPositionRelative(effectRuntime, Id, value);
+            get => PixelpartPlugin.PixelpartParticleTypeIsPositionRelative(effectRuntime, Id);
+            set => PixelpartPlugin.PixelpartParticleTypeSetPositionRelative(effectRuntime, Id, value);
         }
 
         /// <summary>
@@ -137,8 +137,8 @@ namespace Pixelpart
         /// </summary>
         public RotationModeType RotationMode
         {
-            get => (RotationModeType)Plugin.PixelpartParticleTypeGetRotationMode(effectRuntime, Id);
-            set => Plugin.PixelpartParticleTypeSetRotationMode(effectRuntime, Id, (int)value);
+            get => (RotationModeType)PixelpartPlugin.PixelpartParticleTypeGetRotationMode(effectRuntime, Id);
+            set => PixelpartPlugin.PixelpartParticleTypeSetRotationMode(effectRuntime, Id, (int)value);
         }
 
         /// <summary>
@@ -146,8 +146,8 @@ namespace Pixelpart
         /// </summary>
         public AlignmentModeType AlignmentMode
         {
-            get => (AlignmentModeType)Plugin.PixelpartParticleTypeGetAlignmentMode(effectRuntime, Id);
-            set => Plugin.PixelpartParticleTypeSetAlignmentMode(effectRuntime, Id, (int)value);
+            get => (AlignmentModeType)PixelpartPlugin.PixelpartParticleTypeGetAlignmentMode(effectRuntime, Id);
+            set => PixelpartPlugin.PixelpartParticleTypeSetAlignmentMode(effectRuntime, Id, (int)value);
         }
 
         /// <summary>
@@ -168,8 +168,8 @@ namespace Pixelpart
         /// </summary>
         public bool Visible
         {
-            get => Plugin.PixelpartParticleTypeIsVisible(effectRuntime, Id);
-            set => Plugin.PixelpartParticleTypeSetVisible(effectRuntime, Id, value);
+            get => PixelpartPlugin.PixelpartParticleTypeIsVisible(effectRuntime, Id);
+            set => PixelpartPlugin.PixelpartParticleTypeSetVisible(effectRuntime, Id, value);
         }
 
         /// <summary>
@@ -180,8 +180,8 @@ namespace Pixelpart
         /// </remarks>
         public int Layer
         {
-            get => Plugin.PixelpartParticleTypeGetLayer(effectRuntime, Id);
-            set => Plugin.PixelpartParticleTypeSetLayer(effectRuntime, Id, value);
+            get => PixelpartPlugin.PixelpartParticleTypeGetLayer(effectRuntime, Id);
+            set => PixelpartPlugin.PixelpartParticleTypeSetLayer(effectRuntime, Id, value);
         }
 
         /// <summary>
@@ -336,67 +336,67 @@ namespace Pixelpart
             Id = id;
 
             Pivot = new PixelpartStaticPropertyFloat3(
-                Plugin.PixelpartParticleTypeGetPivot(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartParticleTypeGetPivot(effectRuntimePtr, id));
 
             MotionPathForce = new PixelpartStaticPropertyFloat(
-                Plugin.PixelpartParticleTypeGetMotionPathForce(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartParticleTypeGetMotionPathForce(effectRuntimePtr, id));
 
             Count = new PixelpartAnimatedPropertyFloat(
-                Plugin.PixelpartParticleTypeGetCount(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartParticleTypeGetCount(effectRuntimePtr, id));
             Lifespan = new PixelpartAnimatedPropertyFloat(
-                Plugin.PixelpartParticleTypeGetLifespan(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartParticleTypeGetLifespan(effectRuntimePtr, id));
             InitialSize = new PixelpartAnimatedPropertyFloat(
-                Plugin.PixelpartParticleTypeGetInitialSize(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartParticleTypeGetInitialSize(effectRuntimePtr, id));
             InitialRotation = new PixelpartAnimatedPropertyFloat3(
-                Plugin.PixelpartParticleTypeGetInitialRotation(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartParticleTypeGetInitialRotation(effectRuntimePtr, id));
             InitialVelocity = new PixelpartAnimatedPropertyFloat(
-                Plugin.PixelpartParticleTypeGetInitialVelocity(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartParticleTypeGetInitialVelocity(effectRuntimePtr, id));
             InheritedVelocity = new PixelpartAnimatedPropertyFloat(
-                Plugin.PixelpartParticleTypeGetInheritedVelocity(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartParticleTypeGetInheritedVelocity(effectRuntimePtr, id));
             InitialOpacity = new PixelpartAnimatedPropertyFloat(
-                Plugin.PixelpartParticleTypeGetInitialOpacity(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartParticleTypeGetInitialOpacity(effectRuntimePtr, id));
 
             Position = new PixelpartAnimatedPropertyFloat3(
-                Plugin.PixelpartParticleTypeGetMotionPath(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartParticleTypeGetMotionPath(effectRuntimePtr, id));
             Size = new PixelpartAnimatedPropertyFloat3(
-                Plugin.PixelpartParticleTypeGetSize(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartParticleTypeGetSize(effectRuntimePtr, id));
             Stretch = new PixelpartAnimatedPropertyFloat3(
-                Plugin.PixelpartParticleTypeGetStretch(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartParticleTypeGetStretch(effectRuntimePtr, id));
             PhysicalSize = new PixelpartAnimatedPropertyFloat(
-                Plugin.PixelpartParticleTypeGetPhysicalSize(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartParticleTypeGetPhysicalSize(effectRuntimePtr, id));
             Rotation = new PixelpartAnimatedPropertyFloat3(
-                Plugin.PixelpartParticleTypeGetRotation(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartParticleTypeGetRotation(effectRuntimePtr, id));
             RotationBySpeed = new PixelpartAnimatedPropertyFloat3(
-                Plugin.PixelpartParticleTypeGetRotationBySpeed(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartParticleTypeGetRotationBySpeed(effectRuntimePtr, id));
             Acceleration = new PixelpartAnimatedPropertyFloat(
-                Plugin.PixelpartParticleTypeGetAcceleration(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartParticleTypeGetAcceleration(effectRuntimePtr, id));
             RadialAcceleration = new PixelpartAnimatedPropertyFloat(
-                Plugin.PixelpartParticleTypeGetRadialAcceleration(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartParticleTypeGetRadialAcceleration(effectRuntimePtr, id));
             Weight = new PixelpartAnimatedPropertyFloat(
-                Plugin.PixelpartParticleTypeGetWeight(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartParticleTypeGetWeight(effectRuntimePtr, id));
             Bounce = new PixelpartAnimatedPropertyFloat(
-                Plugin.PixelpartParticleTypeGetBounce(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartParticleTypeGetBounce(effectRuntimePtr, id));
             Friction = new PixelpartAnimatedPropertyFloat(
-                Plugin.PixelpartParticleTypeGetFriction(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartParticleTypeGetFriction(effectRuntimePtr, id));
             Color = new PixelpartAnimatedPropertyFloat4(
-                Plugin.PixelpartParticleTypeGetColor(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartParticleTypeGetColor(effectRuntimePtr, id));
             Opacity = new PixelpartAnimatedPropertyFloat(
-                Plugin.PixelpartParticleTypeGetOpacity(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartParticleTypeGetOpacity(effectRuntimePtr, id));
 
             LifespanVariance = new PixelpartStaticPropertyFloat(
-                Plugin.PixelpartParticleTypeGetLifespanVariance(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartParticleTypeGetLifespanVariance(effectRuntimePtr, id));
             SizeVariance = new PixelpartStaticPropertyFloat(
-                Plugin.PixelpartParticleTypeGetSizeVariance(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartParticleTypeGetSizeVariance(effectRuntimePtr, id));
             RotationVariance = new PixelpartStaticPropertyFloat3(
-                Plugin.PixelpartParticleTypeGetRotationVariance(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartParticleTypeGetRotationVariance(effectRuntimePtr, id));
             AngularVelocityVariance = new PixelpartStaticPropertyFloat3(
-                Plugin.PixelpartParticleTypeGetAngularVelocityVariance(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartParticleTypeGetAngularVelocityVariance(effectRuntimePtr, id));
             VelocityVariance = new PixelpartStaticPropertyFloat(
-                Plugin.PixelpartParticleTypeGetVelocityVariance(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartParticleTypeGetVelocityVariance(effectRuntimePtr, id));
             ColorVariance = new PixelpartStaticPropertyFloat4(
-                Plugin.PixelpartParticleTypeGetColorVariance(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartParticleTypeGetColorVariance(effectRuntimePtr, id));
             OpacityVariance = new PixelpartStaticPropertyFloat(
-                Plugin.PixelpartParticleTypeGetOpacityVariance(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartParticleTypeGetOpacityVariance(effectRuntimePtr, id));
         }
     }
 }

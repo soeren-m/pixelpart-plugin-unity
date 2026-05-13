@@ -14,15 +14,15 @@ namespace Pixelpart
         /// <summary>
         /// Value with effect inputs taken into account.
         /// </summary>
-        public bool Value => Plugin.PixelpartStaticPropertyBoolValue(internalProperty);
+        public bool Value => PixelpartPlugin.PixelpartStaticPropertyBoolValue(internalProperty);
 
         /// <summary>
         /// Value without effect inputs taken into account.
         /// </summary>
         public bool BaseValue
         {
-            get => Plugin.PixelpartStaticPropertyBoolGetBaseValue(internalProperty);
-            set => Plugin.PixelpartStaticPropertyBoolSetBaseValue(internalProperty, value);
+            get => PixelpartPlugin.PixelpartStaticPropertyBoolGetBaseValue(internalProperty);
+            set => PixelpartPlugin.PixelpartStaticPropertyBoolSetBaseValue(internalProperty, value);
         }
 
         private readonly IntPtr internalProperty;

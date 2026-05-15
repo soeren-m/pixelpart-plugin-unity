@@ -24,8 +24,8 @@ namespace Pixelpart
         /// </summary>
         public Filter VectorFilter
         {
-            get => (Filter)Plugin.PixelpartVectorFieldGetVectorFieldFilter(effectRuntime, Id);
-            set => Plugin.PixelpartVectorFieldSetVectorFieldFilter(effectRuntime, Id, (int)value);
+            get => (Filter)PixelpartPlugin.PixelpartVectorFieldGetVectorFieldFilter(effectRuntime, Id);
+            set => PixelpartPlugin.PixelpartVectorFieldSetVectorFieldFilter(effectRuntime, Id, (int)value);
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Pixelpart
         public PixelpartVectorField(IntPtr effectRuntimePtr, uint id) : base(effectRuntimePtr, id)
         {
             Tightness = new PixelpartAnimatedPropertyFloat(
-                Plugin.PixelpartVectorFieldGetTightness(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartVectorFieldGetTightness(effectRuntimePtr, id));
         }
     }
 }

@@ -28,9 +28,9 @@ namespace Pixelpart
         public PixelpartDragField(IntPtr effectRuntimePtr, uint id) : base(effectRuntimePtr, id)
         {
             VelocityInfluence = new PixelpartStaticPropertyFloat(
-                Plugin.PixelpartDragFieldGetVelocityInfluence(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartDragFieldGetVelocityInfluence(effectRuntimePtr, id));
             SizeInfluence = new PixelpartStaticPropertyFloat(
-                Plugin.PixelpartDragFieldGetSizeInfluence(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartDragFieldGetSizeInfluence(effectRuntimePtr, id));
         }
     }
 }

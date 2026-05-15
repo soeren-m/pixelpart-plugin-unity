@@ -38,11 +38,11 @@ namespace Pixelpart
         public PixelpartLightSource(IntPtr effectRuntimePtr, uint id) : base(effectRuntimePtr, id)
         {
             Attenuation = new PixelpartAnimatedPropertyFloat(
-                Plugin.PixelpartLightSourceGetAttenuation(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartLightSourceGetAttenuation(effectRuntimePtr, id));
             Color = new PixelpartAnimatedPropertyFloat4(
-                Plugin.PixelpartLightSourceGetColor(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartLightSourceGetColor(effectRuntimePtr, id));
             Intensity = new PixelpartAnimatedPropertyFloat(
-                Plugin.PixelpartLightSourceGetIntensity(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartLightSourceGetIntensity(effectRuntimePtr, id));
         }
     }
 }

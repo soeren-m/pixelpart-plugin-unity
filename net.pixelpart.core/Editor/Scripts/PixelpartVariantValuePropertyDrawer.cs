@@ -4,7 +4,7 @@ using UnityEditor;
 namespace Pixelpart
 {
     [CustomPropertyDrawer(typeof(PixelpartVariantValue))]
-    public class EventOptionDrawer : PropertyDrawer
+    public class PixelpartVariantValuePropertyDrawer : PropertyDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {

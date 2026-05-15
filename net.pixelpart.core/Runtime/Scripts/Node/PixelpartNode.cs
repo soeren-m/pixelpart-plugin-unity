@@ -21,7 +21,7 @@ namespace Pixelpart
         /// <summary>
         /// ID of the node's parent.
         /// </summary>
-        public uint ParentId => Plugin.PixelpartNodeGetParentId(effectRuntime, Id);
+        public uint ParentId => PixelpartPlugin.PixelpartNodeGetParentId(effectRuntime, Id);
 
         /// <summary>
         /// Name of the node.
@@ -31,7 +31,7 @@ namespace Pixelpart
             get
             {
                 var buffer = new byte[256];
-                var size = Plugin.PixelpartNodeGetName(effectRuntime, Id, buffer, buffer.Length);
+                var size = PixelpartPlugin.PixelpartNodeGetName(effectRuntime, Id, buffer, buffer.Length);
 
                 return Encoding.UTF8.GetString(buffer, 0, size);
             }
@@ -42,8 +42,8 @@ namespace Pixelpart
         /// </summary>
         public float LifetimeStart
         {
-            get => Plugin.PixelpartNodeGetStart(effectRuntime, Id);
-            set => Plugin.PixelpartNodeSetStart(effectRuntime, Id, value);
+            get => PixelpartPlugin.PixelpartNodeGetStart(effectRuntime, Id);
+            set => PixelpartPlugin.PixelpartNodeSetStart(effectRuntime, Id, value);
         }
 
         /// <summary>
@@ -51,8 +51,8 @@ namespace Pixelpart
         /// </summary>
         public float LifetimeDuration
         {
-            get => Plugin.PixelpartNodeGetDuration(effectRuntime, Id);
-            set => Plugin.PixelpartNodeSetDuration(effectRuntime, Id, value);
+            get => PixelpartPlugin.PixelpartNodeGetDuration(effectRuntime, Id);
+            set => PixelpartPlugin.PixelpartNodeSetDuration(effectRuntime, Id, value);
         }
 
         /// <summary>
@@ -60,19 +60,19 @@ namespace Pixelpart
         /// </summary>
         public bool Repeat
         {
-            get => Plugin.PixelpartNodeIsRepeating(effectRuntime, Id);
-            set => Plugin.PixelpartNodeSetRepeat(effectRuntime, Id, value);
+            get => PixelpartPlugin.PixelpartNodeIsRepeating(effectRuntime, Id);
+            set => PixelpartPlugin.PixelpartNodeSetRepeat(effectRuntime, Id, value);
         }
 
         /// <summary>
         /// Whether the node is active at the current point in time.
         /// </summary>
-        public bool Active => Plugin.PixelpartNodeIsActive(effectRuntime, Id);
+        public bool Active => PixelpartPlugin.PixelpartNodeIsActive(effectRuntime, Id);
 
         /// <summary>
         /// Time fraction the node has been active for, in range 0.0 (0%) to 1.0 (100%).
         /// </summary>
-        public float LocalTime => Plugin.PixelpartNodeGetLocalTime(effectRuntime, Id);
+        public float LocalTime => PixelpartPlugin.PixelpartNodeGetLocalTime(effectRuntime, Id);
 
         /// <summary>
         /// Position of the node.
@@ -103,11 +103,11 @@ namespace Pixelpart
             Id = id;
 
             Position = new PixelpartAnimatedPropertyFloat3(
-                Plugin.PixelpartNodeGetPosition(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartNodeGetPosition(effectRuntimePtr, id));
             Rotation = new PixelpartAnimatedPropertyFloat3(
-                Plugin.PixelpartNodeGetRotation(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartNodeGetRotation(effectRuntimePtr, id));
             Scale = new PixelpartAnimatedPropertyFloat3(
-                Plugin.PixelpartNodeGetScale(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartNodeGetScale(effectRuntimePtr, id));
         }
     }
 }

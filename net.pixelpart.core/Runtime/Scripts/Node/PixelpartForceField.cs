@@ -17,8 +17,8 @@ namespace Pixelpart
         /// </summary>
         public bool Infinite
         {
-            get => Plugin.PixelpartForceFieldIsInfinite(effectRuntime, Id);
-            set => Plugin.PixelpartForceFieldSetInfinite(effectRuntime, Id, value);
+            get => PixelpartPlugin.PixelpartForceFieldIsInfinite(effectRuntime, Id);
+            set => PixelpartPlugin.PixelpartForceFieldSetInfinite(effectRuntime, Id, value);
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace Pixelpart
         public PixelpartForceField(IntPtr effectRuntimePtr, uint id) : base(effectRuntimePtr, id)
         {
             Strength = new PixelpartAnimatedPropertyFloat(
-                Plugin.PixelpartForceFieldGetStrength(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartForceFieldGetStrength(effectRuntimePtr, id));
         }
     }
 }

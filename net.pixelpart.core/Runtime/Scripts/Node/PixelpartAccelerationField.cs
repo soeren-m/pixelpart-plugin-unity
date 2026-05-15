@@ -40,10 +40,10 @@ namespace Pixelpart
         public Vector3Int AccelerationGridSize
         {
             get => new Vector3Int(
-                Plugin.PixelpartAccelerationFieldGetAccelerationGridSizeX(effectRuntime, Id),
-                Plugin.PixelpartAccelerationFieldGetAccelerationGridSizeY(effectRuntime, Id),
-                Plugin.PixelpartAccelerationFieldGetAccelerationGridSizeZ(effectRuntime, Id));
-            set => Plugin.PixelpartAccelerationFieldSetAccelerationGridSize(effectRuntime, Id,
+                PixelpartPlugin.PixelpartAccelerationFieldGetAccelerationGridSizeX(effectRuntime, Id),
+                PixelpartPlugin.PixelpartAccelerationFieldGetAccelerationGridSizeY(effectRuntime, Id),
+                PixelpartPlugin.PixelpartAccelerationFieldGetAccelerationGridSizeZ(effectRuntime, Id));
+            set => PixelpartPlugin.PixelpartAccelerationFieldSetAccelerationGridSize(effectRuntime, Id,
                 value.x, value.y, value.z);
         }
 
@@ -55,11 +55,11 @@ namespace Pixelpart
         public PixelpartAccelerationField(IntPtr effectRuntimePtr, uint id) : base(effectRuntimePtr, id)
         {
             AccelerationDirection = new PixelpartAnimatedPropertyFloat3(
-                Plugin.PixelpartAccelerationFieldGetAccelerationDirection(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartAccelerationFieldGetAccelerationDirection(effectRuntimePtr, id));
             AccelerationDirectionVariance = new PixelpartAnimatedPropertyFloat(
-                Plugin.PixelpartAccelerationFieldGetAccelerationDirectionVariance(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartAccelerationFieldGetAccelerationDirectionVariance(effectRuntimePtr, id));
             AccelerationStrengthVariance = new PixelpartAnimatedPropertyFloat(
-                Plugin.PixelpartAccelerationFieldGetAccelerationStrengthVariance(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartAccelerationFieldGetAccelerationStrengthVariance(effectRuntimePtr, id));
         }
     }
 }

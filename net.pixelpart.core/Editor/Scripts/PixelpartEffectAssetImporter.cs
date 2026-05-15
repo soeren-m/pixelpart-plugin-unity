@@ -7,7 +7,7 @@ namespace Pixelpart
     [ScriptedImporter(1, "ppfx", AllowCaching = true)]
     public class PixelpartEffectAssetImporter : ScriptedImporter
     {
-        private const string assetIconPath = "Gizmos/PixelpartEffectIcon";
+        private const string assetIconPath = "Icons/PixelpartEffectIcon";
 
         public override void OnImportAsset(AssetImportContext ctx)
         {

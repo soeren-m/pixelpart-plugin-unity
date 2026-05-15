@@ -15,15 +15,15 @@ namespace Pixelpart
         /// <summary>
         /// Value with effect inputs taken into account.
         /// </summary>
-        public Vector4 Value => Plugin.PixelpartStaticPropertyFloat4Value(internalProperty);
+        public Vector4 Value => PixelpartPlugin.PixelpartStaticPropertyFloat4Value(internalProperty);
 
         /// <summary>
         /// Value without effect inputs taken into account.
         /// </summary>
         public Vector4 BaseValue
         {
-            get => Plugin.PixelpartStaticPropertyFloat4GetBaseValue(internalProperty);
-            set => Plugin.PixelpartStaticPropertyFloat4SetBaseValue(internalProperty, value);
+            get => PixelpartPlugin.PixelpartStaticPropertyFloat4GetBaseValue(internalProperty);
+            set => PixelpartPlugin.PixelpartStaticPropertyFloat4SetBaseValue(internalProperty, value);
         }
 
         private readonly IntPtr internalProperty;

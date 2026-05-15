@@ -179,8 +179,8 @@ namespace Pixelpart
         /// </summary>
         public ShapeType Shape
         {
-            get => (ShapeType)Plugin.PixelpartParticleEmitterGetShape(effectRuntime, Id);
-            set => Plugin.PixelpartParticleEmitterSetShape(effectRuntime, Id, (int)value);
+            get => (ShapeType)PixelpartPlugin.PixelpartParticleEmitterGetShape(effectRuntime, Id);
+            set => PixelpartPlugin.PixelpartParticleEmitterSetShape(effectRuntime, Id, (int)value);
         }
 
         /// <summary>
@@ -189,15 +189,15 @@ namespace Pixelpart
         /// <remarks>
         /// Only applicable for emitter shape <c>Path</c>.
         /// </remarks>
-        public int ShapePointCount => Plugin.PixelpartParticleEmitterGetShapePointCount(effectRuntime, Id);
+        public int ShapePointCount => PixelpartPlugin.PixelpartParticleEmitterGetShapePointCount(effectRuntime, Id);
 
         /// <summary>
         /// Where particles are spawned inside the emitter area.
         /// </summary>
         public DistributionType Distribution
         {
-            get => (DistributionType)Plugin.PixelpartParticleEmitterGetDistribution(effectRuntime, Id);
-            set => Plugin.PixelpartParticleEmitterSetDistribution(effectRuntime, Id, (int)value);
+            get => (DistributionType)PixelpartPlugin.PixelpartParticleEmitterGetDistribution(effectRuntime, Id);
+            set => PixelpartPlugin.PixelpartParticleEmitterSetDistribution(effectRuntime, Id, (int)value);
         }
 
         /// <summary>
@@ -205,8 +205,8 @@ namespace Pixelpart
         /// </summary>
         public GridOrderType GridOrder
         {
-            get => (GridOrderType)Plugin.PixelpartParticleEmitterGetGridOrder(effectRuntime, Id);
-            set => Plugin.PixelpartParticleEmitterSetGridOrder(effectRuntime, Id, (int)value);
+            get => (GridOrderType)PixelpartPlugin.PixelpartParticleEmitterGetGridOrder(effectRuntime, Id);
+            set => PixelpartPlugin.PixelpartParticleEmitterSetGridOrder(effectRuntime, Id, (int)value);
         }
 
         /// <summary>
@@ -218,10 +218,10 @@ namespace Pixelpart
         public Vector3Int GridSize
         {
             get => new Vector3Int(
-                    Plugin.PixelpartParticleEmitterGetGridSizeX(effectRuntime, Id),
-                    Plugin.PixelpartParticleEmitterGetGridSizeY(effectRuntime, Id),
-                    Plugin.PixelpartParticleEmitterGetGridSizeZ(effectRuntime, Id));
-            set => Plugin.PixelpartParticleEmitterSetGridSize(effectRuntime, Id, value.x, value.y, value.z);
+                PixelpartPlugin.PixelpartParticleEmitterGetGridSizeX(effectRuntime, Id),
+                PixelpartPlugin.PixelpartParticleEmitterGetGridSizeY(effectRuntime, Id),
+                PixelpartPlugin.PixelpartParticleEmitterGetGridSizeZ(effectRuntime, Id));
+            set => PixelpartPlugin.PixelpartParticleEmitterSetGridSize(effectRuntime, Id, value.x, value.y, value.z);
         }
 
         /// <summary>
@@ -230,8 +230,8 @@ namespace Pixelpart
         /// </summary>
         public EmissionModeType EmissionMode
         {
-            get => (EmissionModeType)Plugin.PixelpartParticleEmitterGetEmissionMode(effectRuntime, Id);
-            set => Plugin.PixelpartParticleEmitterSetEmissionMode(effectRuntime, Id, (int)value);
+            get => (EmissionModeType)PixelpartPlugin.PixelpartParticleEmitterGetEmissionMode(effectRuntime, Id);
+            set => PixelpartPlugin.PixelpartParticleEmitterSetEmissionMode(effectRuntime, Id, (int)value);
         }
 
         /// <summary>
@@ -243,8 +243,8 @@ namespace Pixelpart
         /// </remarks>
         public DirectionModeType DirectionMode
         {
-            get => (DirectionModeType)Plugin.PixelpartParticleEmitterGetDirectionMode(effectRuntime, Id);
-            set => Plugin.PixelpartParticleEmitterSetDirectionMode(effectRuntime, Id, (int)value);
+            get => (DirectionModeType)PixelpartPlugin.PixelpartParticleEmitterGetDirectionMode(effectRuntime, Id);
+            set => PixelpartPlugin.PixelpartParticleEmitterSetDirectionMode(effectRuntime, Id, (int)value);
         }
 
         /// <summary>
@@ -272,9 +272,9 @@ namespace Pixelpart
         public PixelpartParticleEmitter(IntPtr effectRuntimePtr, uint id) : base(effectRuntimePtr, id)
         {
             Direction = new PixelpartAnimatedPropertyFloat3(
-                Plugin.PixelpartParticleEmitterGetDirection(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartParticleEmitterGetDirection(effectRuntimePtr, id));
             Spread = new PixelpartAnimatedPropertyFloat(
-                Plugin.PixelpartParticleEmitterGetSpread(effectRuntimePtr, id));
+                PixelpartPlugin.PixelpartParticleEmitterGetSpread(effectRuntimePtr, id));
         }
 
         /// <summary>
@@ -285,7 +285,7 @@ namespace Pixelpart
         /// </remarks>
         /// <param name="point">Point to add</param>
         public void AddShapePoint(Vector3 point) =>
-            Plugin.PixelpartParticleEmitterAddShapePoint(effectRuntime, Id, point);
+            PixelpartPlugin.PixelpartParticleEmitterAddShapePoint(effectRuntime, Id, point);
 
         /// <summary>
         /// Remove the point at the given index from the emitter shape.
@@ -295,7 +295,7 @@ namespace Pixelpart
         /// </remarks>
         /// <param name="index">Index of point to remove</param>
         public void RemoveShapePoint(int index) =>
-            Plugin.PixelpartParticleEmitterRemoveShapePoint(effectRuntime, Id, index);
+            PixelpartPlugin.PixelpartParticleEmitterRemoveShapePoint(effectRuntime, Id, index);
 
         /// <summary>
         /// Change the location of the point at the given index in the emitter shape.
@@ -306,7 +306,7 @@ namespace Pixelpart
         /// <param name="index">Index of point to change</param>
         /// <param name="point">New location</param>
         public void SetShapePoint(int index, Vector3 point) =>
-            Plugin.PixelpartParticleEmitterSetShapePoint(effectRuntime, Id, index, point);
+            PixelpartPlugin.PixelpartParticleEmitterSetShapePoint(effectRuntime, Id, index, point);
 
         /// <summary>
         /// Return the location of the point at the given index in the emitter shape.
@@ -317,6 +317,6 @@ namespace Pixelpart
         /// <param name="index">Index of point</param>
         /// <returns>Location of point</returns>
         public Vector3 GetShapePoint(int index) =>
-            Plugin.PixelpartParticleEmitterGetShapePoint(effectRuntime, Id, index);
+            PixelpartPlugin.PixelpartParticleEmitterGetShapePoint(effectRuntime, Id, index);
     }
 }

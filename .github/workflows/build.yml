@@ -48,58 +48,58 @@ jobs:
     needs: [windows-build, linux-build, macos-build, ios-build, android-build, webgl-2-0-19-build, webgl-3-1-8-build, webgl-3-1-38-build]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
           python-version: 3.x
           architecture: x64
 
       - name: Download Windows artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: pixelpart-windows
           path: artifacts/windows
 
       - name: Download Linux artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: pixelpart-linux
           path: artifacts/linux
 
       - name: Download macOS artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: pixelpart-macos
           path: artifacts/macos
 
       - name: Download iOS artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: pixelpart-ios
           path: artifacts/ios
 
       - name: Download Android artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: pixelpart-android
           path: artifacts/android
 
       - name: Download WebGL 2.0.19 artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: pixelpart-webgl-2-0-19
           path: artifacts/webgl-2-0-19
 
       - name: Download WebGL 3.1.8 artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: pixelpart-webgl-3-1-8
           path: artifacts/webgl-3-1-8
 
       - name: Download WebGL 3.1.38 artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: pixelpart-webgl-3-1-38
           path: artifacts/webgl-3-1-38
@@ -130,7 +130,7 @@ jobs:
           python package.py -o net.pixelpart.hdrp.tgz -t net.pixelpart.hdrp
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pixelpart-plugin-unity
           path: |

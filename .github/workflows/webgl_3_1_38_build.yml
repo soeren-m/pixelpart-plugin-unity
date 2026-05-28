@@ -9,7 +9,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Update submodules
         uses: ./.github/actions/submodules
@@ -19,7 +19,7 @@ jobs:
 
       - name: Cache emsdk
         id: cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ./emsdk
           key: ${{ runner.os }}-emsdk-3_1_38
@@ -38,7 +38,7 @@ jobs:
           cp ./net.pixelpart.core/Runtime/Plugins/WebGL/libpixelpartunity.a ./net.pixelpart.core/Runtime/Plugins/WebGL/3.1.38/
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: pixelpart-webgl-3-1-38
           path: ./net.pixelpart.core/Runtime/Plugins/WebGL/3.1.38

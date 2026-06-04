@@ -176,6 +176,7 @@ namespace Pixelpart
         }
         [SerializeField]
         [FormerlySerializedAs("EffectScale")]
+        [Min(0.0f)]
         private float effectScale = 1.0f;
 
         /// <summary>
@@ -229,6 +230,11 @@ namespace Pixelpart
         [SerializeField]
         [FormerlySerializedAs("ParticleMaterials")]
         private List<Material> particleMaterials = new List<Material>();
+
+        private Vector3 FinalEffectScale => new Vector3(
+            Math.Max(EffectScale, 0.000001f) * (FlipH ? -1.0f : +1.0f),
+            Math.Max(EffectScale, 0.000001f) * (FlipV ? -1.0f : +1.0f),
+            Math.Max(EffectScale, 0.000001f));
 
         [SerializeField]
         private List<string> effectInputNames = new List<string>();
@@ -340,12 +346,7 @@ namespace Pixelpart
 
         public void UpdateEffectMesh(Camera camera)
         {
-            var scale = new Vector3(
-                EffectScale * (FlipH ? -1.0f : +1.0f),
-                EffectScale * (FlipV ? -1.0f : +1.0f),
-                EffectScale);
-
-            effectRenderer?.UpdateMesh(camera, transform, scale);
+            effectRenderer?.UpdateMesh(camera, transform, FinalEffectScale);
         }
 
         public void RenderEffect(Camera camera)
@@ -895,13 +896,7 @@ namespace Pixelpart
 
         private void ApplyTransform()
         {
-            var scale = new Vector3(
-                EffectScale * (FlipH ? -1.0f : +1.0f),
-                EffectScale * (FlipV ? -1.0f : +1.0f),
-                EffectScale);
-
-            PixelpartPlugin.PixelpartSetEffectTransform(effectRuntime,
-                transform.localToWorldMatrix, scale);
+            PixelpartPlugin.PixelpartSetEffectTransform(effectRuntime, transform.localToWorldMatrix, FinalEffectScale);
         }
 
         private void SetInputPropertyValue(string inputName, PixelpartVariantValue value)

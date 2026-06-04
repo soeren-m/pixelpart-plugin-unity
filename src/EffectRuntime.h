@@ -4,6 +4,7 @@
 #include "pixelpart-runtime/common/Types.h"
 #include "pixelpart-runtime/common/Id.h"
 #include "pixelpart-runtime/common/ThreadPool.h"
+#include "pixelpart-runtime/common/Transform.h"
 #include "pixelpart-runtime/effect/ParticleEmissionPair.h"
 #include "pixelpart-runtime/effect/ShaderGraphSpecification.h"
 #include "pixelpart-runtime/asset/EffectAsset.h"
@@ -26,6 +27,7 @@ extern std::mt19937 rng;
 struct EffectRuntime {
 	pixelpart::EffectAsset effectAsset;
 	std::unique_ptr<pixelpart::EffectEngine> effectEngine;
+	pixelpart::Transform transform;
 	pixelpart::float_t simulationTime = 0.0;
 	std::vector<pixelpart::id_t> invokedEventIds;
 

@@ -5,7 +5,6 @@
 #include "ShaderGraphSpecificationURP.h"
 #include "ShaderGraphSpecificationHDRP.h"
 #include "pixelpart-runtime/common/Curve.h"
-#include "pixelpart-runtime/common/Transform.h"
 #include "pixelpart-runtime/math/Common.h"
 #include "pixelpart-runtime/effect/Effect.h"
 #include "pixelpart-runtime/effect/Node.h"
@@ -169,8 +168,7 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartSetEffectTransform(pixe
 	pixelpart::math::matrix4x4<float> floatTransformMatrix;
 	std::memcpy(&floatTransformMatrix[0][0], transformMatrix.data, sizeof(float) * 16);
 
-	pixelpart::Transform transform = pixelpart::Transform(pixelpart::matrix4_t(floatTransformMatrix));
-	pixelpart::float3_t cappedEffectScale = pixelpart::math::max(pixelpart_unity::fromUnity(scale), pixelpart::float3_t(0.0001));
+	effectRuntime->transform = pixelpart::Transform(pixelpart::matrix4_t(floatTransformMatrix));
 
 	for(const std::unique_ptr<pixelpart::Node>& node : effectRuntime->effectAsset.effect().sceneGraph().nodes()) {
 		if(node->parentId()) {
@@ -178,13 +176,13 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartSetEffectTransform(pixe
 		}
 
 		node->position().keyframes({ pixelpart::Curve<pixelpart::float3_t>::Point{ 0.0,
-			transform.position() / cappedEffectScale
+			effectRuntime->transform.position() / pixelpart_unity::fromUnity(scale)
 		} });
 		node->rotation().keyframes({ pixelpart::Curve<pixelpart::float3_t>::Point{ 0.0,
-			transform.rotation()
+			effectRuntime->transform.rotation()
 		} });
 		node->scale().keyframes({ pixelpart::Curve<pixelpart::float3_t>::Point{ 0.0,
-			transform.scale()
+			effectRuntime->transform.scale()
 		} });
 	}
 }

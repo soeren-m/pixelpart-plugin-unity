@@ -119,10 +119,11 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::bool_t UNITY_INTERFACE_API PixelpartGene
 			runtimeContext, sceneContext);
 
 		if(!effect.is3d()) {
-			pixelpart::VertexDataBufferDimensions bufferDimensions = effectRuntime->vertexBufferDimensions[emissionPair];
+			const pixelpart::VertexDataBufferDimensions bufferDimensions = effectRuntime->vertexBufferDimensions[emissionPair];
+			const float globalZPosition = static_cast<float>(effectRuntime->transform.position().z);
 
 			for(std::uint32_t index = 0; index < bufferDimensions[1]; index++) {
-				vertices[index].z = 0.0f;
+				vertices[index].z = globalZPosition;
 			}
 		}
 

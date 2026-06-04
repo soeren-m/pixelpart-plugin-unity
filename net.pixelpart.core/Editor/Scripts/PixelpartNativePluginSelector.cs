@@ -9,7 +9,9 @@ namespace Pixelpart
     [InitializeOnLoad]
     internal static class PixelpartNativePluginSelector
     {
-#if UNITY_2023_2_OR_NEWER
+#if UNITY_6000_5_OR_NEWER
+        static readonly string activeWebGLPluginPath = "WebGL/4.0.19/libpixelpartunity.a";
+#elif UNITY_2023_2_OR_NEWER
         static readonly string activeWebGLPluginPath = "WebGL/3.1.38/libpixelpartunity.a";
 #elif UNITY_2022_2_OR_NEWER
         static readonly string activeWebGLPluginPath = "WebGL/3.1.8/libpixelpartunity.a";
@@ -21,6 +23,7 @@ namespace Pixelpart
         {
             var webglPluginPaths = new string[]
             {
+                "Packages/net.pixelpart.core/Runtime/Plugins/WebGL/4.0.19/libpixelpartunity.a",
                 "Packages/net.pixelpart.core/Runtime/Plugins/WebGL/3.1.38/libpixelpartunity.a",
                 "Packages/net.pixelpart.core/Runtime/Plugins/WebGL/3.1.8/libpixelpartunity.a",
                 "Packages/net.pixelpart.core/Runtime/Plugins/WebGL/2.0.19/libpixelpartunity.a"

@@ -1,0 +1,43 @@
+name: WebGL Emscripten 4.0.19 build
+on:
+  workflow_call:
+
+jobs:
+  build-webgl-4-0-19:
+    runs-on: ubuntu-latest
+    name: Build
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Install common dependencies
+        uses: ./.github/actions/deps
+
+      - name: Cache emsdk
+        id: cache
+        uses: actions/cache@v5
+        with:
+          path: ./emsdk
+          key: ${{ runner.os }}-emsdk-4_0_19
+
+      - name: Install emsdk
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          git clone --depth 1 https://github.com/emscripten-core/emsdk.git
+          ./emsdk/emsdk install 4.0.19
+
+      - name: Compile
+        run: |
+          ./emsdk/emsdk activate 4.0.19
+          source ./emsdk/emsdk_env.sh
+          python build.py platform=web
+          cp ./net.pixelpart.core/Runtime/Plugins/WebGL/libpixelpartunity.a ./net.pixelpart.core/Runtime/Plugins/WebGL/4.0.19/
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: pixelpart-webgl-4-0-19
+          path: ./net.pixelpart.core/Runtime/Plugins/WebGL/4.0.19

@@ -145,7 +145,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "net.pixelpart.core": "1.9.1"
+        "net.pixelpart.core": "1.9.2"
       }
     },
     "com.unity.modules.ai": {

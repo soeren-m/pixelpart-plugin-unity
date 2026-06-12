@@ -17,14 +17,6 @@ namespace Pixelpart
     /// </remarks>
     public class PixelpartEffectAsset : ScriptableObject
     {
-#if PIXELPART_USE_URP
-        private const int renderPipelineId = 1;
-#elif PIXELPART_USE_HDRP
-        private const int renderPipelineId = 2;
-#else
-        private const int renderPipelineId = 0;
-#endif
-
         /// <summary>
         /// Effect data as byte array.
         /// </summary>
@@ -87,6 +79,8 @@ namespace Pixelpart
 
         private void CreateCustomMaterialAssetDescriptors(IntPtr effectRuntime, string path)
         {
+            var renderPipelineType = PixelpartRenderPipelineDetection.DetectRenderPipeline();
+
             var directory = Path.GetDirectoryName(path);
             var effectName = Path.GetFileNameWithoutExtension(path);
 
@@ -109,7 +103,7 @@ namespace Pixelpart
                 var blendMode = (PixelpartBlendMode)PixelpartPlugin.PixelpartGetMaterialResourceBlendMode(effectRuntime, materialResourceId);
                 var lightingMode = (PixelpartLightingMode)PixelpartPlugin.PixelpartGetMaterialResourceLightingMode(effectRuntime, materialResourceId);
 
-                var result = PixelpartPlugin.PixelpartBuildMaterialShader(effectRuntime, materialResourceId, renderPipelineId,
+                var result = PixelpartPlugin.PixelpartBuildMaterialShader(effectRuntime, materialResourceId, (int)renderPipelineType,
                     shaderMainCodeBuffer, shaderParameterCodeBuffer,
                     shaderParameterNamesBuffer, shaderParameterIdsBuffer,
                     shaderTextureResourceIdsBuffer, shaderSamplerNamesBuffer,
@@ -159,10 +153,12 @@ namespace Pixelpart
                 var parameterCode = Encoding.UTF8.GetString(shaderParameterCodeBuffer, 0, shaderParameterCodeLength);
 
                 GenerateCustomShaderAsset(materialName, directory,
-                    blendMode, lightingMode, false,
+                    blendMode, lightingMode,
+                    renderPipelineType, false,
                     mainCode, parameterCode);
                 GenerateCustomShaderAsset(materialName + "_Inst", directory,
-                    blendMode, lightingMode, true,
+                    blendMode, lightingMode,
+                    renderPipelineType, true,
                     mainCode, parameterCode);
 #endif
             }
@@ -170,7 +166,8 @@ namespace Pixelpart
 
 #if UNITY_EDITOR
         private static void GenerateCustomShaderAsset(string materialName, string directory,
-            PixelpartBlendMode blendMode, PixelpartLightingMode lightingMode, bool instanced,
+            PixelpartBlendMode blendMode, PixelpartLightingMode lightingMode,
+            PixelpartRenderPipelineType renderPipeline, bool instanced,
             string mainCode, string parameterCode)
         {
             var shaderFilepath = Path.Combine(directory, materialName + ".shader");
@@ -179,8 +176,10 @@ namespace Pixelpart
                 return;
             }
 
-            var shaderCode = PixelpartShaderGenerator.GenerateShaderCode(
-                materialName, mainCode, parameterCode, blendMode, lightingMode, instanced);
+            var shaderCode = PixelpartShaderGenerator.GenerateShaderCode(materialName,
+                mainCode, parameterCode,
+                blendMode, lightingMode,
+                renderPipeline, instanced);
 
             var writer = File.CreateText(shaderFilepath);
             writer.Write(shaderCode);

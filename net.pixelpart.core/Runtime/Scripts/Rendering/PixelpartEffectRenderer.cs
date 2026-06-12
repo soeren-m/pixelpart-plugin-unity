@@ -51,18 +51,9 @@ namespace Pixelpart
                 var materialId = Encoding.UTF8.GetString(materialIdBuffer, 0, materialIdLength);
                 var materialBuiltIn = PixelpartPlugin.PixelpartParticleTypeIsMaterialBuiltIn(effectRuntimePtr, emissionPair.TypeId);
 
-                PixelpartMaterialDescriptor materialDescriptor = null;
-                if (materialBuiltIn)
-                {
-                    if (!PixelpartBuiltInMaterialProvider.Instance.BuiltInMaterials.TryGetValue(materialId, out materialDescriptor))
-                    {
-                        materialDescriptor = null;
-                    }
-                }
-                else
-                {
-                    materialDescriptor = customMaterials.FirstOrDefault(desc => desc.ResourceId == materialId);
-                }
+                var materialDescriptor = materialBuiltIn
+                    ? PixelpartBuiltInMaterialProvider.Instance.GetMaterial(materialId)
+                    : customMaterials.FirstOrDefault(desc => desc.ResourceId == materialId);
 
                 if (materialDescriptor == null)
                 {

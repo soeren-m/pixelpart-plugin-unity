@@ -1006,7 +1006,8 @@ namespace Pixelpart
 
                     if (PixelpartPlugin.PixelpartParticleTypeIsMaterialBuiltIn(tempEffectRuntime, particleTypeId))
                     {
-                        if (PixelpartBuiltInMaterialProvider.Instance.BuiltInMaterials.TryGetValue(materialId, out PixelpartMaterialDescriptor builtInMaterial))
+                        var builtInMaterial = PixelpartBuiltInMaterialProvider.Instance.GetMaterial(materialId);
+                        if (builtInMaterial != null)
                         {
                             materialPath = builtInMaterial.MaterialPath;
                         }

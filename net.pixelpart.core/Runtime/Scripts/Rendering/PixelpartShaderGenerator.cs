@@ -5,7 +5,9 @@ namespace Pixelpart
 {
     internal static class PixelpartShaderGenerator
     {
-        public static string GenerateShaderCode(string shaderName, string mainCode, string parameterCode, PixelpartBlendMode blendMode, PixelpartLightingMode lightingMode, bool instancing)
+        public static string GenerateShaderCode(string shaderName, string mainCode, string parameterCode,
+            PixelpartBlendMode blendMode, PixelpartLightingMode lightingMode,
+            PixelpartRenderPipelineType renderPipeline, bool instancing)
         {
             if (lightingMode != PixelpartLightingMode.Unlit)
             {
@@ -13,13 +15,22 @@ namespace Pixelpart
                 return string.Empty;
             }
 
-#if PIXELPART_USE_URP
-            var shaderCode = instancing ? InstancedUnlitShaderTemplateURP : UnlitShaderTemplateURP;
-#elif PIXELPART_USE_HDRP
-            var shaderCode = instancing ? InstancedUnlitShaderTemplateHDRP : UnlitShaderTemplateHDRP;
-#else
-            var shaderCode = instancing ? InstancedUnlitShaderTemplate : UnlitShaderTemplate;
-#endif
+            var shaderCode = string.Empty;
+            switch (renderPipeline)
+            {
+                case PixelpartRenderPipelineType.BuiltIn:
+                    shaderCode = instancing ? InstancedUnlitShaderTemplate : UnlitShaderTemplate;
+                    break;
+                case PixelpartRenderPipelineType.Universal:
+                    shaderCode = instancing ? InstancedUnlitShaderTemplateURP : UnlitShaderTemplateURP;
+                    break;
+                case PixelpartRenderPipelineType.HighDefinition:
+                    shaderCode = instancing ? InstancedUnlitShaderTemplateHDRP : UnlitShaderTemplateHDRP;
+                    break;
+                default:
+                    Debug.LogError("[Pixelpart] Unknown render pipeline, cannot generate shader code");
+                    return string.Empty;
+            }
 
             var renderType = string.Empty;
             var queue = string.Empty;
@@ -44,9 +55,10 @@ namespace Pixelpart
                 zWrite = "Off";
             }
 
-#if PIXELPART_USE_HDRP
-            renderType = "HDUnlitShader";
-#endif
+            if(renderPipeline == PixelpartRenderPipelineType.HighDefinition)
+            {
+                renderType = "HDUnlitShader";
+            }
 
             switch (blendMode)
             {

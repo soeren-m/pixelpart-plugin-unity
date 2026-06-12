@@ -8,7 +8,7 @@ Save the effect you created in *Pixelpart* as a *.ppfx* file and place it into t
 
 ## Playing effects
 
-To play an effect, attach the *Pixelpart/Effect* component to a game object in your scene and drag the effect asset (*.ppfx* file) onto the *Effect Asset* field in the component's inspector window. The selected effect should now be rendered when running the game. If the effect *does not* appear, make sure you have set an appropriate *Effect Scale* value in the node's inspector.
+To play an effect, attach the *Pixelpart/Pixelpart Effect* component to a game object in your scene and drag the effect asset (*.ppfx* file) onto the *Effect Asset* field in the component's inspector window. The selected effect should now be rendered when running the game. If the effect *does not* appear, make sure you have set an appropriate *Effect Scale* value in the node's inspector.
 
 ![Effect inspector](./images/inspector.png)
 

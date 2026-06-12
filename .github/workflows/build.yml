@@ -15,6 +15,10 @@ jobs:
     name: Linux build
     uses: ./.github/workflows/linux_build.yml
 
+  linux-arm-build:
+    name: Linux arm build
+    uses: ./.github/workflows/linux_arm_build.yml
+
   macos-build:
     name: macOS build
     uses: ./.github/workflows/macos_build.yml
@@ -42,7 +46,7 @@ jobs:
   package:
     name: Package plugin
     runs-on: ubuntu-latest
-    needs: [windows-build, linux-build, macos-build, ios-build, android-build, webgl-2-0-19-build, webgl-3-1-8-build, webgl-3-1-38-build]
+    needs: [windows-build, linux-build, linux-arm-build, macos-build, ios-build, android-build, webgl-2-0-19-build, webgl-3-1-8-build, webgl-3-1-38-build]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -64,6 +68,12 @@ jobs:
         with:
           name: pixelpart-linux
           path: artifacts/linux
+
+      - name: Download Linux arm artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: pixelpart-linux-arm
+          path: artifacts/linux-arm
 
       - name: Download macOS artifacts
         uses: actions/download-artifact@v8
@@ -108,8 +118,10 @@ jobs:
         run: |
           cp artifacts/windows/x86/pixelpartunity.dll ./net.pixelpart.core/Runtime/Plugins/x86/
           cp artifacts/windows/x86_64/pixelpartunity.dll ./net.pixelpart.core/Runtime/Plugins/x86_64/
+          cp artifacts/windows/ARM64/pixelpartunity.dll ./net.pixelpart.core/Runtime/Plugins/ARM64/
           cp artifacts/linux/x86/libpixelpartunity.so ./net.pixelpart.core/Runtime/Plugins/x86/
           cp artifacts/linux/x86_64/libpixelpartunity.so ./net.pixelpart.core/Runtime/Plugins/x86_64/
+          cp artifacts/linux-arm/libpixelpartunity.so ./net.pixelpart.core/Runtime/Plugins/ARM64/
           cp artifacts/macos/pixelpartunity.bundle ./net.pixelpart.core/Runtime/Plugins/macOS/
           cp artifacts/ios/libpixelpartunity.a ./net.pixelpart.core/Runtime/Plugins/iOS/
           cp artifacts/android/arm32/libpixelpartunity.so ./net.pixelpart.core/Runtime/Plugins/Android/arm32/

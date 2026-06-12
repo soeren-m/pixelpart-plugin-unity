@@ -33,7 +33,7 @@ jobs:
         run: |
           ./emsdk/emsdk activate 2.0.19
           source ./emsdk/emsdk_env.sh
-          python build.py platform=web
+          scons platform=web arch=wasm32 -j 4
           cp ./net.pixelpart.core/Runtime/Plugins/WebGL/libpixelpartunity.a ./net.pixelpart.core/Runtime/Plugins/WebGL/2.0.19/
 
       - name: Upload artifact

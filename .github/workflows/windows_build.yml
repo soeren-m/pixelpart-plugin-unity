@@ -16,8 +16,14 @@ jobs:
       - name: Install common dependencies
         uses: ./.github/actions/deps
 
-      - name: Compile
-        run: python build.py platform=windows
+      - name: Compile (x86_64)
+        run: scons platform=windows arch=x86_64 -j 4
+
+      - name: Compile (x86_32)
+        run: scons platform=windows arch=x86_32 -j 4
+
+      - name: Compile (arm64)
+        run: scons platform=windows arch=arm64 -j 4
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
@@ -26,3 +32,4 @@ jobs:
           path: |
             ./net.pixelpart.core/Runtime/Plugins/x86/pixelpartunity.dll
             ./net.pixelpart.core/Runtime/Plugins/x86_64/pixelpartunity.dll
+            ./net.pixelpart.core/Runtime/Plugins/ARM64/pixelpartunity.dll

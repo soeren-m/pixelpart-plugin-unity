@@ -1,10 +1,10 @@
-name: macOS build
+name: Linux arm build
 on:
   workflow_call:
 
 jobs:
-  build-macos:
-    runs-on: macOS-latest
+  build-linux-arm:
+    runs-on: ubuntu-22.04-arm
     name: Build
 
     steps:
@@ -15,12 +15,15 @@ jobs:
 
       - name: Install common dependencies
         uses: ./.github/actions/deps
+        with:
+          python-arch: arm64
 
-      - name: Compile
-        run: scons platform=macos arch=universal -j 4
+      - name: Compile (arm64)
+        run: scons platform=linux arch=arm64 -j 4
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
-          name: pixelpart-macos
-          path: ./net.pixelpart.core/Runtime/Plugins/macOS/pixelpartunity.bundle
+          name: pixelpart-linux-arm
+          path: |
+            ./net.pixelpart.core/Runtime/Plugins/ARM64/libpixelpartunity.so

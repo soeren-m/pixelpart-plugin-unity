@@ -16,8 +16,14 @@ jobs:
       - name: Install common dependencies
         uses: ./.github/actions/deps
 
-      - name: Compile
-        run: python build.py platform=ios
+      - name: Compile (arm64)
+        run: scons platform=ios arch=arm64 ios_simulator=no -j 4
+
+      - name: Compile (simulator)
+        run: scons platform=ios arch=x86_64 ios_simulator=yes -j 4
+
+      - name: Create universal library
+        run: lipo -create net.pixelpart.core/Runtime/Plugins/iOS/libpixelpartunity-phone.a net.pixelpart.core/Runtime/Plugins/iOS/libpixelpartunity-simulator.a -output net.pixelpart.core/Runtime/Plugins/iOS/libpixelpartunity.a
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7

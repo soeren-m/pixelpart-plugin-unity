@@ -151,11 +151,15 @@ if env["platform"] == "windows":
         library_path += "x86_64/pixelpartunity.dll"
     elif env["arch"] == "x86_32":
         library_path += "x86/pixelpartunity.dll"
+    elif env["arch"] == "arm64":
+        library_path += "ARM64/pixelpartunity.dll"
 elif env["platform"] == "linux":
     if env["arch"] == "x86_64":
         library_path += "x86_64/libpixelpartunity.so"
     elif env["arch"] == "x86_32":
         library_path += "x86/libpixelpartunity.so"
+    elif env["arch"] == "arm64":
+        library_path += "ARM64/libpixelpartunity.so"
 elif env["platform"] == "macos":
     library_path += "macOS/pixelpartunity.bundle"
 elif env["platform"] == "ios":

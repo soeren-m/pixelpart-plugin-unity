@@ -12,12 +12,12 @@
         {
             "name": "com.unity.render-pipelines.universal",
             "expression": "0.0.0",
-            "define": "PIXELPART_USE_URP"
+            "define": "PIXELPART_URP_AVAILABLE"
         },
         {
             "name": "com.unity.render-pipelines.high-definition",
             "expression": "0.0.0",
-            "define": "PIXELPART_USE_HDRP"
+            "define": "PIXELPART_HDRP_AVAILABLE"
         }
     ],
     "noEngineReferences": false

@@ -6,6 +6,7 @@
 namespace pixelpart_unity {
 extern std::string lastError;
 
+extern const std::string invalidEffectResourceError;
 extern const std::string invalidEffectRuntimeError;
 extern const std::string invalidPropertyError;
 extern const std::string invalidArgumentError;

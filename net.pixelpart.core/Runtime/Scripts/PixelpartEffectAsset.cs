@@ -35,12 +35,31 @@ namespace Pixelpart
         /// </summary>
         public PixelpartMaterialDescriptor[] CustomMaterials = null;
 
+        private IntPtr effectResource = IntPtr.Zero;
+
+        ~PixelpartEffectAsset()
+        {
+            DeleteEffectResource();
+        }
+
+        void OnDisable()
+        {
+            DeleteEffectResource();
+        }
+
+        void OnDestroy()
+        {
+            DeleteEffectResource();
+        }
+
         /// <summary>
         /// Load effect from a <i>ppfx</i> file.
         /// </summary>
         /// <param name="path">File to import</param>
         public void Load(string path)
         {
+            DeleteEffectResource();
+
             Data = File.ReadAllBytes(path);
             CustomMaterials = null;
 
@@ -68,12 +87,12 @@ namespace Pixelpart
         /// <exception cref="InvalidOperationException"></exception>
         public IntPtr LoadEffect()
         {
-            if (Data == null || Data.Length < 1)
+            if (effectResource == IntPtr.Zero)
             {
-                throw new InvalidOperationException("No data assigned to effect asset");
+                LoadEffectResource();
             }
 
-            var effectRuntime = PixelpartPlugin.PixelpartLoadEffect(Data, Data.Length);
+            var effectRuntime = PixelpartPlugin.PixelpartCreateEffect(effectResource);
             if (effectRuntime == IntPtr.Zero)
             {
                 var errorBuffer = new byte[2048];
@@ -83,6 +102,34 @@ namespace Pixelpart
             }
 
             return effectRuntime;
+        }
+
+        private void LoadEffectResource()
+        {
+            if (Data == null || Data.Length < 1)
+            {
+                throw new InvalidOperationException("No data assigned to effect asset");
+            }
+
+            effectResource = PixelpartPlugin.PixelpartLoadEffectResource(Data, Data.Length);
+            if (effectResource == IntPtr.Zero)
+            {
+                var errorBuffer = new byte[2048];
+                var errorLength = PixelpartPlugin.PixelpartLastError(errorBuffer, errorBuffer.Length);
+
+                throw new InvalidOperationException(Encoding.UTF8.GetString(errorBuffer, 0, errorLength));
+            }
+        }
+
+        private void DeleteEffectResource()
+        {
+            if (effectResource == IntPtr.Zero)
+            {
+                return;
+            }
+
+            PixelpartPlugin.PixelpartDeleteEffectResource(effectResource);
+            effectResource = IntPtr.Zero;
         }
 
         private void CreateCustomMaterialAssetDescriptors(IntPtr effectRuntime, string path)

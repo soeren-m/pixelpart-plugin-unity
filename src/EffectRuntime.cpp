@@ -43,7 +43,7 @@ std::mt19937 rng;
 }
 
 extern "C" {
-UNITY_INTERFACE_EXPORT void* UNITY_INTERFACE_API PixelpartLoadEffect(const pixelpart_unity::char_t* data, pixelpart_unity::int_t size) {
+UNITY_INTERFACE_EXPORT void* UNITY_INTERFACE_API PixelpartLoadEffectResource(const pixelpart_unity::char_t* data, pixelpart_unity::int_t size) {
 	if(!data || size <= 0) {
 		pixelpart_unity::lastError = pixelpart_unity::invalidArgumentError;
 		return nullptr;
@@ -82,8 +82,36 @@ UNITY_INTERFACE_EXPORT void* UNITY_INTERFACE_API PixelpartLoadEffect(const pixel
 	}
 
 	try {
+		pixelpart_unity::EffectResource* effectResource = new pixelpart_unity::EffectResource();
+		effectResource->effectAsset = pixelpart::deserializeEffectAsset(data, static_cast<std::size_t>(size));
+
+		return effectResource;
+	}
+	catch(const std::exception& e) {
+		pixelpart_unity::lastError = std::string(e.what());
+	}
+
+	return nullptr;
+}
+
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartDeleteEffectResource(pixelpart_unity::EffectResource* effectResource) {
+	if(!effectResource) {
+		pixelpart_unity::lastError = pixelpart_unity::invalidEffectResourceError;
+		return;
+	}
+
+	delete effectResource;
+}
+
+UNITY_INTERFACE_EXPORT void* UNITY_INTERFACE_API PixelpartCreateEffect(pixelpart_unity::EffectResource* effectResource) {
+	if(!effectResource) {
+		pixelpart_unity::lastError = pixelpart_unity::invalidEffectResourceError;
+		return nullptr;
+	}
+
+	try {
 		pixelpart_unity::EffectRuntime* effectRuntime = new pixelpart_unity::EffectRuntime();
-		effectRuntime->effectAsset = pixelpart::deserializeEffectAsset(data, static_cast<std::size_t>(size));
+		effectRuntime->effectAsset = effectResource->effectAsset;
 
 #ifdef PIXELPART_RUNTIME_MULTITHREADING
 		effectRuntime->effectEngine = std::make_unique<pixelpart::MultiThreadedEffectEngine>(effectRuntime->effectAsset.effect(),

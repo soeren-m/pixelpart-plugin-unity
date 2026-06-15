@@ -6,6 +6,7 @@
 namespace pixelpart_unity {
 std::string lastError = "";
 
+const std::string invalidEffectResourceError = "Invalid effect resource";
 const std::string invalidEffectRuntimeError = "Invalid effect runtime";
 const std::string invalidPropertyError = "Invalid property";
 const std::string invalidArgumentError = "Invalid argument";

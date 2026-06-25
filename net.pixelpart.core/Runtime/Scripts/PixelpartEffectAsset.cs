@@ -17,14 +17,6 @@ namespace Pixelpart
     /// </remarks>
     public class PixelpartEffectAsset : ScriptableObject
     {
-#if PIXELPART_USE_URP
-        private const int renderPipelineId = 1;
-#elif PIXELPART_USE_HDRP
-        private const int renderPipelineId = 2;
-#else
-        private const int renderPipelineId = 0;
-#endif
-
         /// <summary>
         /// Effect data as byte array.
         /// </summary>
@@ -35,12 +27,31 @@ namespace Pixelpart
         /// </summary>
         public PixelpartMaterialDescriptor[] CustomMaterials = null;
 
+        private IntPtr effectResource = IntPtr.Zero;
+
+        ~PixelpartEffectAsset()
+        {
+            DeleteEffectResource();
+        }
+
+        void OnDisable()
+        {
+            DeleteEffectResource();
+        }
+
+        void OnDestroy()
+        {
+            DeleteEffectResource();
+        }
+
         /// <summary>
         /// Load effect from a <i>ppfx</i> file.
         /// </summary>
         /// <param name="path">File to import</param>
         public void Load(string path)
         {
+            DeleteEffectResource();
+
             Data = File.ReadAllBytes(path);
             CustomMaterials = null;
 
@@ -68,12 +79,12 @@ namespace Pixelpart
         /// <exception cref="InvalidOperationException"></exception>
         public IntPtr LoadEffect()
         {
-            if (Data == null || Data.Length < 1)
+            if (effectResource == IntPtr.Zero)
             {
-                throw new InvalidOperationException("No data assigned to effect asset");
+                LoadEffectResource();
             }
 
-            var effectRuntime = PixelpartPlugin.PixelpartLoadEffect(Data, Data.Length);
+            var effectRuntime = PixelpartPlugin.PixelpartCreateEffect(effectResource);
             if (effectRuntime == IntPtr.Zero)
             {
                 var errorBuffer = new byte[2048];
@@ -85,8 +96,38 @@ namespace Pixelpart
             return effectRuntime;
         }
 
+        private void LoadEffectResource()
+        {
+            if (Data == null || Data.Length < 1)
+            {
+                throw new InvalidOperationException("No data assigned to effect asset");
+            }
+
+            effectResource = PixelpartPlugin.PixelpartLoadEffectResource(Data, Data.Length);
+            if (effectResource == IntPtr.Zero)
+            {
+                var errorBuffer = new byte[2048];
+                var errorLength = PixelpartPlugin.PixelpartLastError(errorBuffer, errorBuffer.Length);
+
+                throw new InvalidOperationException(Encoding.UTF8.GetString(errorBuffer, 0, errorLength));
+            }
+        }
+
+        private void DeleteEffectResource()
+        {
+            if (effectResource == IntPtr.Zero)
+            {
+                return;
+            }
+
+            PixelpartPlugin.PixelpartDeleteEffectResource(effectResource);
+            effectResource = IntPtr.Zero;
+        }
+
         private void CreateCustomMaterialAssetDescriptors(IntPtr effectRuntime, string path)
         {
+            var renderPipelineType = PixelpartRenderPipelineDetection.DetectRenderPipeline();
+
             var directory = Path.GetDirectoryName(path);
             var effectName = Path.GetFileNameWithoutExtension(path);
 
@@ -109,7 +150,7 @@ namespace Pixelpart
                 var blendMode = (PixelpartBlendMode)PixelpartPlugin.PixelpartGetMaterialResourceBlendMode(effectRuntime, materialResourceId);
                 var lightingMode = (PixelpartLightingMode)PixelpartPlugin.PixelpartGetMaterialResourceLightingMode(effectRuntime, materialResourceId);
 
-                var result = PixelpartPlugin.PixelpartBuildMaterialShader(effectRuntime, materialResourceId, renderPipelineId,
+                var result = PixelpartPlugin.PixelpartBuildMaterialShader(effectRuntime, materialResourceId, (int)renderPipelineType,
                     shaderMainCodeBuffer, shaderParameterCodeBuffer,
                     shaderParameterNamesBuffer, shaderParameterIdsBuffer,
                     shaderTextureResourceIdsBuffer, shaderSamplerNamesBuffer,
@@ -159,10 +200,12 @@ namespace Pixelpart
                 var parameterCode = Encoding.UTF8.GetString(shaderParameterCodeBuffer, 0, shaderParameterCodeLength);
 
                 GenerateCustomShaderAsset(materialName, directory,
-                    blendMode, lightingMode, false,
+                    blendMode, lightingMode,
+                    renderPipelineType, false,
                     mainCode, parameterCode);
                 GenerateCustomShaderAsset(materialName + "_Inst", directory,
-                    blendMode, lightingMode, true,
+                    blendMode, lightingMode,
+                    renderPipelineType, true,
                     mainCode, parameterCode);
 #endif
             }
@@ -170,7 +213,8 @@ namespace Pixelpart
 
 #if UNITY_EDITOR
         private static void GenerateCustomShaderAsset(string materialName, string directory,
-            PixelpartBlendMode blendMode, PixelpartLightingMode lightingMode, bool instanced,
+            PixelpartBlendMode blendMode, PixelpartLightingMode lightingMode,
+            PixelpartRenderPipelineType renderPipeline, bool instanced,
             string mainCode, string parameterCode)
         {
             var shaderFilepath = Path.Combine(directory, materialName + ".shader");
@@ -179,8 +223,10 @@ namespace Pixelpart
                 return;
             }
 
-            var shaderCode = PixelpartShaderGenerator.GenerateShaderCode(
-                materialName, mainCode, parameterCode, blendMode, lightingMode, instanced);
+            var shaderCode = PixelpartShaderGenerator.GenerateShaderCode(materialName,
+                mainCode, parameterCode,
+                blendMode, lightingMode,
+                renderPipeline, instanced);
 
             var writer = File.CreateText(shaderFilepath);
             writer.Write(shaderCode);

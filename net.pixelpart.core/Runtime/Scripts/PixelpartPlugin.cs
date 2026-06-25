@@ -18,7 +18,11 @@ namespace Pixelpart
 
         // EffectRuntime
         [DllImport(pluginName)]
-        public static extern IntPtr PixelpartLoadEffect(byte[] data, int size);
+        public static extern IntPtr PixelpartLoadEffectResource(byte[] data, int size);
+        [DllImport(pluginName)]
+        public static extern void PixelpartDeleteEffectResource(IntPtr effectResource);
+        [DllImport(pluginName)]
+        public static extern IntPtr PixelpartCreateEffect(IntPtr effectResource);
         [DllImport(pluginName)]
         public static extern void PixelpartDeleteEffect(IntPtr effectRuntime);
         [DllImport(pluginName)]

@@ -1,3 +1,5 @@
 # Directories
+/docs/html/*
+/samples/*
 /.venv/*
 /.vscode/*

@@ -5,6 +5,7 @@
 #include "pixelpart-runtime/effect/StaticProperty.h"
 #include "pixelpart-runtime/effect/AnimatedProperty.h"
 #include "pixelpart-runtime/effect/ForceField.h"
+#include "pixelpart-runtime/effect/AttractionField.h"
 #include "pixelpart-runtime/effect/AccelerationField.h"
 #include "pixelpart-runtime/effect/VectorField.h"
 #include "pixelpart-runtime/effect/NoiseField.h"
@@ -63,6 +64,25 @@ UNITY_INTERFACE_EXPORT pixelpart::AnimatedProperty<pixelpart::float_t>* UNITY_IN
 			effectRuntime->effectAsset.effect().sceneGraph().at<pixelpart::ForceField>(forceFieldId);
 
 		return &forceField.strength();
+	}
+	catch(const std::exception& e) {
+		pixelpart_unity::lastError = std::string(e.what());
+	}
+
+	return nullptr;
+}
+
+UNITY_INTERFACE_EXPORT pixelpart::AnimatedProperty<pixelpart::float_t>* UNITY_INTERFACE_API PixelpartAttractionFieldGetFalloffPower(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::uint_t forceFieldId) {
+	if(!effectRuntime) {
+		pixelpart_unity::lastError = pixelpart_unity::invalidEffectRuntimeError;
+		return nullptr;
+	}
+
+	try {
+		pixelpart::AttractionField& forceField =
+			effectRuntime->effectAsset.effect().sceneGraph().at<pixelpart::AttractionField>(forceFieldId);
+
+		return &forceField.falloffPower();
 	}
 	catch(const std::exception& e) {
 		pixelpart_unity::lastError = std::string(e.what());

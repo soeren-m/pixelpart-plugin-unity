@@ -246,6 +246,8 @@ namespace Pixelpart
         [DllImport(pluginName)]
         public static extern IntPtr PixelpartForceFieldGetStrength(IntPtr effectRuntime, uint forceFieldId);
         [DllImport(pluginName)]
+        public static extern IntPtr PixelpartAttractionFieldGetFalloffPower(IntPtr effectRuntime, uint forceFieldId);
+        [DllImport(pluginName)]
         public static extern IntPtr PixelpartAccelerationFieldGetAccelerationDirection(IntPtr effectRuntime, uint forceFieldId);
         [DllImport(pluginName)]
         public static extern IntPtr PixelpartAccelerationFieldGetAccelerationDirectionVariance(IntPtr effectRuntime, uint forceFieldId);

@@ -12,13 +12,19 @@ namespace Pixelpart
     public class PixelpartAttractionField : PixelpartForceField
     {
         /// <summary>
+        /// How the strength of the force field decreases based on the distance to the center.
+        /// </summary>
+        public PixelpartAnimatedPropertyFloat FalloffPower { get; }
+
+        /// <summary>
         /// Construct <see cref="PixelpartAttractionField"/>.
         /// </summary>
         /// <param name="effectRuntimePtr">Effect runtime</param>
         /// <param name="id">Node ID</param>
         public PixelpartAttractionField(IntPtr effectRuntimePtr, uint id) : base(effectRuntimePtr, id)
         {
-
+            FalloffPower = new PixelpartAnimatedPropertyFloat(
+                PixelpartPlugin.PixelpartAttractionFieldGetFalloffPower(effectRuntimePtr, id));
         }
     }
 }

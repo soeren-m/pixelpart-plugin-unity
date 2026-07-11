@@ -126,9 +126,10 @@ tool.generate(env)
 sources = []
 add_sources(sources, "src", ".cpp")
 add_sources(sources, "pixelpart-runtime/asset", ".cpp")
-add_sources(sources, "pixelpart-runtime/common", ".cpp")
 add_sources(sources, "pixelpart-runtime/effect", ".cpp")
 add_sources(sources, "pixelpart-runtime/engine", ".cpp")
+add_sources(sources, "pixelpart-runtime/platform", ".cpp")
+add_sources(sources, "pixelpart-runtime/types", ".cpp")
 add_sources(sources, "pixelpart-runtime/vertex", ".cpp")
 add_sources(sources, "pixelpart-runtime/zlib", ".c")
 

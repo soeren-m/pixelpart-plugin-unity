@@ -4,8 +4,8 @@
 #include "ShaderGraphSpecification.h"
 #include "ShaderGraphSpecificationURP.h"
 #include "ShaderGraphSpecificationHDRP.h"
-#include "pixelpart-runtime/common/Curve.h"
 #include "pixelpart-runtime/math/Common.h"
+#include "pixelpart-runtime/effect/Curve.h"
 #include "pixelpart-runtime/effect/Effect.h"
 #include "pixelpart-runtime/effect/Node.h"
 #include "pixelpart-runtime/effect/ParticleType.h"
@@ -30,7 +30,7 @@
 #include <algorithm>
 
 #ifdef PIXELPART_RUNTIME_MULTITHREADING
-#include "pixelpart-runtime/common/StdThreadPool.h"
+#include "pixelpart-runtime/platform/StdThreadPool.h"
 #endif
 
 namespace pixelpart_unity {

@@ -1,11 +1,10 @@
 #include "Common.h"
 #include "Error.h"
 #include "EffectRuntime.h"
-#include "pixelpart-runtime/common/Types.h"
-#include "pixelpart-runtime/common/Transform.h"
-#include "pixelpart-runtime/common/Curve.h"
-#include "pixelpart-runtime/common/Id.h"
-#include "pixelpart-runtime/common/ThreadPool.h"
+#include "pixelpart-runtime/types/Types.h"
+#include "pixelpart-runtime/types/Id.h"
+#include "pixelpart-runtime/effect/Transform.h"
+#include "pixelpart-runtime/effect/Curve.h"
 #include "pixelpart-runtime/effect/ParticleType.h"
 #include "pixelpart-runtime/effect/Effect.h"
 #include "pixelpart-runtime/effect/ParticleEmissionPair.h"
@@ -13,6 +12,7 @@
 #include "pixelpart-runtime/engine/ParticleCollection.h"
 #include "pixelpart-runtime/vertex/VertexDataBufferCollection.h"
 #include "pixelpart-runtime/vertex/SceneContext.h"
+#include "pixelpart-runtime/platform/ThreadPool.h"
 #include <cstdint>
 #include <cstring>
 #include <cmath>

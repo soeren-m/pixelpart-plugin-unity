@@ -1,16 +1,16 @@
 #ifndef PIXELPART_UNITY_EFFECT_RUNTIME_H
 #define PIXELPART_UNITY_EFFECT_RUNTIME_H
 
-#include "pixelpart-runtime/common/Types.h"
-#include "pixelpart-runtime/common/Id.h"
-#include "pixelpart-runtime/common/ThreadPool.h"
-#include "pixelpart-runtime/common/Transform.h"
+#include "pixelpart-runtime/types/Types.h"
+#include "pixelpart-runtime/types/Id.h"
+#include "pixelpart-runtime/effect/Transform.h"
 #include "pixelpart-runtime/effect/ParticleEmissionPair.h"
 #include "pixelpart-runtime/effect/ShaderGraphSpecification.h"
 #include "pixelpart-runtime/asset/EffectAsset.h"
 #include "pixelpart-runtime/engine/EffectEngine.h"
 #include "pixelpart-runtime/vertex/ParticleVertexGenerator.h"
 #include "pixelpart-runtime/vertex/VertexDataBufferDimensions.h"
+#include "pixelpart-runtime/platform/ThreadPool.h"
 #include <memory>
 #include <vector>
 #include <unordered_map>

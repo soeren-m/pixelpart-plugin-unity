@@ -1,7 +1,7 @@
 #include "Common.h"
 #include "Error.h"
 #include "EffectRuntime.h"
-#include "pixelpart-runtime/common/VariantValue.h"
+#include "pixelpart-runtime/types/VariantValue.h"
 #include "pixelpart-runtime/effect/EffectInput.h"
 #include <cstring>
 #include <string>

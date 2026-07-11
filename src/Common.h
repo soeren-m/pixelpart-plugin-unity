@@ -1,7 +1,7 @@
 #ifndef PIXELPART_UNITY_COMMON_H
 #define PIXELPART_UNITY_COMMON_H
 
-#include "pixelpart-runtime/common/Types.h"
+#include "pixelpart-runtime/types/Types.h"
 #include <cstdint>
 
 #if defined(__CYGWIN32__)

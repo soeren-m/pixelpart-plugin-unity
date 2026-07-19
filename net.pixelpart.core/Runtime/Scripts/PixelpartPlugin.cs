@@ -55,6 +55,13 @@ namespace Pixelpart
         [DllImport(pluginName)]
         public static extern void PixelpartSpawnParticles(IntPtr effectRuntime, uint particleEmitterId, uint particleTypeId, int count);
 
+        // BuiltInMaterial
+        [DllImport(pluginName)]
+        public static extern int PixelpartGetBuiltInMaterialParameterCount([MarshalAs(UnmanagedType.LPStr)] string materialName);
+        [DllImport(pluginName)]
+        public static extern int PixelpartGetBuiltInMaterialParameters([MarshalAs(UnmanagedType.LPStr)] string materialName,
+            uint[] parameterIds, byte[] parameterNames, int parameterNameBufferSize);
+
         // EffectInput
         [DllImport(pluginName)]
         public static extern int PixelpartGetEffectInputCount(IntPtr effectRuntime);

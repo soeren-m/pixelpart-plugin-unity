@@ -378,7 +378,6 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::int_t UNITY_INTERFACE_API PixelpartGetMa
 	return -1;
 }
 
-
 UNITY_INTERFACE_EXPORT pixelpart_unity::int_t UNITY_INTERFACE_API PixelpartGetMaterialResourceLightingMode(pixelpart_unity::EffectRuntime* effectRuntime, const pixelpart_unity::char_t* resourceId) {
 	if(!effectRuntime) {
 		pixelpart_unity::lastError = pixelpart_unity::invalidEffectRuntimeError;

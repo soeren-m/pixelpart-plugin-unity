@@ -40,8 +40,8 @@ Triggers are used to make effects react to events in your game. The following ex
 // Get effect component of game object
 var effect = GetComponent<PixelpartEffect>();
 
-// Activate the trigger "Event"
-effect.ActivateTrigger("Event");
+// Activate the trigger "MyTrigger"
+effect.ActivateTrigger("MyTrigger");
 ```
 
 Use @ref Pixelpart.PixelpartEffect.IsTriggerActivated to check if a trigger has already been activated.

@@ -2,17 +2,17 @@
 
 ## Importing effects
 
-Save the effect you created in *Pixelpart* as a *.ppfx* file and place it into the *Assets* folder of your Unity project. If the plugin is installed correctly, Unity recognizes the *.ppfx* file as a Pixelpart effect and shows it with the Pixelpart icon in the project browser.
+Save the effect you created in Pixelpart as a *.ppfx* file and place it into the *Assets* folder of your Unity project. If the plugin is installed correctly, Unity recognizes the *.ppfx* file as a Pixelpart effect and shows it in the project browser.
 
 ![Project browser](./images/project-browser.png)
 
 ## Playing effects
 
-To play an effect, attach the *Pixelpart/Pixelpart Effect* component to a game object in your scene and drag the effect asset (*.ppfx* file) onto the *Effect Asset* field in the component's inspector window. The selected effect should now be rendered when running the game. If the effect *does not* appear, make sure you have set an appropriate *Effect Scale* value in the node's inspector.
+To play an effect, attach the *Pixelpart/Pixelpart Effect* component to a game object in your scene and drag the effect asset (*.ppfx* file) onto the *Effect Asset* field in the component's inspector window. The selected effect should now be visible in the scene. If the effect *does not* appear, make sure you have set an appropriate *Effect Scale* value in the node's inspector.
 
 ![Effect inspector](./images/inspector.png)
 
-## Effect properties
+The inspector allows you change how the effect is simulated and rendered.
 
 Property | Description
 -------- | -----------

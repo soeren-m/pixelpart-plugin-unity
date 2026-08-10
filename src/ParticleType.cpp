@@ -300,6 +300,25 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::bool_t UNITY_INTERFACE_API PixelpartPart
 	return false;
 }
 
+UNITY_INTERFACE_EXPORT pixelpart_unity::bool_t UNITY_INTERFACE_API PixelpartParticleTypeIsVisibleAtCurrentLod(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::uint_t particleTypeId) {
+	if(!effectRuntime || !effectRuntime->effectEngine) {
+		pixelpart_unity::lastError = pixelpart_unity::invalidEffectRuntimeError;
+		return false;
+	}
+
+	try {
+		const pixelpart::ParticleType& particleType =
+			effectRuntime->effectAsset.effect().particleTypes().at(pixelpart::id_t(particleTypeId));
+
+		return particleType.visibleAtLod(effectRuntime->effectEngine->context().lod());
+	}
+	catch(const std::exception& e) {
+		pixelpart_unity::lastError = std::string(e.what());
+	}
+
+	return false;
+}
+
 UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleTypeSetLayer(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::uint_t particleTypeId, pixelpart_unity::int_t layer) {
 	if(!effectRuntime) {
 		pixelpart_unity::lastError = pixelpart_unity::invalidEffectRuntimeError;

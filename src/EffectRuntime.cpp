@@ -24,7 +24,6 @@
 #include "pixelpart-runtime/json/json.hpp"
 #include <cstdint>
 #include <cstring>
-#include <vector>
 #include <locale>
 #include <exception>
 #include <algorithm>
@@ -213,6 +212,27 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartSetEffectTransform(pixe
 			effectRuntime->transform.scale()
 		} });
 	}
+}
+
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartSelectEffectLod(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::int_t lod) {
+	if(!effectRuntime || !effectRuntime->effectEngine) {
+		pixelpart_unity::lastError = pixelpart_unity::invalidEffectRuntimeError;
+		return;
+	}
+
+	effectRuntime->effectEngine->selectLod(static_cast<std::uint32_t>(std::max(lod, 0)));
+}
+
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartSelectEffectLodForCamera(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::vector3_t cameraPosition) {
+	if(!effectRuntime || !effectRuntime->effectEngine) {
+		pixelpart_unity::lastError = pixelpart_unity::invalidEffectRuntimeError;
+		return;
+	}
+
+	std::uint32_t lod = pixelpart::queryEffectLod(
+		effectRuntime->effectAsset.effect(), effectRuntime->effectEngine->context(), pixelpart_unity::fromUnity(cameraPosition));
+
+	effectRuntime->effectEngine->selectLod(lod);
 }
 
 UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartAdvanceEffect(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::float_t dt,

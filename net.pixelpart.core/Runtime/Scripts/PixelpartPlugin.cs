@@ -28,6 +28,10 @@ namespace Pixelpart
         [DllImport(pluginName)]
         public static extern void PixelpartSetEffectTransform(IntPtr effectRuntime, Matrix4x4 transformMatrix, Vector3 scale);
         [DllImport(pluginName)]
+        public static extern void PixelpartSelectEffectLod(IntPtr effectRuntime, int lod);
+        [DllImport(pluginName)]
+        public static extern void PixelpartSelectEffectLodForCamera(IntPtr effectRuntime, Vector3 cameraPosition);
+        [DllImport(pluginName)]
         public static extern void PixelpartAdvanceEffect(IntPtr effectRuntime, float dt,
             bool loop, float loopTime, float speed,
             float timeStep, int seed, bool randomSeed);
@@ -358,6 +362,8 @@ namespace Pixelpart
         public static extern void PixelpartParticleTypeSetVisible(IntPtr effectRuntime, uint particleTypeId, bool visible);
         [DllImport(pluginName)]
         public static extern bool PixelpartParticleTypeIsVisible(IntPtr effectRuntime, uint particleTypeId);
+        [DllImport(pluginName)]
+        public static extern bool PixelpartParticleTypeIsVisibleAtCurrentLod(IntPtr effectRuntime, uint particleTypeId);
         [DllImport(pluginName)]
         public static extern void PixelpartParticleTypeSetLayer(IntPtr effectRuntime, uint particleTypeId, int layer);
         [DllImport(pluginName)]

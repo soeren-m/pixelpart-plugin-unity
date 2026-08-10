@@ -315,6 +315,7 @@ namespace Pixelpart
             }
 
             ApplyTransform();
+            ApplyLod();
 
             var timeStep = 1.0f / Math.Max(FrameRate, 0.01f);
             PixelpartPlugin.PixelpartAdvanceEffect(effectRuntime, dt,
@@ -860,6 +861,7 @@ namespace Pixelpart
 
             ApplyInputProperties();
             ApplyTransform();
+            ApplyLod();
 
             PixelpartPlugin.PixelpartReseedEffect(effectRuntime, RandomSeed
                 ? (int)(Time.realtimeSinceStartupAsDouble * 1e6)
@@ -897,6 +899,28 @@ namespace Pixelpart
         private void ApplyTransform()
         {
             PixelpartPlugin.PixelpartSetEffectTransform(effectRuntime, transform.localToWorldMatrix, FinalEffectScale);
+        }
+
+        private void ApplyLod()
+        {
+            if (!Application.IsPlaying(gameObject))
+            {
+                PixelpartPlugin.PixelpartSelectEffectLod(effectRuntime, 0);
+                return;
+            }
+
+            var camera = Camera.main;
+            if (camera == null)
+            {
+                return;
+            }
+
+            var finalScale = FinalEffectScale;
+
+            PixelpartPlugin.PixelpartSelectEffectLodForCamera(effectRuntime, new Vector3(
+                camera.transform.position.x / finalScale.x,
+                camera.transform.position.y / finalScale.y,
+                camera.transform.position.z / finalScale.z));
         }
 
         private void SetInputPropertyValue(string inputName, PixelpartVariantValue value)

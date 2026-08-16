@@ -10,34 +10,6 @@
 #include <exception>
 #include <algorithm>
 
-namespace pixelpart_unity {
-void setParticleEmitterShapePoints(pixelpart::ParticleEmitter& particleEmitter, const std::vector<pixelpart::float3_t>& points) {
-	std::vector<pixelpart::float_t> distances(points.size(), 0.0);
-	pixelpart::float_t length = 0.0;
-
-	for(std::size_t i = 1; i < points.size(); i++) {
-		length += std::max(pixelpart::math::distance(points[i], points[i - 1]), 0.000001);
-		distances[i] = length;
-	}
-
-	pixelpart::Curve<pixelpart::float3_t> modifiedPath;
-	for(std::size_t i = 0; i < points.size(); i++) {
-		modifiedPath.addPoint(distances[i] / length, points[i]);
-	}
-
-	particleEmitter.path() = modifiedPath;
-}
-
-std::vector<pixelpart::float3_t> getParticleEmitterShapePoints(const pixelpart::ParticleEmitter& particleEmitter) {
-	std::vector<pixelpart::float3_t> points(particleEmitter.path().pointCount(), pixelpart::float3_t(0.0));
-	for(std::size_t i = 0; i < particleEmitter.path().pointCount(); i++) {
-		points[i] = particleEmitter.path().point(i).value;
-	}
-
-	return points;
-}
-}
-
 extern "C" {
 UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleEmitterSetShape(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::uint_t emitterId, pixelpart_unity::int_t shape) {
 	if(!effectRuntime) {
@@ -85,10 +57,7 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleEmitterAddShape
 		pixelpart::ParticleEmitter& emitter =
 			effectRuntime->effectAsset.effect().sceneGraph().at<pixelpart::ParticleEmitter>(emitterId);
 
-		std::vector<pixelpart::float3_t> points = pixelpart_unity::getParticleEmitterShapePoints(emitter);
-		points.push_back(pixelpart_unity::fromUnity(point));
-
-		pixelpart_unity::setParticleEmitterShapePoints(emitter, points);
+		emitter.path().addPoint(pixelpart_unity::fromUnity(point));
 	}
 	catch(const std::exception& e) {
 		pixelpart_unity::lastError = std::string(e.what());
@@ -109,10 +78,7 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleEmitterRemoveSh
 		pixelpart::ParticleEmitter& emitter =
 			effectRuntime->effectAsset.effect().sceneGraph().at<pixelpart::ParticleEmitter>(emitterId);
 
-		std::vector<pixelpart::float3_t> points = pixelpart_unity::getParticleEmitterShapePoints(emitter);
-		points.erase(points.begin() + static_cast<std::size_t>(index));
-
-		pixelpart_unity::setParticleEmitterShapePoints(emitter, points);
+		emitter.path().removePoint(static_cast<std::size_t>(index));
 	}
 	catch(const std::exception& e) {
 		pixelpart_unity::lastError = std::string(e.what());
@@ -133,10 +99,7 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleEmitterSetShape
 		pixelpart::ParticleEmitter& emitter =
 			effectRuntime->effectAsset.effect().sceneGraph().at<pixelpart::ParticleEmitter>(emitterId);
 
-		std::vector<pixelpart::float3_t> points = pixelpart_unity::getParticleEmitterShapePoints(emitter);
-		points.at(static_cast<std::size_t>(index)) = pixelpart_unity::fromUnity(point);
-
-		pixelpart_unity::setParticleEmitterShapePoints(emitter, points);
+		emitter.path().setPoint(static_cast<std::size_t>(index), pixelpart_unity::fromUnity(point));
 	}
 	catch(const std::exception& e) {
 		pixelpart_unity::lastError = std::string(e.what());
@@ -176,7 +139,7 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::vector3_t UNITY_INTERFACE_API PixelpartP
 		const pixelpart::ParticleEmitter& emitter =
 			effectRuntime->effectAsset.effect().sceneGraph().at<pixelpart::ParticleEmitter>(emitterId);
 
-		return pixelpart_unity::toUnity(emitter.path().point(static_cast<std::size_t>(index)).value);
+		return pixelpart_unity::toUnity(emitter.path().point(static_cast<std::size_t>(index)));
 	}
 	catch(const std::exception& e) {
 		pixelpart_unity::lastError = std::string(e.what());

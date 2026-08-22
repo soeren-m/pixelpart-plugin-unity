@@ -10,6 +10,7 @@
 #include "pixelpart-runtime/effect/VectorField.h"
 #include "pixelpart-runtime/effect/NoiseField.h"
 #include "pixelpart-runtime/effect/DragField.h"
+#include "pixelpart-runtime/effect/VortexField.h"
 #include <string>
 #include <exception>
 #include <algorithm>
@@ -462,6 +463,44 @@ UNITY_INTERFACE_EXPORT pixelpart::StaticProperty<pixelpart::float_t>* UNITY_INTE
 			effectRuntime->effectAsset.effect().sceneGraph().at<pixelpart::DragField>(forceFieldId);
 
 		return &forceField.sizeInfluence();
+	}
+	catch(const std::exception& e) {
+		pixelpart_unity::lastError = std::string(e.what());
+	}
+
+	return nullptr;
+}
+
+UNITY_INTERFACE_EXPORT pixelpart::AnimatedProperty<pixelpart::float_t>* UNITY_INTERFACE_API PixelpartVortexFieldGetTangentialStrength(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::uint_t forceFieldId) {
+	if(!effectRuntime) {
+		pixelpart_unity::lastError = pixelpart_unity::invalidEffectRuntimeError;
+		return nullptr;
+	}
+
+	try {
+		pixelpart::VortexField& forceField =
+			effectRuntime->effectAsset.effect().sceneGraph().at<pixelpart::VortexField>(forceFieldId);
+
+		return &forceField.tangentialStrength();
+	}
+	catch(const std::exception& e) {
+		pixelpart_unity::lastError = std::string(e.what());
+	}
+
+	return nullptr;
+}
+
+UNITY_INTERFACE_EXPORT pixelpart::AnimatedProperty<pixelpart::float_t>* UNITY_INTERFACE_API PixelpartVortexFieldGetRadialStrength(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::uint_t forceFieldId) {
+	if(!effectRuntime) {
+		pixelpart_unity::lastError = pixelpart_unity::invalidEffectRuntimeError;
+		return nullptr;
+	}
+
+	try {
+		pixelpart::VortexField& forceField =
+			effectRuntime->effectAsset.effect().sceneGraph().at<pixelpart::VortexField>(forceFieldId);
+
+		return &forceField.radialStrength();
 	}
 	catch(const std::exception& e) {
 		pixelpart_unity::lastError = std::string(e.what());

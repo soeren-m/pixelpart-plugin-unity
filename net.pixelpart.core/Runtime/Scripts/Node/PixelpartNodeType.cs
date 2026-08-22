@@ -1,9 +1,6 @@
 namespace Pixelpart
 {
-    /// <summary>
-    /// Types of nodes in a Pixelpart effect.
-    /// </summary>
-    public enum PixelpartNodeType : int
+    internal enum PixelpartNodeType : int
     {
         GroupNode = 0,
         ParticleEmitter = 1,
@@ -12,10 +9,11 @@ namespace Pixelpart
         VectorField = 4,
         NoiseField = 5,
         DragField = 6,
-        LineCollider = 7,
-        PlaneCollider = 8,
-        DirectionalLightSource = 9,
-        PointLightSource = 10,
-        SpotLightSource = 11
+        VortexField = 7,
+        LineCollider = 8,
+        PlaneCollider = 9,
+        DirectionalLightSource = 10,
+        PointLightSource = 11,
+        SpotLightSource = 12
     }
 }

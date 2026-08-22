@@ -70,6 +70,7 @@ public class SampleBehavior : MonoBehaviour
         else if (node is PixelpartVectorField) typeString = "VectorField";
         else if (node is PixelpartNoiseField) typeString = "NoiseField";
         else if (node is PixelpartDragField) typeString = "DragField";
+        else if (node is PixelpartVortexField) typeString = "VortexField";
         else if (node is PixelpartLineCollider) typeString = "LineCollider";
         else if (node is PixelpartPlaneCollider) typeString = "PlaneCollider";
         else if (node is PixelpartDirectionalLightSource) typeString = "DirectionalLightSource";

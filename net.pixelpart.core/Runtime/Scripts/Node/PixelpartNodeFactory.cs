@@ -2,18 +2,9 @@ using System;
 
 namespace Pixelpart
 {
-    /// <summary>
-    /// Factory for creating a <see cref="PixelpartNode"/>.
-    /// </summary>
-    public static class PixelpartNodeFactory
+    internal static class PixelpartNodeFactory
     {
-        /// <summary>
-        /// Create a node object from its ID in the effect.
-        /// </summary>
-        /// <param name="effectRuntime">Effect runtime</param>
-        /// <param name="nodeId">Node ID</param>
-        /// <returns>Created node</returns>
-        public static PixelpartNode CreateNode(IntPtr effectRuntime, uint nodeId)
+        internal static PixelpartNode CreateNode(IntPtr effectRuntime, uint nodeId)
         {
             var nodeTypeIndex = PixelpartPlugin.PixelpartNodeGetType(effectRuntime, nodeId);
             if (nodeTypeIndex < 0)
@@ -37,6 +28,8 @@ namespace Pixelpart
                     return new PixelpartNoiseField(effectRuntime, nodeId);
                 case PixelpartNodeType.DragField:
                     return new PixelpartDragField(effectRuntime, nodeId);
+                case PixelpartNodeType.VortexField:
+                    return new PixelpartVortexField(effectRuntime, nodeId);
                 case PixelpartNodeType.LineCollider:
                     return new PixelpartLineCollider(effectRuntime, nodeId);
                 case PixelpartNodeType.PlaneCollider:

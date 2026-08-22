@@ -298,6 +298,10 @@ namespace Pixelpart
         public static extern IntPtr PixelpartDragFieldGetVelocityInfluence(IntPtr effectRuntime, uint forceFieldId);
         [DllImport(pluginName)]
         public static extern IntPtr PixelpartDragFieldGetSizeInfluence(IntPtr effectRuntime, uint forceFieldId);
+        [DllImport(pluginName)]
+        public static extern IntPtr PixelpartVortexFieldGetTangentialStrength(IntPtr effectRuntime, uint forceFieldId);
+        [DllImport(pluginName)]
+        public static extern IntPtr PixelpartVortexFieldGetRadialStrength(IntPtr effectRuntime, uint forceFieldId);
 
         // Collider
         [DllImport(pluginName)]

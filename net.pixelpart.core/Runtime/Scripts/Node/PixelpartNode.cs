@@ -42,8 +42,8 @@ namespace Pixelpart
         /// </summary>
         public float LifetimeStart
         {
-            get => PixelpartPlugin.PixelpartNodeGetStart(effectRuntime, Id);
-            set => PixelpartPlugin.PixelpartNodeSetStart(effectRuntime, Id, value);
+            get => PixelpartPlugin.PixelpartNodeGetLifetimeStart(effectRuntime, Id);
+            set => PixelpartPlugin.PixelpartNodeSetLifetimeStart(effectRuntime, Id, value);
         }
 
         /// <summary>
@@ -51,8 +51,8 @@ namespace Pixelpart
         /// </summary>
         public float LifetimeDuration
         {
-            get => PixelpartPlugin.PixelpartNodeGetDuration(effectRuntime, Id);
-            set => PixelpartPlugin.PixelpartNodeSetDuration(effectRuntime, Id, value);
+            get => PixelpartPlugin.PixelpartNodeGetLifetimeDuration(effectRuntime, Id);
+            set => PixelpartPlugin.PixelpartNodeSetLifetimeDuration(effectRuntime, Id, value);
         }
 
         /// <summary>

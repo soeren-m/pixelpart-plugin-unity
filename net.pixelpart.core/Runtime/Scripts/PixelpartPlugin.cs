@@ -183,15 +183,15 @@ namespace Pixelpart
         [DllImport(pluginName)]
         public static extern uint PixelpartNodeGetParentId(IntPtr effectRuntime, uint nodeId);
         [DllImport(pluginName)]
-        public static extern void PixelpartNodeSetStart(IntPtr effectRuntime, uint nodeId, float value);
+        public static extern void PixelpartNodeSetLifetimeStart(IntPtr effectRuntime, uint nodeId, float value);
         [DllImport(pluginName)]
-        public static extern void PixelpartNodeSetDuration(IntPtr effectRuntime, uint nodeId, float value);
+        public static extern void PixelpartNodeSetLifetimeDuration(IntPtr effectRuntime, uint nodeId, float value);
         [DllImport(pluginName)]
         public static extern void PixelpartNodeSetRepeat(IntPtr effectRuntime, uint nodeId, bool value);
         [DllImport(pluginName)]
-        public static extern float PixelpartNodeGetStart(IntPtr effectRuntime, uint nodeId);
+        public static extern float PixelpartNodeGetLifetimeStart(IntPtr effectRuntime, uint nodeId);
         [DllImport(pluginName)]
-        public static extern float PixelpartNodeGetDuration(IntPtr effectRuntime, uint nodeId);
+        public static extern float PixelpartNodeGetLifetimeDuration(IntPtr effectRuntime, uint nodeId);
         [DllImport(pluginName)]
         public static extern bool PixelpartNodeIsRepeating(IntPtr effectRuntime, uint nodeId);
         [DllImport(pluginName)]

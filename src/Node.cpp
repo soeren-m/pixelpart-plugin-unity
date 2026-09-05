@@ -192,7 +192,7 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::uint_t UNITY_INTERFACE_API PixelpartNode
 	return pixelpart::id_t::nullValue;
 }
 
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartNodeSetStart(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::uint_t nodeId, pixelpart_unity::float_t value) {
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartNodeSetLifetimeStart(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::uint_t nodeId, pixelpart_unity::float_t value) {
 	if(!effectRuntime) {
 		pixelpart_unity::lastError = pixelpart_unity::invalidEffectRuntimeError;
 		return;
@@ -202,14 +202,14 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartNodeSetStart(pixelpart_
 		pixelpart::Node& node =
 			effectRuntime->effectAsset.effect().sceneGraph().at(pixelpart::id_t(nodeId));
 
-		node.start(pixelpart_unity::fromUnity(value));
+		node.lifetimeStart(pixelpart_unity::fromUnity(value));
 	}
 	catch(const std::exception& e) {
 		pixelpart_unity::lastError = std::string(e.what());
 	}
 }
 
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartNodeSetDuration(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::uint_t nodeId, pixelpart_unity::float_t value) {
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartNodeSetLifetimeDuration(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::uint_t nodeId, pixelpart_unity::float_t value) {
 	if(!effectRuntime) {
 		pixelpart_unity::lastError = pixelpart_unity::invalidEffectRuntimeError;
 		return;
@@ -219,7 +219,7 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartNodeSetDuration(pixelpa
 		pixelpart::Node& node =
 			effectRuntime->effectAsset.effect().sceneGraph().at(pixelpart::id_t(nodeId));
 
-		node.duration(pixelpart_unity::fromUnity(value));
+		node.lifetimeDuration(pixelpart_unity::fromUnity(value));
 	}
 	catch(const std::exception& e) {
 		pixelpart_unity::lastError = std::string(e.what());
@@ -243,7 +243,7 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartNodeSetRepeat(pixelpart
 	}
 }
 
-UNITY_INTERFACE_EXPORT pixelpart_unity::float_t UNITY_INTERFACE_API PixelpartNodeGetStart(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::uint_t nodeId) {
+UNITY_INTERFACE_EXPORT pixelpart_unity::float_t UNITY_INTERFACE_API PixelpartNodeGetLifetimeStart(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::uint_t nodeId) {
 	if(!effectRuntime) {
 		pixelpart_unity::lastError = pixelpart_unity::invalidEffectRuntimeError;
 		return 0.0f;
@@ -253,7 +253,7 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::float_t UNITY_INTERFACE_API PixelpartNod
 		const pixelpart::Node& node =
 			effectRuntime->effectAsset.effect().sceneGraph().at(pixelpart::id_t(nodeId));
 
-		return pixelpart_unity::toUnity(node.start());
+		return pixelpart_unity::toUnity(node.lifetimeStart());
 	}
 	catch(const std::exception& e) {
 		pixelpart_unity::lastError = std::string(e.what());
@@ -262,7 +262,7 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::float_t UNITY_INTERFACE_API PixelpartNod
 	return 0.0f;
 }
 
-UNITY_INTERFACE_EXPORT pixelpart_unity::float_t UNITY_INTERFACE_API PixelpartNodeGetDuration(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::uint_t nodeId) {
+UNITY_INTERFACE_EXPORT pixelpart_unity::float_t UNITY_INTERFACE_API PixelpartNodeGetLifetimeDuration(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::uint_t nodeId) {
 	if(!effectRuntime) {
 		pixelpart_unity::lastError = pixelpart_unity::invalidEffectRuntimeError;
 		return 0.0f;
@@ -272,7 +272,7 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::float_t UNITY_INTERFACE_API PixelpartNod
 		const pixelpart::Node& node =
 			effectRuntime->effectAsset.effect().sceneGraph().at(pixelpart::id_t(nodeId));
 
-		return pixelpart_unity::toUnity(node.duration());
+		return pixelpart_unity::toUnity(node.lifetimeDuration());
 	}
 	catch(const std::exception& e) {
 		pixelpart_unity::lastError = std::string(e.what());

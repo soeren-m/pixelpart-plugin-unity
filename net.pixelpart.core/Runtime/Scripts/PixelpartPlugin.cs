@@ -347,9 +347,9 @@ namespace Pixelpart
         [DllImport(pluginName)]
         public static extern int PixelpartParticleTypeGetName(IntPtr effectRuntime, uint particleTypeId, byte[] buffer, int length);
         [DllImport(pluginName)]
-        public static extern void PixelpartParticleTypeSetPositionRelative(IntPtr effectRuntime, uint particleTypeId, bool relative);
+        public static extern void PixelpartParticleTypeSetSimulationSpace(IntPtr effectRuntime, uint particleTypeId, int space);
         [DllImport(pluginName)]
-        public static extern bool PixelpartParticleTypeIsPositionRelative(IntPtr effectRuntime, uint particleTypeId);
+        public static extern int PixelpartParticleTypeGetSimulationSpace(IntPtr effectRuntime, uint particleTypeId);
         [DllImport(pluginName)]
         public static extern void PixelpartParticleTypeSetRotationMode(IntPtr effectRuntime, uint particleTypeId, int mode);
         [DllImport(pluginName)]

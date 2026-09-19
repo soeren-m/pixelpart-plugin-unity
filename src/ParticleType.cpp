@@ -118,7 +118,7 @@ UNITY_INTERFACE_EXPORT pixelpart_unity::int_t UNITY_INTERFACE_API PixelpartParti
 	return 0;
 }
 
-UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleTypeSetPositionRelative(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::uint_t particleTypeId, pixelpart_unity::bool_t relative) {
+UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleTypeSetSimulationSpace(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::uint_t particleTypeId, pixelpart_unity::int_t space) {
 	if(!effectRuntime) {
 		pixelpart_unity::lastError = pixelpart_unity::invalidEffectRuntimeError;
 		return;
@@ -128,30 +128,30 @@ UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleTypeSetPosition
 		pixelpart::ParticleType& particleType =
 			effectRuntime->effectAsset.effect().particleTypes().at(pixelpart::id_t(particleTypeId));
 
-		particleType.positionRelative(relative);
+		particleType.simulationSpace(static_cast<pixelpart::ParticleSimulationSpace>(space));
 	}
 	catch(const std::exception& e) {
 		pixelpart_unity::lastError = std::string(e.what());
 	}
 }
 
-UNITY_INTERFACE_EXPORT pixelpart_unity::bool_t UNITY_INTERFACE_API PixelpartParticleTypeIsPositionRelative(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::uint_t particleTypeId) {
+UNITY_INTERFACE_EXPORT pixelpart_unity::int_t UNITY_INTERFACE_API PixelpartParticleTypeGetSimulationSpace(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::uint_t particleTypeId) {
 	if(!effectRuntime) {
 		pixelpart_unity::lastError = pixelpart_unity::invalidEffectRuntimeError;
-		return false;
+		return static_cast<pixelpart_unity::int_t>(pixelpart::ParticleSimulationSpace::global);
 	}
 
 	try {
 		const pixelpart::ParticleType& particleType =
 			effectRuntime->effectAsset.effect().particleTypes().at(pixelpart::id_t(particleTypeId));
 
-		return particleType.positionRelative();
+		return static_cast<pixelpart_unity::int_t>(particleType.simulationSpace());
 	}
 	catch(const std::exception& e) {
 		pixelpart_unity::lastError = std::string(e.what());
 	}
 
-	return false;
+	return static_cast<pixelpart_unity::int_t>(pixelpart::ParticleSimulationSpace::global);
 }
 
 UNITY_INTERFACE_EXPORT void UNITY_INTERFACE_API PixelpartParticleTypeSetRotationMode(pixelpart_unity::EffectRuntime* effectRuntime, pixelpart_unity::uint_t particleTypeId, pixelpart_unity::int_t mode) {

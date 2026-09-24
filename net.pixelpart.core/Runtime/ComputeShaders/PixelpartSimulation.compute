@@ -1,0 +1,30 @@
+#pragma kernel PixelpartSimulation
+
+struct Particle
+{
+    float3 position;
+    float3 globalPosition;
+    float3 velocity;
+    float3 force;
+    float life;
+};
+
+RWStructuredBuffer<Particle> particleBuffer;
+
+float deltaTime;
+
+[numthreads(256, 1, 1)]
+void PixelpartSimulation(uint3 threadId : SV_DispatchThreadID)
+{
+    // TODO
+
+    Particle particle = particleBuffer[threadId.x];
+
+    particle.velocity += particle.force * deltaTime;
+    particle.position += particle.velocity * deltaTime;
+    particle.globalPosition = particle.position;
+
+    particle.life -= deltaTime;
+
+    particleBuffer[threadId.x] = particle;
+}

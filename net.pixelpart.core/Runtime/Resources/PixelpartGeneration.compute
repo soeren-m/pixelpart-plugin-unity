@@ -1,0 +1,18 @@
+#pragma kernel CSMain
+
+struct Particle
+{
+    float3 position;
+    float3 globalPosition;
+    float3 velocity;
+    float3 force;
+    float life;
+};
+
+RWStructuredBuffer<Particle> particleBuffer;
+
+[numthreads(256, 1, 1)]
+void CSMain(uint3 threadId : SV_DispatchThreadID)
+{
+    // TODO
+}

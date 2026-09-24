@@ -26,6 +26,8 @@ namespace Pixelpart
 
         private static int simulationKernelId = 0;
 
+        private static uint generationKernelGroupSize = 0;
+
         private static uint simulationKernelGroupSize = 0;
 
         private readonly PixelpartParticleEmissionPair[] particleEmissionPairs;
@@ -45,14 +47,33 @@ namespace Pixelpart
             {
                 gpuBuffers[emissionPairIndex] = new GpuBufferCollection
                 {
-                    ParticleBuffer = new ComputeBuffer(MaxParticleCount, sizeof(GpuParticle))
+                    ParticleBuffer = new ComputeBuffer(MaxParticleCount, sizeof(float) * 13)
                 };
-            }
 
-            // TODO: init with some dummy data
+                // Some dummy data
+                var particleArray = new GpuParticle[MaxParticleCount];
+                for (int i = 0; i < MaxParticleCount; i++)
+                {
+                    particleArray[i].position.x = Random.value * 2.0f - 1.0f;
+                    particleArray[i].position.y = Random.value * 2.0f - 1.0f;
+                    particleArray[i].position.z = Random.value * 2.0f - 1.0f;
+                    particleArray[i].velocity.x = 1.0f;
+                    particleArray[i].velocity.y = 0.0f;
+                    particleArray[i].velocity.z = 0.0f;
+                    particleArray[i].force.x = 0.0f;
+                    particleArray[i].force.y = 0.01f;
+                    particleArray[i].force.z = 0.0f;
+                    particleArray[i].life = 5.0f;
+                }
+
+                gpuBuffers[emissionPairIndex].ParticleBuffer.SetData(particleArray);
+            }
         }
 
-        public void Advance(float dt, bool loop, float loopTime, float speed, float timeStep, uint seed, bool randomSeed)
+        public void Advance(float dt,
+            bool loop, float loopTime,
+            float speed, float timeStep,
+            uint seed, bool randomSeed)
         {
             simulationComputeShader.SetFloat("deltaTime", Time.deltaTime);
 
@@ -66,6 +87,22 @@ namespace Pixelpart
                 simulationComputeShader.Dispatch(simulationKernelId,
                     Mathf.CeilToInt((float)MaxParticleCount / (float)simulationKernelGroupSize), 1, 1);
             }
+        }
+
+        public void Restart(bool clearParticles)
+        {
+            // TODO
+        }
+
+        public void SpawnParticles(uint particleEmitterId, uint particleTypeId, int count)
+        {
+            // TODO
+        }
+
+        public bool IsFinished()
+        {
+            // TODO
+            return false;
         }
 
         public ComputeBuffer GetParticleBuffer(uint emitterId, uint typeId)
@@ -83,12 +120,13 @@ namespace Pixelpart
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
         private static void LoadComputeShaders()
         {
-            generationComputeShader = Resources.Load<ComputeShader>("GenerationComputeShader");
-            simulationComputeShader = Resources.Load<ComputeShader>("SimulationComputeShader");
+            generationComputeShader = Resources.Load<ComputeShader>("PixelpartGeneration");
+            simulationComputeShader = Resources.Load<ComputeShader>("PixelpartSimulation");
 
-            generationKernelId = generationComputeShader.FindKernel("PixelpartGeneration");
-            simulationKernelId = simulationComputeShader.FindKernel("PixelpartSimulation");
+            generationKernelId = generationComputeShader.FindKernel("CSMain");
+            simulationKernelId = simulationComputeShader.FindKernel("CSMain");
 
+            generationComputeShader.GetKernelThreadGroupSizes(generationKernelId, out generationKernelGroupSize, out _, out _);
             simulationComputeShader.GetKernelThreadGroupSizes(simulationKernelId, out simulationKernelGroupSize, out _, out _);
         }
     }

@@ -358,8 +358,8 @@ namespace Pixelpart
         /// <summary>
         /// Restart the effect.
         /// </summary>
-        /// <param name="clearParticles">Whether to remove existing particles</param>
-        public void RestartEffect(bool clearParticles = true)
+        /// <param name="clear">Whether to remove existing particles</param>
+        public void RestartEffect(bool clear = true)
         {
             if (effectRuntime == IntPtr.Zero)
             {
@@ -367,7 +367,7 @@ namespace Pixelpart
                 return;
             }
 
-            PixelpartPlugin.PixelpartRestartEffect(effectRuntime, clearParticles);
+            PixelpartPlugin.PixelpartRestartEffect(effectRuntime, clear);
         }
 
         /// <summary>

@@ -356,9 +356,10 @@ namespace Pixelpart
         }
 
         /// <summary>
-        /// Restart the effect and remove all existing particles.
+        /// Restart the effect.
         /// </summary>
-        public void RestartEffect()
+        /// <param name="clearParticles">Whether to remove existing particles</param>
+        public void RestartEffect(bool clearParticles = true)
         {
             if (effectRuntime == IntPtr.Zero)
             {
@@ -366,22 +367,14 @@ namespace Pixelpart
                 return;
             }
 
-            PixelpartPlugin.PixelpartRestartEffect(effectRuntime, true);
+            PixelpartPlugin.PixelpartRestartEffect(effectRuntime, clearParticles);
         }
 
         /// <summary>
         /// Restart the effect, but do not remove existing particles.
         /// </summary>
-        public void ResetEffect()
-        {
-            if (effectRuntime == IntPtr.Zero)
-            {
-                Debug.LogWarning("[Pixelpart] PixelpartEffect component is not associated with any effect asset", this);
-                return;
-            }
-
-            PixelpartPlugin.PixelpartRestartEffect(effectRuntime, false);
-        }
+        [Obsolete("Use RestartEffect instead.")]
+        public void ResetEffect() => RestartEffect(false);
 
         /// <summary>
         /// Generate <paramref name="count"/> particles of the given type from the given emitter.

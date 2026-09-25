@@ -1,6 +1,51 @@
 # Scripting
 
-A Pixelpart effect that is rendered using a @ref Pixelpart.PixelpartEffect component in your scene can be modified at runtime with scripts. This can be used to dynamically change the effect and let it react to other objects in the scene.
+A Pixelpart effect that is rendered using a @ref Pixelpart.PixelpartEffect component in your scene can be controlled and modified at runtime with scripts. This can be used to dynamically change the effect and let it react to other objects in the scene.
+
+## General
+
+The @ref Pixelpart.PixelpartEffect component provides methods to control the effect simulation. You can also change the properties visible in the inspector from a script. The following example shows how to restart an effect and then simulate it in slow motion:
+
+```csharp
+// Get effect component of game object
+var effect = GetComponent<PixelpartEffect>();
+
+// Restart effect and play in slow-motion
+effect.RestartEffect();
+effect.Playing = true;
+effect.Speed = 0.5;
+```
+
+- @ref Pixelpart.PixelpartEffect.RestartEffect - Restart the effect from the beginning.
+- @ref Pixelpart.PixelpartEffect.Playing - Whether is the effect is playing or paused.
+- @ref Pixelpart.PixelpartEffect.Loop - If enabled, the effect is repeated after the time specified in `LoopTime`.
+- @ref Pixelpart.PixelpartEffect.LoopTime - Time in seconds after which the effect is repeated. Only has an effect if `Loop` is enabled.
+- @ref Pixelpart.PixelpartEffect.WarmupTime - Time in seconds the effect is pre-simulated before being rendered. This value impacts performance and should be kept as low as possible.
+- @ref Pixelpart.PixelpartEffect.Speed - Multiplier for the playback speed of the effect. For example, setting `Speed` to *0.5* shows the effect in slow motion.
+- @ref Pixelpart.PixelpartEffect.FrameRate - How many iterations are simulated per second. Can be used to improve performance for complex effects.
+- @ref Pixelpart.PixelpartEffect.Seed - Seed used to initialize the effect simulation. This seed is used if `RandomSeed` is not enabled.
+- @ref Pixelpart.PixelpartEffect.RandomSeed - Whether to use a random seed to initialize the effect simulation.
+- @ref Pixelpart.PixelpartEffect.EffectScale - Multiplier for the size of the effect. Adjust this value if the effect appears too small or too large in the scene.
+- @ref Pixelpart.PixelpartEffect.FlipH - Whether the effect is flipped horizontally.
+- @ref Pixelpart.PixelpartEffect.FlipV - Whether the effect is flipped vertically.
+
+You might also want to get notified when an effect is finished and no particles are visible anymore. You can do so by subscribing to the @ref Pixelpart.PixelpartEffect.Finished event. Of course this only works for effects without repeating emitters.
+
+```csharp
+public void Awake()
+{
+    // Get effect component of game object
+    var effect = GetComponent<PixelpartEffect>();
+
+    // Get notified when effect is finished
+    effect.Finished += OnFinished;
+}
+
+private void OnFinished(object sender, EventArgs e)
+{
+    // Effect is now finished
+}
+```
 
 ## Inputs
 

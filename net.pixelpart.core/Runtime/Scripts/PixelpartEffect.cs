@@ -315,6 +315,7 @@ namespace Pixelpart
             }
 
             ApplyTransform();
+            ApplyLod();
 
             var timeStep = 1.0f / Math.Max(FrameRate, 0.01f);
             PixelpartPlugin.PixelpartAdvanceEffect(effectRuntime, dt,
@@ -355,9 +356,10 @@ namespace Pixelpart
         }
 
         /// <summary>
-        /// Restart the effect and remove all existing particles.
+        /// Restart the effect.
         /// </summary>
-        public void RestartEffect()
+        /// <param name="clear">Whether to remove existing particles</param>
+        public void RestartEffect(bool clear = true)
         {
             if (effectRuntime == IntPtr.Zero)
             {
@@ -365,22 +367,14 @@ namespace Pixelpart
                 return;
             }
 
-            PixelpartPlugin.PixelpartRestartEffect(effectRuntime, true);
+            PixelpartPlugin.PixelpartRestartEffect(effectRuntime, clear);
         }
 
         /// <summary>
         /// Restart the effect, but do not remove existing particles.
         /// </summary>
-        public void ResetEffect()
-        {
-            if (effectRuntime == IntPtr.Zero)
-            {
-                Debug.LogWarning("[Pixelpart] PixelpartEffect component is not associated with any effect asset", this);
-                return;
-            }
-
-            PixelpartPlugin.PixelpartRestartEffect(effectRuntime, false);
-        }
+        [Obsolete("Use RestartEffect instead.")]
+        public void ResetEffect() => RestartEffect(false);
 
         /// <summary>
         /// Generate <paramref name="count"/> particles of the given type from the given emitter.
@@ -860,6 +854,7 @@ namespace Pixelpart
 
             ApplyInputProperties();
             ApplyTransform();
+            ApplyLod();
 
             PixelpartPlugin.PixelpartReseedEffect(effectRuntime, RandomSeed
                 ? (int)(Time.realtimeSinceStartupAsDouble * 1e6)
@@ -897,6 +892,28 @@ namespace Pixelpart
         private void ApplyTransform()
         {
             PixelpartPlugin.PixelpartSetEffectTransform(effectRuntime, transform.localToWorldMatrix, FinalEffectScale);
+        }
+
+        private void ApplyLod()
+        {
+            if (!Application.IsPlaying(gameObject))
+            {
+                PixelpartPlugin.PixelpartSelectEffectLod(effectRuntime, 0);
+                return;
+            }
+
+            var camera = Camera.main;
+            if (camera == null)
+            {
+                return;
+            }
+
+            var finalScale = FinalEffectScale;
+
+            PixelpartPlugin.PixelpartSelectEffectLodForCamera(effectRuntime, new Vector3(
+                camera.transform.position.x / finalScale.x,
+                camera.transform.position.y / finalScale.y,
+                camera.transform.position.z / finalScale.z));
         }
 
         private void SetInputPropertyValue(string inputName, PixelpartVariantValue value)

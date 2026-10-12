@@ -16,8 +16,6 @@ namespace Pixelpart
 
         private readonly PixelpartParticleEmissionPair[] particleEmissionPairs;
 
-        private readonly int[] sortedParticleEmissionPairs;
-
         public PixelpartEffectRenderer(IntPtr effectRuntimePtr, IList<Material> particleMaterials, IList<PixelpartMaterialDescriptor> customMaterials)
         {
             effectRuntime = effectRuntimePtr;
@@ -29,7 +27,6 @@ namespace Pixelpart
 
             particleMeshes = new PixelpartParticleMesh[emissionPairCount];
             particleEmissionPairs = new PixelpartParticleEmissionPair[emissionPairCount];
-            sortedParticleEmissionPairs = new int[emissionPairCount];
             PixelpartPlugin.PixelpartGetEffectParticleEmissionPairs(effectRuntimePtr, particleEmissionPairs);
 
             var materialIdBuffer = new byte[2048];
@@ -101,8 +98,17 @@ namespace Pixelpart
 
         public void Render(Camera camera, Transform transform, int layer)
         {
-            foreach (var particleMesh in particleMeshes)
+            for (var emissionPairIndex = 0; emissionPairIndex < particleEmissionPairs.Length && emissionPairIndex < particleMeshes.Length; emissionPairIndex++)
             {
+                var emissionPair = particleEmissionPairs[emissionPairIndex];
+                var visible = PixelpartPlugin.PixelpartParticleTypeIsVisibleAtCurrentLod(effectRuntime, emissionPair.TypeId);
+                if (!visible)
+                {
+                    continue;
+                }
+
+                var particleMesh = particleMeshes[emissionPairIndex];
+
                 if (camera != null)
                 {
                     particleMesh?.Render(camera, transform, layer);

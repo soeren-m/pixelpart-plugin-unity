@@ -86,12 +86,7 @@ namespace Pixelpart
                 return;
             }
 
-            var visible = PixelpartPlugin.PixelpartParticleTypeIsVisible(effectRuntime, particleTypeId);
             var particleLayer = PixelpartPlugin.PixelpartParticleTypeGetLayer(effectRuntime, particleTypeId);
-            if (!visible)
-            {
-                return;
-            }
 
             particleMaterial.ApplyRuntimeParameters();
 

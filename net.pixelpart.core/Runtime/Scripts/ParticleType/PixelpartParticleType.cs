@@ -29,6 +29,22 @@ namespace Pixelpart
     public class PixelpartParticleType
     {
         /// <summary>
+        /// Whether particles are simulated in global or local coordinates.
+        /// </summary>
+        public enum SimulationSpaceType : int
+        {
+            /// <summary>
+            /// Particles are simulated in global coordinates.
+            /// </summary>
+            Global = 0,
+
+            /// <summary>
+            /// Particles are simulated in local coordinates and move relative to their parent emitter.
+            /// </summary>
+            Local = 1
+        }
+
+        /// <summary>
         /// Whether the rotation property represents the exact rotation of particles or their angular velocity.
         /// </summary>
         public enum RotationModeType : int
@@ -123,12 +139,22 @@ namespace Pixelpart
         }
 
         /// <summary>
+        /// Whether particles are simulated in global or local coordinates.
+        /// </summary>
+        public SimulationSpaceType SimulationSpace
+        {
+            get => (SimulationSpaceType)PixelpartPlugin.PixelpartParticleTypeGetSimulationSpace(effectRuntime, Id);
+            set => PixelpartPlugin.PixelpartParticleTypeSetSimulationSpace(effectRuntime, Id, (int)value);
+        }
+
+        /// <summary>
         /// Whether the position of particles is tied to the position of the emitter.
         /// </summary>
+        [Obsolete("Use SimulationSpace instead.")]
         public bool PositionRelative
         {
-            get => PixelpartPlugin.PixelpartParticleTypeIsPositionRelative(effectRuntime, Id);
-            set => PixelpartPlugin.PixelpartParticleTypeSetPositionRelative(effectRuntime, Id, value);
+            get => (SimulationSpaceType)PixelpartPlugin.PixelpartParticleTypeGetSimulationSpace(effectRuntime, Id) == SimulationSpaceType.Local;
+            set => PixelpartPlugin.PixelpartParticleTypeSetSimulationSpace(effectRuntime, Id, value ? (int)SimulationSpaceType.Local : (int)SimulationSpaceType.Global);
         }
 
         /// <summary>

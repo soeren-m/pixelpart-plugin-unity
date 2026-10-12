@@ -28,6 +28,10 @@ namespace Pixelpart
         [DllImport(pluginName)]
         public static extern void PixelpartSetEffectTransform(IntPtr effectRuntime, Matrix4x4 transformMatrix, Vector3 scale);
         [DllImport(pluginName)]
+        public static extern void PixelpartSelectEffectLod(IntPtr effectRuntime, int lod);
+        [DllImport(pluginName)]
+        public static extern void PixelpartSelectEffectLodForCamera(IntPtr effectRuntime, Vector3 cameraPosition);
+        [DllImport(pluginName)]
         public static extern void PixelpartAdvanceEffect(IntPtr effectRuntime, float dt,
             bool loop, float loopTime, float speed,
             float timeStep, int seed, bool randomSeed);
@@ -54,6 +58,13 @@ namespace Pixelpart
         public static extern uint PixelpartGetEffectParticleCount(IntPtr effectRuntime, uint particleEmitterId, uint particleTypeId);
         [DllImport(pluginName)]
         public static extern void PixelpartSpawnParticles(IntPtr effectRuntime, uint particleEmitterId, uint particleTypeId, int count);
+
+        // BuiltInMaterial
+        [DllImport(pluginName)]
+        public static extern int PixelpartGetBuiltInMaterialParameterCount([MarshalAs(UnmanagedType.LPStr)] string materialName);
+        [DllImport(pluginName)]
+        public static extern int PixelpartGetBuiltInMaterialParameters([MarshalAs(UnmanagedType.LPStr)] string materialName,
+            uint[] parameterIds, byte[] parameterNames, int parameterNameBufferSize);
 
         // EffectInput
         [DllImport(pluginName)]
@@ -172,15 +183,15 @@ namespace Pixelpart
         [DllImport(pluginName)]
         public static extern uint PixelpartNodeGetParentId(IntPtr effectRuntime, uint nodeId);
         [DllImport(pluginName)]
-        public static extern void PixelpartNodeSetStart(IntPtr effectRuntime, uint nodeId, float value);
+        public static extern void PixelpartNodeSetLifetimeStart(IntPtr effectRuntime, uint nodeId, float value);
         [DllImport(pluginName)]
-        public static extern void PixelpartNodeSetDuration(IntPtr effectRuntime, uint nodeId, float value);
+        public static extern void PixelpartNodeSetLifetimeDuration(IntPtr effectRuntime, uint nodeId, float value);
         [DllImport(pluginName)]
         public static extern void PixelpartNodeSetRepeat(IntPtr effectRuntime, uint nodeId, bool value);
         [DllImport(pluginName)]
-        public static extern float PixelpartNodeGetStart(IntPtr effectRuntime, uint nodeId);
+        public static extern float PixelpartNodeGetLifetimeStart(IntPtr effectRuntime, uint nodeId);
         [DllImport(pluginName)]
-        public static extern float PixelpartNodeGetDuration(IntPtr effectRuntime, uint nodeId);
+        public static extern float PixelpartNodeGetLifetimeDuration(IntPtr effectRuntime, uint nodeId);
         [DllImport(pluginName)]
         public static extern bool PixelpartNodeIsRepeating(IntPtr effectRuntime, uint nodeId);
         [DllImport(pluginName)]
@@ -246,6 +257,8 @@ namespace Pixelpart
         [DllImport(pluginName)]
         public static extern IntPtr PixelpartForceFieldGetStrength(IntPtr effectRuntime, uint forceFieldId);
         [DllImport(pluginName)]
+        public static extern IntPtr PixelpartAttractionFieldGetFalloffPower(IntPtr effectRuntime, uint forceFieldId);
+        [DllImport(pluginName)]
         public static extern IntPtr PixelpartAccelerationFieldGetAccelerationDirection(IntPtr effectRuntime, uint forceFieldId);
         [DllImport(pluginName)]
         public static extern IntPtr PixelpartAccelerationFieldGetAccelerationDirectionVariance(IntPtr effectRuntime, uint forceFieldId);
@@ -285,6 +298,10 @@ namespace Pixelpart
         public static extern IntPtr PixelpartDragFieldGetVelocityInfluence(IntPtr effectRuntime, uint forceFieldId);
         [DllImport(pluginName)]
         public static extern IntPtr PixelpartDragFieldGetSizeInfluence(IntPtr effectRuntime, uint forceFieldId);
+        [DllImport(pluginName)]
+        public static extern IntPtr PixelpartVortexFieldGetTangentialStrength(IntPtr effectRuntime, uint forceFieldId);
+        [DllImport(pluginName)]
+        public static extern IntPtr PixelpartVortexFieldGetRadialStrength(IntPtr effectRuntime, uint forceFieldId);
 
         // Collider
         [DllImport(pluginName)]
@@ -330,9 +347,9 @@ namespace Pixelpart
         [DllImport(pluginName)]
         public static extern int PixelpartParticleTypeGetName(IntPtr effectRuntime, uint particleTypeId, byte[] buffer, int length);
         [DllImport(pluginName)]
-        public static extern void PixelpartParticleTypeSetPositionRelative(IntPtr effectRuntime, uint particleTypeId, bool relative);
+        public static extern void PixelpartParticleTypeSetSimulationSpace(IntPtr effectRuntime, uint particleTypeId, int space);
         [DllImport(pluginName)]
-        public static extern bool PixelpartParticleTypeIsPositionRelative(IntPtr effectRuntime, uint particleTypeId);
+        public static extern int PixelpartParticleTypeGetSimulationSpace(IntPtr effectRuntime, uint particleTypeId);
         [DllImport(pluginName)]
         public static extern void PixelpartParticleTypeSetRotationMode(IntPtr effectRuntime, uint particleTypeId, int mode);
         [DllImport(pluginName)]
@@ -349,6 +366,8 @@ namespace Pixelpart
         public static extern void PixelpartParticleTypeSetVisible(IntPtr effectRuntime, uint particleTypeId, bool visible);
         [DllImport(pluginName)]
         public static extern bool PixelpartParticleTypeIsVisible(IntPtr effectRuntime, uint particleTypeId);
+        [DllImport(pluginName)]
+        public static extern bool PixelpartParticleTypeIsVisibleAtCurrentLod(IntPtr effectRuntime, uint particleTypeId);
         [DllImport(pluginName)]
         public static extern void PixelpartParticleTypeSetLayer(IntPtr effectRuntime, uint particleTypeId, int layer);
         [DllImport(pluginName)]
